@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <style>
+@page {
+    size: letter;
+    margin: 1in 1in 0.9in 1in;
+    @bottom-center {
+        content: counter(page);
+        font-size: 9pt;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #888;
+    }
+}
+
+@page :first {
+    @bottom-center { content: none; }
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.45;
+    color: #1a1a1a;
+    orphans: 3;
+    widows: 3;
+}
+
+.title-block {
+    text-align: center;
+    margin-bottom: 20pt;
+    padding-bottom: 14pt;
+    border-bottom: 2px solid #333;
+}
+
+.title-block h1 {
+    font-size: 18pt;
+    font-weight: 700;
+    margin: 0 0 4pt 0;
+    color: #000;
+    letter-spacing: 0.5pt;
+}
+
+.title-block h2 {
+    font-size: 14pt;
+    font-weight: 400;
+    margin: 0 0 10pt 0;
+    color: #333;
+    border-bottom: none;
+}
+
+.title-block .author {
+    font-size: 12pt;
+    font-weight: 600;
+    margin: 0;
+}
+
+.title-block .meta {
+    font-size: 10.5pt;
+    color: #444;
+    margin: 2pt 0 0 0;
+}
+
+.project-title {
+    text-align: center;
+    margin: 18pt 0 24pt 0;
+    padding: 0 20pt;
+}
+
+.project-title p {
+    font-size: 13pt;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #111;
+    text-align: center;
+}
+
+h1 {
+    font-size: 14pt;
+    font-weight: 700;
+    margin-top: 22pt;
+    margin-bottom: 8pt;
+    color: #000;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4pt;
+    page-break-after: avoid;
+}
+
+h2 {
+    font-size: 12pt;
+    font-weight: 700;
+    margin-top: 16pt;
+    margin-bottom: 6pt;
+    color: #111;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    margin-top: 12pt;
+    margin-bottom: 4pt;
+    color: #222;
+    page-break-after: avoid;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 7pt;
+    text-align: justify;
+    hyphens: auto;
+}
+
+strong {
+    font-weight: 700;
+}
+
+em {
+    font-style: italic;
+}
+
+hr {
+    display: none;
+}
+
+ol, ul {
+    margin-top: 4pt;
+    margin-bottom: 7pt;
+    padding-left: 22pt;
+}
+
+li {
+    margin-bottom: 3pt;
+}
+
+li > ul, li > ol {
+    margin-top: 2pt;
+    margin-bottom: 2pt;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 8pt;
+    margin-bottom: 8pt;
+    font-size: 10pt;
+    page-break-inside: avoid;
+}
+
+thead th {
+    background-color: #f0f0f0;
+    font-weight: 700;
+    text-align: left;
+    padding: 5pt 7pt;
+    border: 1px solid #aaa;
+}
+
+td {
+    padding: 4pt 7pt;
+    border: 1px solid #bbb;
+    vertical-align: top;
+}
+
+tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+blockquote {
+    border-left: 3pt solid #ccc;
+    margin-left: 0;
+    padding-left: 12pt;
+    color: #444;
+}
+
+code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10pt;
+    background-color: #f4f4f4;
+    padding: 1pt 3pt;
+    border-radius: 2pt;
+}
+
+pre {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 9.5pt;
+    background-color: #f4f4f4;
+    padding: 8pt 10pt;
+    border: 1px solid #ddd;
+    border-radius: 3pt;
+    page-break-inside: avoid;
+}
+</style>
+</head>
+<body>
+<div class="title-block">
+    <h1>CS781 – AI for Health Sciences</h1>
+    <h2>Course Project Proposal</h2>
+    <p class="author">Anton Rasmussen</p>
+    <p class="meta">Spring 2026 | Submission Date: February 17, 2026</p>
+</div>
+<div class="project-title">
+    <p>Beyond Accuracy Loss: Measuring and Recovering Calibration Degradation in a Quantized Biomedical Large Language Model</p>
+</div>
+<hr />
+<hr />
+<h1>1. Introduction and Motivation</h1>
+<p>Healthcare organizations increasingly seek to deploy large language models for clinical documentation support, triage, and biomedical literature analysis. A 7B-parameter model achieves strong zero-shot and few-shot performance on biomedical NLP tasks but requires approximately 14 GB of VRAM at FP16, exceeding the capacity of most commodity hardware. A 4-bit quantized variant of the same model fits within 3.5 GB, enabling deployment on consumer-grade GPUs or CPU-only infrastructure. Post-training quantization (PTQ) is therefore the most practical compression technique for resource-constrained clinical environments.</p>
+<p>However, existing evaluations of quantized models focus almost exclusively on aggregate accuracy. In safety-critical settings, this is insufficient. Two properties matter at least as much as accuracy for clinical deployment:</p>
+<ol>
+<li><strong>Calibration</strong> — whether a model's predicted confidence aligns with its actual probability of being correct. A model that maintains 92% accuracy but assigns 99% confidence to its predictions (including the 8% it gets wrong) is actively dangerous in decision-support contexts.</li>
+<li><strong>Prompt robustness</strong> — whether a model produces stable predictions across semantically equivalent input phrasings. A model whose output flips when a clinician rephrases a question is unreliable regardless of its average accuracy.</li>
+</ol>
+<p>Critically, the existing literature on quantization-induced calibration shift provides an observation but not a remedy. This project goes further: it measures calibration degradation under quantization, then evaluates whether standard post-hoc calibration methods (temperature scaling, isotonic regression) can <em>recover</em> the lost calibration — and at what cost. The distinction between "quantization breaks calibration" (known) and "post-hoc methods can fix it" (not established for quantized biomedical LLMs) is the core contribution.</p>
+<p>In my professional work as a healthcare data engineer, I have observed that deployment decisions hinge on predictability and behavioral stability, not just aggregate scores. This project is designed to produce results that directly inform those decisions.</p>
+<hr />
+<h1>2. Problem Statement</h1>
+<p><strong>Primary hypothesis:</strong> Post-training quantization of BioMistral-7B to INT4 precision degrades Expected Calibration Error (ECE) by a greater relative magnitude than it degrades macro F1 score, across both biomedical tasks.</p>
+<p><strong>Operationalization:</strong> Let Δ_ECE = (ECE_quantized − ECE_FP16) / ECE_FP16 and Δ_F1 = (F1_FP16 − F1_quantized) / F1_FP16. The hypothesis predicts |Δ_ECE| &gt; |Δ_F1| at INT4, tested via paired bootstrap comparison.</p>
+<p><strong>Secondary hypothesis:</strong> Standard post-hoc calibration (temperature scaling) applied after quantization recovers ECE to within 110% of the full-precision baseline, without materially reducing classification accuracy (verified empirically).</p>
+<p><strong>Tertiary hypothesis:</strong> Quantization to INT4 increases prompt sensitivity — measured as decreased inter-template prediction agreement — relative to FP16, and this effect is <em>not</em> recovered by post-hoc calibration.</p>
+<hr />
+<h1>3. NLP Tasks</h1>
+<p>Two open-access biomedical classification benchmarks provide generalizability across task types and class structures.</p>
+<h2>3.1 PubMed 20k RCT (Sequential Sentence Classification)</h2>
+<p>PubMed 20k RCT (the 20,000-abstract subset of PubMed 200k RCT; Dernoncourt &amp; Lee, 2017) contains approximately 200,000 labeled sentences from 20,000 structured medical abstracts. Each sentence is labeled with one of five rhetorical roles: Background, Objective, Methods, Results, or Conclusions.</p>
+<p><strong>Why this task:</strong>
+* Open access, no credentialing required
+* Well-established benchmark in biomedical NLP
+* 5-class structure provides richer signal for calibration analysis than binary tasks
+* Large volume supports stable bootstrap estimates</p>
+<h2>3.2 MedNLI (Medical Natural Language Inference)</h2>
+<p>MedNLI contains approximately 14,000 premise-hypothesis pairs derived from clinical text, labeled as entailment, contradiction, or neutral. It is the standard NLI benchmark for clinical language understanding.</p>
+<p><strong>Why this task:</strong>
+* Tests compositional reasoning, not just pattern matching
+* 3-class structure complements the 5-class PubMed task
+* Clinical origin adds direct healthcare relevance</p>
+<p><strong>Access note:</strong> MedNLI is distributed via PhysioNet under a credentialed data use agreement (Romanov &amp; Shivade, 2018). The author has verified PhysioNet access. In the event of credentialing delays, the project will proceed with PubMed 20k RCT as the sole evaluation task; its large volume and 5-class structure are sufficient for the core calibration analysis.</p>
+<p>Using two tasks with different class structures and cognitive demands guards against conclusions that are artifacts of a single dataset.</p>
+<hr />
+<h1>4. Model</h1>
+<p>This project focuses on a single model to eliminate confounds between model architecture, pretraining corpus, and inference paradigm. All quantization effects are measured within the same model family, isolating precision as the independent variable.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Parameters</th>
+<th>Architecture</th>
+<th>Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BioMistral-7B (Labrak et al., 2024)</td>
+<td>7B</td>
+<td>Decoder (Mistral architecture)</td>
+<td>Open (HuggingFace)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why BioMistral-7B:</strong>
+* 7B parameters is the scale where quantization produces deployment-relevant savings (14 GB → 3.5 GB at INT4)
+* Mistral architecture is widely deployed and well-supported by quantization tooling
+* Biomedical continued pretraining provides domain relevance without requiring clinical data access
+* Open weights with no usage restrictions
+* Large enough that calibration behavior under compression is a genuine open question</p>
+<p><strong>Reference baselines (not part of the quantization analysis):</strong>
+* <strong>TF-IDF + Logistic Regression:</strong> Non-neural reference to establish task difficulty
+* These baselines contextualize BioMistral's absolute performance; they are not compared on calibration or quantization metrics</p>
+<p><strong>Design rationale:</strong> A multi-model comparison across parameter scales (e.g., 110M encoder vs. 7B decoder) was considered but rejected because architecture and inference paradigm differences would confound any scale-dependent finding. A single-model design isolates precision as the independent variable and allows the project to invest its time budget in methodological depth rather than breadth.</p>
+<hr />
+<h1>5. Methodology</h1>
+<h2>5.1 Quantization Conditions</h2>
+<p>BioMistral-7B will be evaluated at three precision levels using a single quantization backend (bitsandbytes) to eliminate cross-backend confounds:</p>
+<table>
+<thead>
+<tr>
+<th>Precision</th>
+<th>Method</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FP16</td>
+<td>Native (torch.float16)</td>
+<td>Full-precision baseline</td>
+</tr>
+<tr>
+<td>INT8</td>
+<td>bitsandbytes LLM.int8() (Dettmers et al., 2022)</td>
+<td>Mixed-precision post-training quantization</td>
+</tr>
+<tr>
+<td>INT4</td>
+<td>bitsandbytes NF4 (Dettmers et al., 2023)</td>
+<td>4-bit NormalFloat, double quantization enabled; weight quantization only (no LoRA adapters)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why a single backend:</strong> Different quantization backends (bitsandbytes, GPTQ, AWQ, llama.cpp) use different kernel implementations, dequantization strategies, and logit extraction interfaces. Using multiple backends would introduce a confound: observed differences could reflect backend implementation choices rather than precision effects. Restricting to bitsandbytes ensures that all logit extraction, probability computation, and calibration measurement flows through a single, consistent code path.</p>
+<p>This yields 3 precision levels × 2 tasks × 5 prompt templates = 30 core experimental runs, plus calibration recovery experiments (30 additional runs with post-hoc calibration applied).</p>
+<h2>5.2 Probability Extraction (Critical Methodological Detail)</h2>
+<p>Calibration analysis requires well-defined probability distributions over class labels. For a decoder LM evaluated via prompting, this is non-trivial and represents a key methodological decision in this project.</p>
+<p><strong>Approach: Single-token class code scoring.</strong></p>
+<p>Each task's labels are mapped to single-token alphabetic codes that are guaranteed to tokenize as exactly one token:</p>
+<table>
+<thead>
+<tr>
+<th>PubMed RCT</th>
+<th></th>
+<th>MedNLI</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A → Background</td>
+<td></td>
+<td>A → Entailment</td>
+<td></td>
+</tr>
+<tr>
+<td>B → Objective</td>
+<td></td>
+<td>B → Contradiction</td>
+<td></td>
+</tr>
+<tr>
+<td>C → Methods</td>
+<td></td>
+<td>C → Neutral</td>
+<td></td>
+</tr>
+<tr>
+<td>D → Results</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>E → Conclusions</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The prompt explicitly presents this mapping (e.g., "Classify the following sentence. A = Background, B = Objective, C = Methods, D = Results, E = Conclusions. Answer with a single letter.") and the model is scored on the logits of exactly the tokens {A, B, C, D, E} (or {A, B, C} for MedNLI).</p>
+<p>For each input x:</p>
+<ol>
+<li>Construct the prompt with x, the label-code mapping, and a completion cue</li>
+<li>Run a single forward pass and extract the logit vector z at the first generated token position</li>
+<li>Select the logits corresponding to the token IDs for the code tokens (e.g., "A", "B", "C", "D", "E")</li>
+<li>Compute P(class_k | x) = softmax(z[token_id(code_k)]) over only the K code tokens</li>
+</ol>
+<p>This produces a proper K-dimensional probability distribution suitable for ECE computation.</p>
+<p><strong>Why single-token codes instead of natural-language label verbalizers?</strong> Scoring the "first token of each label name" (e.g., first token of "Background", "Methods") introduces a fragile dependency on tokenizer behavior: multi-token labels, leading-space sensitivity, and shared first-token collisions can silently corrupt the probability distribution. Single-letter codes are each guaranteed to be a single token in any BPE tokenizer, avoiding this class of errors.</p>
+<p><strong>Why not free-form generation?</strong> Decoding full text and parsing the output introduces label noise, loses probability information, and makes calibration measurement ill-defined. Constrained token scoring avoids all three problems.</p>
+<p><strong>Validation gate (Phase 1):</strong> On 200 held-out examples, verify that (a) code-token probabilities sum to 1.0 after softmax over the restricted set, (b) the argmax of the code distribution matches the greedy-decoded output token, and (c) reliability diagrams are visually plausible at FP16. Experiments do not proceed until this gate passes.</p>
+<h2>5.3 Evaluation Framework</h2>
+<h3>5.3.1 Classification Performance</h3>
+<ul>
+<li>Macro F1 score (primary metric, accounts for class imbalance)</li>
+<li>Per-class F1 scores (to detect selective degradation on minority classes)</li>
+<li>Accuracy (secondary, for comparability with prior work)</li>
+<li>95% bootstrap confidence intervals on all metrics (n=1000 resamples)</li>
+</ul>
+<h3>5.3.2 Calibration Analysis (Primary Contribution)</h3>
+<p><strong>Measurement:</strong>
+* Expected Calibration Error (ECE) with 15 equal-width bins
+* Adaptive ECE (ACE) with 15 equal-mass bins as a robustness check (equal-width ECE can be unstable when confidence distributions are skewed)
+* Reliability diagrams (predicted confidence vs. observed accuracy) for each precision level
+* Calibration delta: relative change in ECE from FP16 to each quantized precision</p>
+<p><strong>Recovery (the intervention):</strong></p>
+<p>For each quantized model, post-hoc calibration will be applied to test whether quantization-induced miscalibration is recoverable:</p>
+<ul>
+<li><strong>Temperature scaling</strong> (Guo et al., 2017): A single scalar T is optimized on a held-out calibration set (15% of validation data) to minimize negative log-likelihood. Applied at test time by dividing logits by T before softmax. Because temperature scaling preserves logit ordering, it should not materially change classification accuracy — but this will be verified empirically, since ties and numerical edge cases can produce marginal shifts.</li>
+<li><strong>Isotonic regression</strong> (Zadrozny &amp; Elkan, 2002): A non-parametric, per-class calibration method fit on the same held-out calibration set. More flexible than temperature scaling but can overfit on small calibration sets.</li>
+</ul>
+<p>For each precision level and calibration method, the following will be reported:
+* ECE (equal-width) and ACE (equal-mass) before and after post-hoc calibration. Reporting both guards against conclusions that depend on binning strategy; if the two metrics disagree directionally, this will be noted as a limitation.
+* Recovery ratio: (ECE_uncalibrated − ECE_calibrated) / (ECE_uncalibrated − ECE_FP16). This is a derived summary statistic (not a community-standard metric) that measures what fraction of quantization-induced miscalibration was recovered. It is reported for interpretive convenience alongside the raw ECE values.
+* Whether post-hoc calibration changed classification accuracy (expected to be negligible for temperature scaling; verified empirically)</p>
+<h3>5.3.3 Prompt Robustness Analysis (Secondary Contribution)</h3>
+<p>Prompt robustness measures whether the model produces stable predictions when the prompt's surface form varies but the task semantics are held constant. The key constraint is that all template variation must be strictly <em>meaning-preserving</em>: templates may rephrase instructions or reorder label-code mappings, but must not alter the implied task, add hints, or change the information available to the model.</p>
+<p><strong>Design:</strong>
+* 5 prompt templates per task
+* All templates share the same class-code mapping, input formatting, and answer-space constraint (single letter)
+* Permitted variation: instruction synonym substitution (e.g., "Classify" vs. "Label"), sentence structure rearrangement, label-code presentation order
+* Prohibited variation: adding reasoning cues, changing few-shot examples, altering the code-to-class mapping, or restructuring the task framing (these would measure instruction-following differences, not robustness)
+* All templates validated on 50 held-out development examples per task to confirm that (a) all templates yield the same modal prediction on ≥90% of dev examples at FP16, and (b) no template produces systematically different class distributions. Templates failing this gate are revised or discarded.</p>
+<p><strong>Metrics:</strong>
+* <strong>Fleiss' kappa</strong> (Fleiss, 1971) across the 5 templates (treated as independent "raters"), computed at each precision level. Kappa accounts for chance agreement and is more informative than raw agreement rate for multi-class tasks.
+* <strong>Sensitivity delta:</strong> Change in Fleiss' kappa from FP16 to each quantized variant, with bootstrap confidence interval
+* <strong>Per-sample flip rate:</strong> Fraction of test examples where the modal prediction (across templates) changes between FP16 and quantized</p>
+<p><strong>Critical test:</strong> After applying temperature scaling to the quantized model, re-run the prompt robustness analysis on the calibrated quantized model. If temperature scaling recovers calibration but does <em>not</em> recover inter-template agreement, this demonstrates that quantization introduces two distinct failure modes — one recoverable (miscalibration), one not (output instability) — which is a meaningful finding for deployment.</p>
+<h3>5.3.4 Efficiency Metrics (Supplementary)</h3>
+<p>Reported in a single summary table, not as a primary contribution:</p>
+<ul>
+<li>Model size on disk (MB)</li>
+<li>Peak GPU VRAM during inference (nvidia-smi, batch size 1 and 16)</li>
+<li>Inference latency (mean and p95, per-sample, batch size 1 and 16)</li>
+<li>Throughput (samples/second)</li>
+</ul>
+<h2>5.4 Statistical Rigor</h2>
+<ul>
+<li>All classification and calibration metrics include 95% bootstrap confidence intervals (n=1000 resamples)</li>
+<li>McNemar's test for pairwise significance testing of accuracy between precision variants</li>
+<li>Paired bootstrap test for comparing ECE and F1 degradation magnitudes (testing the primary hypothesis directly)</li>
+<li>Results reported per-task throughout; no cross-task averaging</li>
+<li>All prompt template results reported individually to enable inspection of outlier templates</li>
+</ul>
+<h2>5.5 Controls and Validity Safeguards</h2>
+<ul>
+<li><strong>No test-set prompt tuning:</strong> Prompt templates are designed and validated exclusively on a held-out development subset (50 examples per task). No template selection or modification based on test-set performance.</li>
+<li><strong>Calibration set isolation:</strong> The 15% calibration split used for temperature scaling / isotonic regression is drawn from the validation set and is never used for ECE evaluation. ECE is computed exclusively on the test set.</li>
+<li><strong>Deterministic decoding:</strong> All inference uses temperature=0 (greedy decoding) to eliminate sampling variance. The only source of variation across templates is the prompt itself.</li>
+<li><strong>Contamination acknowledgment:</strong> BioMistral-7B was pretrained on biomedical corpora that likely include PubMed abstracts overlapping with PubMed 20k RCT test examples. The pretraining corpus is not publicly released, making direct n-gram overlap analysis infeasible. This will be reported as a limitation. As a partial mitigation, FP16 zero-shot accuracy on PubMed RCT will be compared against published baselines; performance substantially above known benchmarks would suggest contamination.</li>
+</ul>
+<hr />
+<h1>6. Timeline and Milestones</h1>
+<p>Project Duration: February 17 – May 8, 2026</p>
+<hr />
+<h2>Phase 1: Infrastructure, Data, and Probability Pipeline</h2>
+<p><strong>Feb 17 – Mar 2</strong> (2 weeks)</p>
+<ul>
+<li>Download and preprocess PubMed 20k RCT; verify MedNLI access via PhysioNet (activate fallback if needed)</li>
+<li>Implement evaluation harness: F1 (macro + per-class), ECE (equal-width and adaptive), bootstrap CIs</li>
+<li>Implement single-token class code probability extraction for BioMistral-7B (see Section 5.2)</li>
+<li><strong>Validation gate (Section 5.2):</strong> On 200 held-out examples, verify that code-token probabilities sum to 1.0, that the argmax matches greedy-decoded output, and that reliability diagrams are visually plausible at FP16. Do not proceed until this gate passes.</li>
+<li>Load BioMistral-7B at FP16; run sanity-check inference on both tasks</li>
+<li>Implement TF-IDF + Logistic Regression reference baseline</li>
+</ul>
+<p>Deliverable: Working probability extraction pipeline, validated at FP16, with evaluation harness</p>
+<hr />
+<h2>Phase 2: Full-Precision Baselines and Prompt Design</h2>
+<p><strong>Mar 3 – Mar 16</strong> (2 weeks)</p>
+<ul>
+<li>Design and validate 5 prompt templates per task (meaning-preserving variation only; validated on 50 dev examples per task)</li>
+<li>Run full evaluation at FP16 on both tasks across all 5 templates</li>
+<li>Compute FP16 baselines: F1, ECE, reliability diagrams, Fleiss' kappa</li>
+<li>Measure FP16 efficiency metrics (VRAM, latency, throughput)</li>
+<li>Implement temperature scaling and isotonic regression; validate on FP16 (post-hoc calibration of a well-calibrated model should produce minimal change — this is a sanity check)</li>
+</ul>
+<p>Deliverable: Complete FP16 baseline with calibration and robustness metrics</p>
+<hr />
+<h2>Phase 3: Quantization Experiments</h2>
+<p><strong>Mar 17 – Apr 6</strong> (3 weeks)</p>
+<ul>
+<li>Apply INT8 quantization via bitsandbytes; evaluate on both tasks across all 5 templates</li>
+<li>Apply INT4 (NF4) quantization via bitsandbytes; evaluate on both tasks across all 5 templates</li>
+<li>Record efficiency metrics at each precision level</li>
+<li>Compute calibration deltas and robustness deltas relative to FP16 baselines</li>
+<li>Apply temperature scaling and isotonic regression to INT8 and INT4 models; re-evaluate calibration</li>
+<li>Re-run prompt robustness analysis on calibrated quantized models</li>
+<li><strong>Checkpoint:</strong> By Apr 1, INT8 results should be complete. If INT4 is causing technical problems, the project still has a complete INT8 story to tell.</li>
+</ul>
+<p>Deliverable: Complete results matrix (3 precisions × 2 tasks × 5 templates × pre/post calibration)</p>
+<hr />
+<h2>Phase 4: Analysis</h2>
+<p><strong>Apr 7 – Apr 18</strong> (~2 weeks)</p>
+<ul>
+<li>Test primary hypothesis: paired bootstrap comparison of |Δ_ECE| vs |Δ_F1|</li>
+<li>Test secondary hypothesis: does temperature scaling recover ECE to within 110% of FP16 baseline?</li>
+<li>Test tertiary hypothesis: does Fleiss' kappa degrade under quantization, and does calibration recovery restore it?</li>
+<li>Construct reliability diagrams (FP16 vs INT8 vs INT4, before and after temperature scaling)</li>
+<li>Construct calibration recovery plots showing ECE trajectory across precision × calibration method</li>
+<li>Analyze per-class calibration to identify whether specific classes are disproportionately affected</li>
+<li>Compile efficiency summary table</li>
+</ul>
+<p>Deliverable: Complete statistical analysis with tested hypotheses and publication-quality figures</p>
+<hr />
+<h2>Phase 5: IEEE Report and Presentation</h2>
+<p><strong>Apr 19 – May 8</strong> (3 weeks)</p>
+<ul>
+<li>Title and Abstract (150–250 words)</li>
+<li>Introduction with hypothesis statement and explicit scope</li>
+<li>Methods: reproducible experimental protocol, probability extraction methodology, calibration recovery procedure</li>
+<li>Results: with confidence intervals, reliability diagrams, recovery plots, robustness analysis</li>
+<li>Discussion: practical deployment recommendations, limitations, failed hypotheses (if any)</li>
+<li>References, Figures, Tables</li>
+<li>Finalize visualizations, clean and document code repository</li>
+<li>Record presentation video</li>
+</ul>
+<p>Final submission due by May 8.</p>
+<hr />
+<h1>7. Expected Contributions</h1>
+<ol>
+<li><strong>Calibration degradation measurement:</strong> Quantify whether post-training quantization disproportionately degrades calibration (ECE) relative to classification accuracy (F1) in a biomedical LLM, using a single-token class code scoring methodology that eliminates tokenizer-dependent verbalizer artifacts.</li>
+<li><strong>Calibration recovery evaluation:</strong> Determine whether standard post-hoc calibration methods (temperature scaling, isotonic regression) can recover quantization-induced miscalibration to near-full-precision levels — a question with direct deployment implications that has received limited systematic attention for quantized biomedical LLMs.</li>
+<li><strong>Prompt robustness under quantization:</strong> Quantify whether INT4 quantization amplifies prompt sensitivity (measured via Fleiss' kappa over 5 meaning-preserving templates), and whether this instability is independent of calibration — i.e., whether it persists even after post-hoc calibration.</li>
+<li><strong>Methodological contribution:</strong> Provide a validated protocol for extracting well-defined class probabilities from prompted decoder LMs under quantization via single-token class code scoring, enabling rigorous calibration analysis that is currently absent from most quantization benchmarks.</li>
+</ol>
+<hr />
+<h1>8. Alignment with Course Objectives</h1>
+<p>This project aligns directly with:</p>
+<ul>
+<li>AI applications in healthcare (biomedical NLP deployment under resource constraints)</li>
+<li>EHR and NLP (Weeks 11–12) — clinical language understanding and classification</li>
+<li>Explainable AI and evaluation — calibration as a measurable dimension of trustworthiness</li>
+<li>Applied AI in biomedical contexts — connecting model compression research to clinical deployment realities</li>
+</ul>
+<p>The project contributes to the gap between model development and production deployment in resource-constrained healthcare environments, with emphasis on safety-relevant properties (calibration, robustness) rather than aggregate accuracy alone.</p>
+<hr />
+<h1>9. References</h1>
+<ul>
+<li>Dettmers, T., Lewis, M., Belkada, Y., &amp; Zettlemoyer, L. (2022). GPT3.int8(): 8-bit Matrix Multiplication for Transformers at Scale. <em>NeurIPS 2022</em>.</li>
+<li>Dettmers, T., Pagnoni, A., Holtzman, A., &amp; Zettlemoyer, L. (2023). QLoRA: Efficient Finetuning of Quantized Language Models. <em>NeurIPS 2023</em>.</li>
+<li>Dernoncourt, F., &amp; Lee, J.Y. (2017). PubMed 200k RCT: a Dataset for Sequential Sentence Classification in Medical Abstracts. <em>IJCNLP 2017</em>.</li>
+<li>Fleiss, J.L. (1971). Measuring nominal scale agreement among many raters. <em>Psychological Bulletin</em>, 76(5), 378–382.</li>
+<li>Guo, C., Pleiss, G., Sun, Y., &amp; Weinberger, K.Q. (2017). On Calibration of Modern Neural Networks. <em>ICML 2017</em>.</li>
+<li>Labrak, Y., Bazoge, A., Morin, E., Gourraud, P.-A., Rouvier, M., &amp; Dufour, R. (2024). BioMistral: A Collection of Open-Source Pretrained Large Language Models for Medical Domains. <em>ACL 2024 Findings</em>.</li>
+<li>Romanov, A., &amp; Shivade, C. (2018). Lessons from Natural Language Inference in the Clinical Domain. <em>EMNLP 2018</em>.</li>
+<li>Zadrozny, B., &amp; Elkan, C. (2002). Transforming Classifier Scores into Accurate Multiclass Probability Estimates. <em>KDD 2002</em>.</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,1407 @@
+see uh ABCD and then it's one and then you apply the same thing
+that's not testing it's because you have taught uh the AI model to do this right
+it's part of the training that so this is then it is not testing so the testing
+should be somewhat in theory it should be
+independent from the training data set so in practice we just put a trading dat
+data set split them into one portion for training one portion for testing and
+there's also a validation set that's uh doing training where you you you can
+actually go over the socalled the hyper parameters uh we will actually
+probably uh dive into that later on in the class
+so okay so uh the first part is just to loading the
+data in into the environment we are working on this is Jupiter notebook so
+the jupyter uh notebook has you see on top there a coding section there's also
+text section and for this part is a text section if you see the the play button
+that the coding section uh for people who use R math lab
+or Mathematica you will see a lot right in fact the mathematic probably had the
+notebook uh for the first the software I can't remember and then Pyon also
+started a notebook R then also started uh I I don't know who had the first
+notebook idea but it's a good idea right so and then you have the collab which is
+also use the notebook uh The Notebook B here you have comment
+and then you have a code and then you also uh behind the code you also had the output window right so here there's a
+button there if I click uh see a click button is start to spinning that means
+this section of code is running and you can actually see the output is refreshed so there and and you
+have to really we have to really be uh what's thankful to Google for make this
+available I mean this is basically free everybody can use and it's not perfect but it's quite
+convenient right so so Google uh collab is indeed quite uh uh what what we call
+public good uh quite quite uh uh very nice for Google to do this for us
+so uh so in cab we also see the purple and the
+black green fun and uh well the purple those are uh the key word import uh
+that's the python keyword and nonp blackw those are
+the I forgot the term for it it probably let's just call it a non keyword uh but
+some of them like a data frame that's the attribute for the class um so in in
+this case uh nonp is a python library or we call it a module uh and then we
+import it but n nonp is pretty long if you type it that most most people doing
+coding like to do short hand so we import nonp but instead of typing nonp
+we actually type as NP and pandis is another module
+basically uh if you actually Google Pand you will see why it's not it's
+interesting why it's the uh name of the animal but the p is original name is a
+something like a panel business something if uh interestingly had nothing to do
+with pandas kind of entire business purpose the thing with a Acron name
+called pandas yeah so I know but instead of we call pandas we also call it a PD
+shorthand it and then you have a mat La plot Library py plot on this long stream
+we call that we often call that PLT uh uh that's just a convention I mean I
+guess if you really like it you you we can name it anything we like we we can
+call that what uh uh Hampton Road plot if you like but
+what's the point the the the thing about writing the code is everybody read it uh it's easy to understand if everybody
+call it PLT we code something else that will be make it very confusing for our
+code to be understood by others it's also making it difficult for our code to
+be portable by other people to use right so so if you if you write a code which is nice enough clean enough people often
+just copy paste put into a different context and it will work very often that
+make your code or work more uh relatable more uh sided or more impact right so so
+it's good to follow convention and
+so and import request on this one we just called that request didn't rename
+it and this is also because request we don't use it a lot uh because you just
+write the first line that's it so I use it only once so in this case uh we use
+request to request the input data so the for this demo we actually
+retrieve the input data from a website that's actually also GitHub
+uh and there's a you can actually uh copy paste start URL link into the web
+browser and see what happened uh actually let me uh I'm trying
+to okay I open too many link but I'm going to open another one see yeah wow
+that's very nice and it still works after six wow after seven years it's still
+there 2018 this one was first published so it's already 2025 now so wow that is
+really a lot the sequences they have been using right so all those sequ all
+the those sequence uh is one entry uh okay but there's no zero and one
+interesting interesting so that means they must uh have
+something uh how how do they get the zero and one
+something they must arbitrarily put something there uh
+there's a there's a let me see there must be a order of
+this that means the first one let me see label oh label is a different okay
+that's fine sorry uh label uh th those are all
+sequence uh the label the basically Z and one is in a different
+file there Z and one okay this 0 0 one one okay so it's actually not the split
+by index sorry my apology uh i s actually if I if I wrote
+the the tutorial just for simpl I can just split in the middle right so the
+first part is the one the second part is there but the way this tutorial written
+is actually there's no particular order it look like just uh some random number
+there 0 1 one one0 1 Z there seem to be no apparent pattern there so anyhow but
+that's that's the tutorial input of data so we have one file is input the other
+file uh is there and one which is label
+and so uh let me follow my uh loading the data pre-processing and split the
+data so okay so uh we read we read the input sequence
+read the label and then now remember the de learning on
+basically based on tensor Matrix which is basically what number numbers but we
+when we read this uh sequence is actually not numbers so we somehow need
+to convert those atcg or those letters into
+numbers so one way to do that is a socalled one heart
+encoder uh this one heart encoder let's see uh is there a diag
+here okay I guess that's the output there so if you look at this one how in
+[Music] coding uh this sequence is C
+CG and I guess a TCG so the
+a hopefully the bottom one uh CC that means this position C is one the
+second position is one g
+Okay C G oh G this one so this is
+G uh a a c GT okay so the first row is a
+second row is c g and this one must be t
+uh we we don't see a t but this T must be a a one somewhere here so
+so that's the so the one holding coding basically uh for this sequence so we
+have a c GT and every position which is a uh matching value we put a one there
+which when the value is not we put a zero there so this is the one heart
+encoding there are some other ways label encoding uh those are two very common
+approaches you can actually see the L one hard encoding seem to take a lot of space
+right so it's not very efficient but it it is one of the most popular way for uh
+encoding we can also try label encoding which is that means uh atcg they will
+correspond to different integers not there on one it could be 0o 1 2 and
+three but if we do that that's imply there is order for it so some people
+don't like this right so some people say well this really not a order uh this is
+just letters a in front of G that's
+alphabetic but in biology that that is meaningless so this reason people prefer
+one heart encoding versus labor encoding so but then label encoding make it very
+easy and compact can be helpful down down the road as well so and when in
+doubt and very often in practice we just try uh different approach right you can try
+one hard encoding try label encoding and provide a reason and see whether the
+result is consistent right oh very often it doesn't make if if the uh well if the
+study designed well it shouldn't matter if in fact uh people who have use r or
+SAS you realize uh in R and SAS they very often use label
+encoding so as long is taken care of it's okay yeah so I don't think R and uh
+by default R uh use a lot of them just so called a uh factor which is just
+label in coding so but somehow in machine learning well hard en coding is
+very popular so okay so the same thing again for the labels
+well the labels uh I guess the was the top one must be one now the second one
+is zero let's let's see is that clear oh no the top one is zero sorry my bad uh
+the top the first one is zero so that value is one so this is a bit confusing
+sorry so yes that's say a zero uh then the zero is the first row second row is
+one and is a zero uh yeah it is a bit confusing see and then the last value is
+one so it's the second row list of one and so first row is zero and second row
+is one and again this is the one hard encoding so and then we split split the
+data into training testing uh and this one is actually
+uh 25% split that mean 75% for
+training 25% for testing oh that's really a lot uh it's yeah some some
+people use 90 10 some people use 80 20 and 75 25 okay uh I even uh in in some
+cases I even see people use uh 5050 60 40 is there's really no uh
+uh correct answer is it depend on how how much data you have right if you if
+you have a lot of data for training you don't really care that's fine just half and half it's fine so but on if you have
+very few data for training then you may want to put a lot of data into your training data
+set uh okay that's a whole different St if you don't have inal data how do you deal
+with the generate a as so called the robust or trustworthy
+AI model is a whole different topic to to start with so okay so we that's the
+data loading part and pre-processing part and splitting data and
+uh okay next uh to build a AI model very often there's a lot of choice what kind
+of AI model and most importantly what so-call what kind of architecture of AI
+model we choose uh remember this is a very old uh technique so at that time
+seven years ago convolution neuron Network CNN or uh this uh recursive
+neuron Network or RNN are two uh major type so we can
+either use a convolution new network and I mean there's also Cable News Network I
+guess see but this is convolution NE netor uh r n uh so
+so yeah so for DNA we often use the
+convolution neuronet it's still one of the most efficient way uh in neuron
+netor uh we can actually spend a lot of more time to to talk about just for the
+convolution neur how it work it's very uh effective I for image analysis as
+well so in this case we are going to pick a convolution NE network uh or
+DNA uh because it uh convolution neur had a fixed we
+need to have a fixed size and then we also need to have a convolution kernel
+uh usually it's predefined in this case yeah this one it
+look like which use uh caras predefined uh one this will be one
+layer so one layer convolution neur
+Network and we have a future 32 kernel size 12 okay so that we kernel size
+that's actually pretty long enough for the input sequence right so yeah the input sequence how long is
+that uh actually
+uh we could uh ask TBT for this let's see whether it works uh
+oops so how long is the
+following STI close
+4 a nuclear for nuclear tide and 12 uh length of Kernel is actually pretty long
+enough so uh let me see what the cola building have this so let's
+see uh oh it does have the table to explain
+this right uh one layer convolution followed by Ma pulling and then one
+layer two layer three layer uh that's it three layer uh and
+then that's just uh two uh output with sof Max remember last
+time when we uh play with the tensorflow playground
+and since this one predict Z and one they just put two uh neurons for the Z
+and one and that means input layer output layer w we have just one hidden
+layer uh with 16 neuron as the in in the hidden layer so this is a very simple
+neuron network
+uh yeah so let's see uh if I
+say go back uh explain the
+following Pon
+code emphasize on the AI model
+architecture
+Choice see whether it works or not
+yeah first layer pulling layer Max pooling uh Max pooling is originally
+designed for image analysis you just picking the maximal value in this case
+because everything just zero and one so it's you just picking one from the Max
+poing uh yeah it doesn't look like a very simple way to deal with inut and
+amazingly that's how deep linear AI Works uh sometime you you look we look
+at all simple uh mathematical algebraic
+operation it it sometime I do Marvel how the AI work I mean those are all very
+simple Mass operations so
+yeah now so uh let's see what I uh generate
+uh diagram to Ill
+this I'm not sure whether you can do this or not by the
+way this above neur netor
+interesting wow it actually does generate a diagram impressive uh so
+we have input first layer 32 future uh Max pulling flatten Den that's it uh
+okay so explain fs and the kernel
+choices so those are seem to be by default building in a
+carage is origin designed for for image like uh trying to pick simple image uh
+features paks edges others uh but in this
+case our input is basically one hard in coding it's the
+art so it is a multidim multi-dimensional
+uh but it's kind of a I guess we can treat that as a image as well so yeah so
+the it is interesting this method original designed for image but in this
+case this is just one hard encoding of DNA sequences so but it also works here
+so uh that's also an interesting part of uh deep learning many of the technique
+was originally designed for image analysis and it apparently is generating
+enough also working other cases so so in this case
+which means if we use label encoding this approach will probably
+be less effective because we are indeed using the filters and work on this the
+two dimensional one hard encoding as other image input so I guess label encoding in
+this case probably doesn't work as well as a one hard encoding
+so uh you could actually you could try all that on your own and see
+yeah that must be the uh the
+parallel uh yeah they must be the
+parallel now so it actually uh right now those are so calleded hyper parameter 32
+12 those are just hyper parameter why do we pick those
+uh that's because original paper pick it seem to be working I guess yeah so as as
+we show uh the other day when you when we pick multiple layer different uh
+parameter some sometime just arbitrary and we we think it will work and uh if
+it work we are happy if it doesn't work we try different thing
+so in this case is with the 48 nucle
+input and 32 and 12 that seem to be a good parameter and it just worked
+so the flatten basically put a because our uh once you have
+a uh multiple uh convolution kernel is
+actually come out with with more than two Dimension uh is actually depend on
+the Kernel uh let me see how CH B explain not
+flatten explain Latin to uh
+but that above the code
+begin yeah you just convert things into a vector or uh array uh in fact this
+also very common in the so-call the multi model machine learning when when you have all these different image voice
+very often we just flatten them concatenate them and then put into the next layer
+uh so yeah platin is BAS put multi-dimensional into one dimension
+that's the simple uh and in this case you can we can
+actually do a calculation here so after the max pulling the DI menion is
+probably 9 32 9 * 32 is probably 288
+yeah so after that with that Dimension then 32 we
+flatting it become just 288 so that's the and from the two 288 we got
+the uh is that a REO uh hold on from 288 how
+do we do that oh yeah that's a reu yeah we just use the real and get what 16
+from 16 we get the two so so basically all the information channeling down to
+the last two and then followed by what soft Max which uh put a probability there
+so yeah and this is actually tatb common version
+uh uh
+so the uh original code actually doesn't work anymore the the paper 2016 2018 I
+use chat TPT to update the the syntax
+make it running again using the because the python Library collab they always
+evolving in fact the python uh the main Python language is
+updated every recorded b mean four at least four major update four times a
+year so for the code which is a seven years old uh it just doesn't run anymore
+so I use chbd to say updated for the current when electri runs
+so uh so the previous one that's how and then I you CHP added a comment there
+so oh pick convolution so the next part will be
+choose convolution build of the [Music] model okay and then okay the model
+architecture we we we did went through the model architecture amazingly HPD actually draw that diagram with yeah
+it's very simple it's just sequential so the input is pretty big and then uh
+convolution Max pulling and flatten it and then uh 16 neuron Dan layer forward
+Ru soft Max to the become output so this is very simple neuron
+Network well uh this is interactive chart mean I can't even modify it well
+it's very impressive so uh
+so okay so uh let me see the running R do and
+model
+summary wait where the training part uh where did the train
+go this is just mod of
+summary oh here here here model. fit no there here's the training part
+so yeah so the input feature that me train train the label EAC 50 Time Each
+epac is one entire training data go over with Train 50 times you may ask why 50
+time that's another hyper parameter right of course in this case we can actually look at the the so-called uh
+loss function is it going down if it's flatten that means that the minimal uh
+the error is not going down anymore that means we have we are done
+so ver validation split that means 25 so that means
+inside inside training data is 25% uh so that's actually that initial figure is
+inaccurate uh maybe I say it actually so uh so so that means the 25% of initial
+75% used for validation so it's actually not exactly 25% that to be 25 time 25
+that's actually probably 12.25% uh 12 something percent of the
+validation so that also means the training data is
+6075 UH 60 something yeah I that's uh you can actually use
+Python to to do that calculation so so basically in the trading data we do
+another 75 25 spit again uh part of that validation the other part is
+training uh oh uh reconnect it apparently I haven't run it
+automatically disconnect me from that so
+uh so we do this model model is defined where model is defined
+oh there there model Divine sequential model add the first layer Max Ming model
+add flatten model add Danse model add Dan the last Danse two neur Rons six
+neon and then uh model. compare this L function is so
+called a cross entropy because this is something called classification it's either zero and one one is just a
+binary so we this use a so-call cross entropy okay uh let me
+see but that it does it work
+oh actually give the formula nice so yeah so the cross entropy basically
+is is indeed entropy as defined by what cloud Shannon uh the original formula but this
+is just do that for two categories so that will be one to two and it is p yeah
+just p log p and with frequency in front of so that's just uh classical entropy
+definition so
+um yeah so the classical entropy definition yes that's just that
+yeah so the uh for these two category you basically frequency c will be one P1
+and P2 will be 1 minus P2 right and then you put a frequency so there that's just classical entropy
+definition all right yeah so this this chb is really convenient with all of
+course uh very it does sometimes make mistake in fact even for jbd 40 uh I
+think the error rate is probably 1% or something so that it doesn't make make
+some mistake and but in this case uh based on what I can remember this is seem to be correct
+so uh yeah the the problem of using chb
+is to know when all when it make a mistake when it's actually do something
+useful that that is something take a lot of practice I guess
+yeah so So Adam is the so-called Optimizer uh
+for machine learning so and usually it work item is is
+yeah so and then we uh build that model model summary just put that table
+and then model do fit that's where the training happen it take a while in fact if I click on
+this oh I have not run the previous one can I run all before run everything
+before sorry that's going to take a while uh uh yeah it's collab is a bit slow but
+okay actually well fast enough so now can we wrong yes now we can run the
+model chaining part uh
+wow it's pretty fast it's a very simple uh neuron
+Network and very uh quite straightforward uh data and label so yeah so 50 uh well actually here we do
+see a problem right so you see that the blue line for training data is goes uh
+the loss the error goes down very quickly but then that orange which
+validation is actually stay pretty high what is this phenomenal called can can
+someone put in the chat window what is happening here why after a while you see
+the blue line goes down but the yellow is still stay high what is this what is this thing
+called ah overfeeding someone said uh yes so this is classical sign of over
+fitting that means if we run the model long enough is not going to help because
+the it's not learning generalizable knowledge generalizable Insight because
+it it only work very well for for the input has been given to the model but
+for the input uh for the input has the model has not learned it just doesn't work so the longer we train is not is
+not going to be helpful and this is uh what What's the main challenge in
+machine learning yeah so actually probably in all model fitting uh but in deep learning that's become a very big
+issue uh so and we so that's the loss function
+but there are also other measures accurac uh accuracy there are also actually uh
+foral positive for negative the socalled confusion Matrix and we we we will public that later but for the time being
+you can also see if it plot the accuracy
+so uh accuracy we see uh yes so this is also overfitting
+because the validation had a lower accuracy well for the training it has is
+not almost 100% accurate so we actually can print out that value to you not look
+at the Plus uh it it doesn't look at poing 100 so this is a classical overfitting issue
+wow you have to think about this is very simple new netor is already start to overfit and then you think about the all
+those large language model had a billion of parameter so this is a terrible overfitting issue
+uh yeah everywhere so yeah so so this is a very simple D model we already had the
+overfitting issue so and aha here's the uh more detail uh on
+evaluation so how do we evaluate the machine learning in general any model
+prediction right so this so called the true positive true negative true
+positive basically uh the model prediction is
+correct and Bally the red is if it's in
+this case z and one there zero is zero is correct one is correctly
+prict one uh oh wait wait wait in this that's correct uh one no no in this
+case that one is correct one two negative means the zero is true is
+predicted the zero uh false negative and false positive means is predicted is
+one but is actually zero yeah so so uh I'm sorry I I think I may have
+confused you false negative means is predict as zero but is actually one I
+may have to use the diagram to explain this so true positive means is we
+predict one it is also one to negative we predict zero it is also zero false
+positive means we predict is one by it is actually zero false negative means we
+predict is zero but is actually one this is probably sounds very
+confusing but uh but I guess the good way to look at
+it you try to see uh okay let's ask ch2 provide a
+provide uh a simple explanation on the confusion Matrix
+use example to explain two positive true negative false
+positive false negative let let's see what jcpd
+does okay true posi medical test pred patient and the disease and they act
+have sure true positive to negative the model uh pred patient doesn't have a disease but
+they actually have a disease oh that's terrible that's a misdiagnosis okay well
+that that is too negative yeah oh wait wait wait this is the true netive uh predict that doesn't have the
+disase they actually don't so this is true NE that's sorry that's false positive means uh yeah for example uh
+people don't have a cancer it's predict that cancer and that to be acquired a liability for
+treatment in plus nective it means someone has a cancer and the the doctor
+the AI doctor say that patient is normal uh that's also terrible isn't it uh so
+so uh false positive and false negative and both false positive will be the false alarm false
+negative I in situation is is a will just delay
+uh all delay the potential risk or bad things will happen right
+so uh yeah so and chb does give well a lot of other
+detailed example there so okay
+uh in fact uh uh we actually so the
+Caris actually provide some uh nice illustration plot wow
+so uh this is actually pretty good uh but hold on hold on but is this un TR
+the data oh this is actually predicted the data based [Music] on based on testing oh this is uh
+despite the loss function validation well the testing data is also highly
+accurate uh predicted label uh wow 98% accurate for zero predicted Z is 98%
+zero but predict one is actually 100% accurate
+so even though it's overfitting but there still seem to uh let me see is
+test feature yeah that should be splited the test feature where where else do we see
+the test feature let me do a search test picture
+I want to see the line that line where the test feature is
+H label test feature uh where did we have that split
+uh model split uh
+okay anyone remember where we have the split uh 0.25 maybe I should search
+for25 but it's not highlighting where
+where oh here is split okay so yeah trend test train feature test so that is
+wow that is very impressive it is yeah so we here here the split yeah train
+model uh train test split input feature input label and
+split you know train feature so if we just take the Bland face of
+this uh python package to do the trans liit they are indeed independent so this
+is pretty impressive right so with a very simple neural network with get wow 98% for the true two two for
+accuracy for zero 100% for the label of one so it is very impressive
+so yeah so there this is a very simple
+exercise uh the other part uh I haven't done this uh
+in 2018 people use a sailing feature but nowadays the most popular way is called
+shap value but I haven't got a chance to do the shap value uh for this
+uh and the other part is uh Caris and
+tensor flow is old technology now the most the current uh right now the
+current model is Transformer uh we could actually uh for good exercise we could
+convert this into Transformer as well uh not to be a good exercise actually py
+Transformer are the not the most popular model now in 2018 convolution ne still
+big deal um and at that time also the Caris Cy learn is also a big deal U not
+anymore Su still use a lot but tensor flow is is is uh tensor flow is not
+consider uh it's consider old technology now py is the most recent so but this
+tutorial is from 2018 so it's the state of that uh seven years
+ago nevertheless it's still impressive after seven years still runs of course I
+you chpd updated a few minor things but it's still wrong so very nice so okay so
+uh questions uh have you any uh Terry ad me can when
+you try to run on your side that they
+work yeah I've run it up to the labels and it seemed to be okay I didn't run
+through the all of the cells oh uh can you try to run everything see see whether it works
+uh second sure
+actually let me uh after speaking oh she for a whole hour I need to drink
+something have a cup set of
+water okay can you can you share your screen if you don't mind yep
+sure oh nice yeah the cab is a good way to for for repeat this yeah yeah I just
+went through and clicked run run run run and
+uh okay
+very nice very nice it's quite repeatable isn't it so uh let me see the
+whether you you you regenerate that overfitting
+lot oh nice it is there I mean of course the plot a little different but the
+overfitting is clearly there so yeah and let's wait can you also run the
+last confusion Matrix and see whether it is
+the yeah see what the final accuracy interesting you got 96 98 I got
+98 100% a little difference
+yeah but more or less uh qualitatively still similar yeah so you got 96 98
+uh so okay very good thanks for sharing
+this yeah so in a way you can see the because of the testing splitting runon
+cting this is not although qualitativ is numerically is not exactly the the same
+thing here that's the part of AI has always been you you may have taken some
+math work you know the optimize maximal there's always one value there
+apparently for deep learning at AI That's not the case every time we try there's some luck
+there is is not entirely exactly the same even though qualitatively they are
+similar so that's has always been a very interesting part of AI
+so uh it look like people don't really care so as not it works at least for in
+in the Practical uh world and 98% was
+100% maybe it do matters but in most cases yeah it's not entirely repeatable
+people just accept it the way it is
+right okay let me uh uh I'm going to take five minutes
+break and then come back uh so uh let me share my screen
+uh uh
+so the next part let me we train model we visualize this we
+do the confusion matric okay the next part uh we're going to remove the whole
+thing to W have UND Dem mind rerun everything now next part I'm so if you
+don't actually you have everything you could try to do this on your own right uh basically uh if you if you go to
+uh if you have right you you can that's
+the code that's the GAA repository you try to just put all your code on wab and
+then try to run it uh yeah actually let how about you everybody try to do that
+uh and then I'm going to take a break that come back in 10 minutes and then see how we have a discussion how we're going to
+proceed with that some of you have been using wab in fact some of you should be expert
+our so uh and then let's discuss some different way how to do that yeah so
+okay uh I'm going to let let's try to
+uh uh put the GitHub code on wub and R
+it about this uh I'm going to uh let's
+take a I'm I'm going to take a 10 minute break while you're working on it and then after 10 minutes I come back and
+then discuss how we proceed with this about that yeah okay so I I know some of you
+probably cannot do this but that's fine we are recording this uh so me Terry uh
+uh yeah let's try
+uh yeah let's try oh uh how to work on demand uh yeah Terry you can you can
+provide some advice to others how to use this I guess yeah
+yeah yeah yeah somebody probably is not in a environment can do this right now
+but that's fine so okay so I'm going to uh yeah pause the recording come back in
+10 minutes
+
+
+yeah so to get started uh On Demand is just a web goey it's like a graphical
+user interface to connect to wob um we don't have Google collab but we have
+something similar called a Jupiter notebook um so after you log in here there's a drop- down menu called
+interactive apps and then you can click on Jupiter here um this will give you an interactive
+python environment uh what I was trying to do is I tested with different
+versions of tensorflow um ah interesting okay I see I see okay yeah so for the
+first one it ran okay using 214 and I was trying now with
+216 um I think it was okay um so if you were
+to leave everything as a default um go ahead and click tensorflow
+2.16 [Music] and this should work but we do have high
+demand for gpus right now but if you were to click the GPU partition um and click
+launch so the one I just launched is this box up top and okay um let me
+actually delete has three job running yeah
+Okay cool so that one is starting I'm just delete this one too and so why that uh while that gets
+ready to launch I'll close out of these two we first need the Jupiter notebook
+um available on the cluster so if you go back to the uh GitHub page you could get clone this if you wanted to from the
+terminal but a real simple way is from this link which I'll paste in the chat
+here oh copy paste uh I just downloaded it um oh I oh no you you get cloned it
+okay I see you you can do that but I'm downloading it locally to my oh you
+download it locally yeah and then so I just now transfer yeah
+right through this option here so actually a couple ways to do it um I
+have a terminal session open um and so there's a um oh you SCP I see
+okay iped it you can also use the open on demand so from files and home
+directory app I see okay I never use this feature okay I'm not even aware it
+existed okay yeah to explain that you know we have
+storage on your local machine I see I see see and you have a home directory what we call it on the cluster and you
+need to make sure the data is available on the cluster I I see okay first step
+is just you know getting the data to the cluster um and so going back over here
+to interactive sessions uh you can see that the session is now ready to go and
+so you can click on connect to Jupiter this will take a
+second oh let me close this just for a minute so it'll default you into your
+home directory and so wherever you uploaded that python no book you can
+navigate to that and if you just double click on it it'll open it up
+here and so this is you know this should look similar and so if you go down to
+the first number um you can do shift enter to execute that cell or hit the the play
+button up top so it was able to you know get that URL this looks okay very good you R do
+you actually how do you have that uh request module uh wait wait wait oh no
+this one runs that's right yeah yeah yeah very good yeah this one does run the request module seem to be by default
+is on yeah yeah so the um tensor flow is also there yeah yeah tensorflow
+is also there yeah this is just a name but it has a ton of python modules baked in um but that's I see I see I see okay
+and this is getting into more wob stuff but you're able to install your own python modules into a different
+directory if you wanted to oh you you can change the uh virtual environment
+correct so if you had a you can create a virtual environment for different projects and that'll help you included
+oh very nice very nice oh this is a very good feature to know yeah thank you and so this is just the default with
+no additional packages so we were able to do the one
+coding this should pretty fast okay cool
+um now this one is going to throw some warnings but it's safe to ignore it so
+depending on the tensorflow version you have and how it was compiled it might
+um throw some stuff like this but don't worry um it's still going to execute fine
+okay oh thank you for going over this that's uh I learned some new tricks too
+thank you okay all right uh uh M
+usula any uh amen you want to share how you do this or um no but I have a
+question for Terry yeah hi um Terry could you go back to
+the um like the beginning before before it launches is
+where you choose the python um yes go right here so with the additional module
+directory um if you leave it could you please click it if you leave it at
+none um how is that's also okay that's okay yeah okay you
+don't need to always choose a a different directory yeah that's correct if you
+need additional python modules we can walk how to set that up but this
+um the 216 tensorflow has everything to oh to run that code okay okay thank
+you just real quick I did want to share this too um this is a Jupiter notebook
+wahabism like a problem we have um in order to get your plots to show up you just need to give it this uh I think
+it's called like a magic function if if you oh you had to do the in line yeah without this it won't actually um I see
+yes I I do remember this issue there took me a while to I I think I
+even emailed some someone atpc they'll say why is this not
+printing so if I let this finish it just won't do anything but if I
+re it it'll show up here in a sec but yeah
+different uh something is running publica in the middle of it uh like you
+have the zero L spot perfect yeah doesn't look at this is a
+truncated uh plot so 100% model accuracy yeah so this is
+the there you go oh yeah there we repeat 98% was 100% again I
+have okay uh very good thanks Terry uh yeah so okay
+uh uh so let me show uh the way I actually did
+I use the GitHub cloning and the security key so that's probably good for everyone to
+learn on that as well so but that's probably a different conversation we we need to we can have a different class
+just to um exercise just on this one so basically one way to do that is the like
+uh oh I I wasn't sharing my screen sorry
+uh the one way to do is uh just to uh log to
+the oh I was in a zoom not actually my is this my actual
+Pyon yes that is okay
+is it working no
+uh okay so once I log in I
+uh so we can uh so call the get clone it
+uh if the key is there so in this case I can uh
+so go back to that uh get have
+repository so in this case I'm going to that's the get cloning link U by the way
+some univ actually disabled that so if that disabled how to do that I'm not
+sure but here we can actually get a clone it directly yeah so there once you see that
+is already there so so I once I uh once
+we clone it and we can actually even uh testing it
+so right so in this case I'm going to addit to that redmi file
+say uh
+uh who do for a genomic AI
+primer uh add D
+value convert to high
+torch uh what other things we say we want to do that
+uh what that's two things good enough so so and
+then commit uh in this
+case right we get com commit
+this so I update this on one have just for the testing and then we push it to
+the site there so error
+uh does not much okay I did have the error oh I have a double M
+sorry i m okay now it's
+committed uh very good so if I go back to the
+GitHub
+uh yeah so updated that I have it do shows here yeah in fact I changed add
+these two line add shapely value C to That's The To Do List that's
+uh highlighted green so there that's the once link to the GitHub it will be a
+very uh convenient to uh track the changes so this is especially use for
+when work on multiple environment and then we can use the GitHub to check different
+versions all right so and the next
+exercise uh so we we will probably have a different
+exercise in fact there's a lot of tutorial how to connect GitHub uh on the command line version so probably put
+that as a uh assignment or exercise on your own
+so okay so wait uh we still have time for
+another exercise uh this Bally electronic health record with uh also a
+bit a simple machine learning on it and this one actually is uh I I just found this one from kle
+uh electronic uh Health Data set so this K actually does have a lot of this so
+you if you are interested you can actually look more on this in this case
+uh there's a data set here uh and then there's also some other people sample
+code uh in fact oh this is wait wait wait which
+data it look like uh oh yeah that's the data set Healthcare data set it look I put a wrong link uh there
+did I yeah it doesn't look I put a wrong link uh so but the data set is this this
+is actually is not real it's a synthetic health data set which means it's
+everybody can use it so if it if it's not uh actually real person I don't
+think we can use it so but it does have a name age uh well no real data set put
+the patient's name there but so it's actually not good idea to put name there
+uh but in this case we can just say the ID uh whatever uh age gender blood type
+medic medic Med medical condition uh like the different status diabetes
+hypertension asthma Etc dat of admission that's will be a visit to a clinical
+facility uh doctor yeah that's also a privacy issue
+right I don't think uh well the actual real uh data will certainly have that
+the doctor who is uh treated the patient will be put there hpit
+insurance provider billing
+amount that's an interesting R number admission type emergency elected
+version uh this uh discharge dat admission is
+medication test result so it basically ask you to predict test result with all
+this can you can we predict test result wait wait wait with test result
+and alternative you can also say predict the state uh you have the discharge date
+and the admission you can also predict the length of the stain right it's just
+a simple exercise so that's the data set uh the way uh I use data set I I
+download that data set I me it's okay good anyway uh did I acknowledge maybe I
+should add acknowledge I did say that's K go inside data right I so uh maybe I
+should add acknowledgement sorry let me add that uh
+uh K go data set is [Music]
+from no that's not uh didn't copy the right way where did I get the K good
+data set uh yes okay let me copy
+but okay all right
+so and then I commit
+the commit a change uh are the K go
+[Music] data set
+link okay so there it it is there so in fact I added if I go back to
+the I can pull it and then if I if I look at it
+the it is also there the K data set right so it's it's very convenient uh uh
+it's going to also look on a resume how you use it right so uh by doing a uh AI
+work you you can't even know how to use GitHub I'll get it doesn't look like uh
+won't be impressive in a JV interview so okay
+so uh sorry that's a whole different story so okay so for this data for this
+exercise uh uh if we want to run the code and data
+you either have to download it or get clone it to wab either way uh you have
+to figure out a way to do that like Ty showed the file actually I never use
+this part I didn't even know it existed so but I guess you uh oh they upload I
+see okay so I guess you can't upload downlo they upload but on the other hand you uh you can also use get or GitHub uh
+but that's it when you do this you need to set up the link and set up the ID uh
+the secure ID uh in this case I do have my
+uh uh the security key here the the public key I have to use it to put put
+it there so uh so so for the time being maybe downloading file is the most straightforward way but in the long run
+you you really need to learn how to put the uh your security uh key there link
+your GitHub with your own working directory so okay so
+uh once we have that uh so I have a
+few uh environment running let me see
+uh yes so that's the primer and this is Koo yeah this one already I I tested it
+around so uh it so the ODU doesn't have the the K go Hub so
+by the way Terry I just uh uh install this on a wrong time is that a good idea
+uh what your recommended way to do this yeah yeah that's fine that'll just go into
+um there's like a default virtual environment right oh I see I see it goes to the default Ving man okay so this is
+uh uh if if you don't install that one the the ODU Hub doesn't have that KGO
+Library to retrieve data from from oh actually we don't actually use that
+because I uh have the local data set but uh but I forgot to comment those out so
+okay any let's run the whole thing because the this one also work and but
+also download data in case it doesn't work uh I forgot about that they didn't didn't come in that right now so okay
+so let's see ahuh very good it does read that data uh
+oh actually here we actually read that file locally
+uh yeah so anyhow uh no PD is not def did I I I did oh I
+haven't run this part sorry uh yeah that's the part of a a notebook sometime
+you forgot to run a block and then you have a error uh if it wrong is actually
+obvious the more subtle part is a variable which is not updated then you wrong and then of course you get WR with
+that so uh okay so that's
+the uh electronic Health Data uh we have what name age gender blah
+blah blah all those test result so the the goal is to write some uh fancy
+machine learning things to predict the test result normal abnormal
+inconclusive uh so if you think about we can use one
+hard including say normal incluses of normal so that will be a three different
+result or we can also use label encoding right but
+then what kind of feature should we use to predict this result the name is
+really not a good data because the name is unique everybody how are people's
+names supposed to link to predict the medical R they shouldn't right so basically the name shouldn't even be
+part of the input even though it's in the data but then gender probably should
+because many disase is related to gender right so there are some disease more
+prevalent in in one gender all the other right so blood
+type is probably related because it's part of a is one uh indirectly
+correlated with your genetic uh people's individual genetic makeup so blood type
+seem to be a good uh useful feature right so relevant
+feature at the minimal and then there a medical condition which is probably very
+important because your disease and your symptom is probably really related to
+the medical condition of each person right so so that's clearly uh I probably
+shouldn't say that seem to be a very important uh Factor we should use to predict the testing result and then
+there admission date that may or may not be useful if you think of predicting the
+result but we can use it right so and then the the the particular doctor name
+will be used to predict testing result what what do you what do you
+think uh should the doctor's name be correlated with the uh testing result of
+a patient uh me what do you
+think sorry I'm sorry uh the question is in
+the input of data there's doctor's name and they are also patient testing results
+uh do you think the doctor the name should be used to predict the testing
+result why or why not
+uh I don't think like we can only like use the doctor name to predict the test
+results because if the input there are many like input like name age gender
+like many like other inputs thing we can use are like we can combine all of these
+Imports together then to predict the test
+result uh I in a way I agree with the doctor's name is
+probably informative on the testing result but that probably is not a good
+idea because if the if the patient is more severe usually you put a more
+experienced doctor to put it and if it's routine we probably put the
+intern but that correlation is actually not good for machine Ming to learn it
+because those are actually not a useful input uh in fact I heard a story say
+there's a somebody train the AI model to predict
+the patient the cancer whatever the the survival it get a extremely accurate
+result um when when a patient close to uh severe I forgot the result and then
+the hospital get suspicious how how can the AI model become so accurate it turns
+out uh when the AI model learned to to associate the the chap
+plens of visit with the patient uh outcome because if the patient going to
+die of as a they're going to ask the hospital chap to give the whatever the
+the the prayer or whatever the things and but that somehow get into the AI
+model training data so every time there's a chaplain Pastor to visit a
+patient for that the a model learn that's a bad thing could to happen to that patient but but it's actually not
+good to predict the the patient outcome so so so so my the the point is the name
+of the doctor's name uh the name of those doctors is probably Ed for for
+machine to to Accurate predict the testing of the patient outcome but it's actually not
+useful that's the point I'm trying to make so if we use the doctor's name
+maybe it's indeed will help the accuracy of prediction but in
+reality is not a useful and we could even say that's
+a we could even say what's what's the word uh there's actually a actual word
+uh data leaking or something because that's the
+some sorry I forgot the actual word for this yeah unintentional consequence uh
+uh unintentional at minimum it's unintentional bias or whatever uh that is so so so even though the data is
+there is probably not good and again there's also the hospital name um the hospital
+name if we use the hospital name that's also interesting so you you you you can
+imagine some Hospital maybe manages some
+severe uh issue some house maybe have more resource some less resource so
+there's a lot of issue but I I would say use Hospital name it probably
+interesting it probably help but it depend on the purpose right so if the study is to say how the fairness of the
+resource allocation the hospital name public should be
+included but if the goal of the a model just to predict the based on the patient
+information the hospital name shouldn't be included but but that say on other
+hand if the goal of the study to predict the admission of patients patients stay
+in the hospital then the patient Hospital name should be included in fact in that case Doctor name probably also
+be included because the prediction now become to say based on patient information on the hospital State how
+long is the predict length of the patient will stay in the hospital so so in that case then the hospital name will
+be relevant so so in a way I I guess the how how do you
+decide which feature should be included in your AI model or not it has a lot of
+uh what's the [Laughter] word
+uh reading justification into it yeah rationale you have to justify right
+so uh actually insurance provider is probably also important there especially
+if the insurance is related to the hospital staying lens some some some
+insurance will set limit you just can't stay this long and so so it depend but
+then insurance provider on the patient uh testing result not seem to be shouldn't be
+related but in may be because Insurance May dictate the method of the uh testing
+and some method may be more sensitive some method less so they actually not to
+be kind of a sad the insurance provider May indeed inference a testing result
+simply by dictating the procedure vendor and Method yeah this really a lot of things
+going this kind of machine I mean we may just write a code to do that but if you
+want to interpret there really a lot of things that go into it uh so I don't
+want to even evoke Reon the situation actually related to the insurance so you can see
+how complicated the thing can quickly go uh become say so of course admission
+type as other things it's just so there a lot of a once you have a data set
+there a lot of things uh can become quickly complicated uh so okay just for
+the sake of exercise and so in a way it's good this is a fake data set
+completely synthesized so okay so we
+this actually 55,000 people so I try to run this on cab is
+actually say out of memory or something D memory Dum something so I decide to
+okay let's just use the W on demand to do this so it's good exercise if you can
+get this running so I'm going to quickly go with and then hopefully some of you can get this running on wab and it's a
+good exercise because what have is a useful resource um for everybody in this
+class you may some of you may have to use this for your uh other class or C
+or different project right so okay so so in this case uh we read that data
+this is actually a pendis uh pendis data set uh there's a lot of things you uh
+you can actually learn on data Camp how to uh manage or so called the rank data
+wrangling almost like a data is the B you need to Wrangle it something data
+wrangling uh or data pre-processing or data processing or something so okay so
+the I I'm going to let you to work through this data camp on this part yeah
+so uh this is really a lot uh data
+cleaning data cleaning is probably the work nobody like to do it you have to do
+it actually if you want to get high quality meaningful analysis and the
+meaningful machine learning uh model uh in fact people actually uh what's the word
+uh the quality of the data dep decides the AI model quality there a there's a
+phrase I forgot uh yeah uh
+so uh I'm going to quickly just go over this uh you have the admission oh those are
+the conversion so when loaded by default uh those data
+they actually in text the data is a very interesting data uh
+for example uh uh we have a uh January 30 January 31
+and then we didn't have January 32 January 30 33 is actually become
+February 1 February 2 right so the data have it own order even though we
+name it differently but then to the to the February is a February 28 and then
+sometime you have February 29 sometime it don't so data uh is a very special
+variable and and we are very thank for it's a special
+python package to handle that so and in this case we just say that's the data
+format and you could hopefully it's correct handled so otherwise just too
+much hardle just to deal with that all by yourself so uh let's say the many
+other language has it to some of you use R Pyon MB size so other
+things the the nice things about the most of data SP had a
+very mature technology to handle that dat so okay good so that's the why we
+put that into a data variable because data is a very special uh variable
+compared to other things like 1 2 3 four five right so those things are uh number
+which seem to be quite obvious but they if you want to order date and the time
+that'll be quite different uh a whole different uh Beast sorry okay so and then we have a gender
+uh in this case well uh it has male and female kind of kind of old data I'm not
+sure what the noway Hospital how many gender they put in
+uh they probably have something called birth gender or identify g depend on what
+hospital data you you get yes so
+uh there's actually a turn for that at least in the airport because sometime people's passport and the agenda doesn't
+M they do have some name I forgot yeah
+there's also a blood type uh in this case I doesn't look like we
+do the prediction we drop the name doctor hospital and room number and we don't think that's good
+for the prediction uh and then we're going to oh uh data admitted do that and
+then hold uh and then I tried the logistical regression uh sorry for this
+log I actually didn't remove anything I I use everything look like just for the
+sake of demonstration uh but even I use everything is actually not very good is
+logistic regression is still had the position like 33
+34% uh I mean it's not it's better than run
+run than gas but uh probably can be improved quite a quite a
+lot yeah so and there's also a issue I didn't do any
+encoding uh but this just for the say demonstration uh so but you can actually
+work on it uh do your your own exercise if you like and to improve this
+prediction uh yeah so this really is really terrible but but that on the other hand I didn't do anything I just
+uh put everything into the logistic regression is actually better than
+random so depend on your view is good and bad it can be optimistic or
+pessimistic depend on your view so okay so this is the the second
+exercise uh so I'm going to let you try a little
+bit and Sh uh this probably the a piece of cake for Terry I'm going to let a few
+other me and man how about you try to upload uh this data set on one have and
+then let's share some your experience see how it GES yeah so let's I'm going
+to let you work for how long do you think me and man uh oh Terry Terry how
+long do you think it will take you uh one minutes I mean you need a 10 minutes
+so yeah I think 10 15 minutes sure sure yeah let let's break about 10 minutes
+then come back and discover strategy share your experience how how you get this work yeah so
+yeah okay so this is 625 let's come back at the 635 I share your experience how
+you put this data set on the W have yeah so
+okay me and amen uh are we okay with
+this yes Professor I can TR okay let's go yeah
+so e
+okay so how you do this uh I first I what I did I uh open interactive
+sessions here M and here this one okay and uh and then I uploaded my uh files
+like the Klo
+upad okay this one doesn't have any so and Healthcare uh data data set also
+save in here so yeah I haven't drawn it yet but this is the file uh the start to
+yeah I can start it right now uh the thing is last time I started it uh with
+the with the prime uh okay this is the interactive for the
+prime when I started this it came this far and for some reason here when I
+worked on this one the my carel was crashed it says the carel we starting let me show you uh like if I play from
+here
+yeah it does work uh till this one yeah so if it works here let me
+see uh what what what sorry I missed what Arrow do you have uh uh it's called
+is carel is getting stopped I'm not sure why uh yeah carel uh let have too many
+notes open it look like you have too many open there uh but there are
+different interactive sessions so they should on uh like yeah
+here load for someon ter uh when you have
+multiple environment are they do when you have pple notebook open do they
+matter uh it should not because in my interactive session okay what is the
+section active job uh yeah so I have three active jobs
+right now so all of them are running so these two I'm using yeah see the car
+restarting call have died uh one thing I uh I think
+it happened because the no I only used one GPU and one node per GPU but I think
+for one core but I I think I need have to uh uh bring some more like when I
+select the interactive sessions for this one I had to I had to use more gpus more CES of
+the gpus I only used one code maybe it could not handle or I'm not sure yet
+like what why the carel restarting at this point yeah so this is the point uh for
+the earlier one
+uh maybe uh Terry was telling us something about like uh Mt plot in line
+just to use that one I guess uh if you don't see the plot yeah
+you should put the m m line can you please give me the code in
+the message so that I can just use here uh you you you had to uh
+yeah it's in the zoom chat yeah okay in the
+chat yeah I'm not sure why the why that konel is
+restarting could it be a space or something like a space in my
+uh let me started so I have to do it all over again
+could it be because of my home directory does not have uh enough
+gpus like I when I select the interactive sessions I select only one GPU and one code could it be for that
+one no I don't think so okay let's see what happened
+[Music]
+yeah it's still happen it does have kernel restarting all the time yeah yeah
+I might have to figure that out why it's happening uh so I just downloaded for the other one the healthcare with
+location I just downloaded this so I haven't run it yet but yeah I can run it
+and okay uh does this anything to do with the environment
+because I selected the default environments and I saw Terry was selecting some environment that's
+actually uh I think he created uh right I'm not sure in this case I don't
+know what the other environment and you could create
+enironment I go there and Inter apps so
+uh here I have only two environments so Terry has several environments in here
+yeah I mean you you uh you so how do you put environments in there uh Terry you
+make you just create a virtual environment uh yeah just extra python
+packages I don't think you just put environment oh I I thought maybe uh the
+university as they have only because this one was created by them like the system engineer uh so I wasn't sure if I
+can actually create the environment for create another one but I don't think
+that's that's it can you try like another you said you had two or three jobs running yes yeah does that happen
+on all all of the uh okay let
+[Music] me or even like with the the primer that
+you were working with before no it didn't happen
+before and also make sure that the prev uh s
+okay I have to download it manually okay as profor was telling
+me there a virtual environment you just create create one it seem to be
+automatically pop out when you when you go to the okay okay but I created for my research but
+it's not popping here like I have environment like my EnV is not popping up not here no it's
+not popping up here so that how do you how do you have that environment listed here
+D yeah it should be we can check if you if you're a SC is
+there the the in at the bottom you said directory within that the environment
+yeah if you type in L on that directory yeah yeah okay so I have to create that
+environment actually in the environment uh uh that's interesting that's not the
+case in my because I have environment in other places also yes okay actually they
+all it think I have to create the environment here yeah yeah yeah yeah you
+have to put it there yeah because like if I look at here uh
+oh okay so my inir actually in the other CL like the white you put it you must
+different dire I have to put one I have to put one in here okay yeah
+yeah so yeah I have to put it in B and I have to run this again and for this one
+I have to uh uh uh select my path from here just to
+down yeah so yeah uh in the meantime M can go on and
+I can just do that like the the code here and then I can show again
+okay okay thank you uh M can you show
+some of your progress or oh okay I'm sorry like can I show you
+next time because like I usually get didn't choose one have on over school so there is still some problem on my
+running oh okay
+so you can see on my side the the virtual environment those are what I I
+made uh actually this one is the HPC help be made
+out so but uh it doesn't look like it all pop up uh
+so yeah it look like it uh what whoever wrote this is just only pick the module
+front that directory yeah FR environment directory
+so okay so that's uh so we next time we probably uh follow
+up with the uh the K EHR on wab and try to do more exercise on this
+one uh we may also try to convert
+the sequence one into py torch and we can even try to add Transformer model
+into it that's actually really a lot of exercise to to go uh
+uh and but uh by the way uh
+um uh me and Terry and best do you have a GitHub account do you have a chbt
+account I do yeah oh okay um I definitely have a paid
+for chat GPT account I don't know about GitHub though yeah uh GitHub will be easy for
+you to work on a group account but the it doesn't look everyone had the hbt
+account that would be uh yeah so that means uh we can next
+next class we can just uh use the chbt python uh engine to see
+whether we can use that to convert the tensor flow into P torch and that be
+quite a good exercise uh yeah all right uh that's
+what I have and have the good weekend everyone yeah than thanks you
+too thank you
+
+okay my apologies on the little uh pickup so okay uh I put up
+the the slides for the first unit there and
+Al wait I don't look I have the video uh the slide is there and then I also
+put the video on where is the video I put
+there oh yeah that's wait that should be two video why
+is only one uh let me
+see oh yeah yeah sorry it is two video okay
+uh so yeah the it basically unedited the video and those videos are actually uh
+not public so uh I I don't have time to really edit them to be the presentable
+but that's the what we just raw recording from the lectur I just put it
+there without publishing it should should work uh yeah so it it is on YouTube but it's
+the uh ire publ I just use YouTube to host
+it uh and here's
+the other videos yeah GE there's a lot of commercial
+there so well it's free so you have you have to be with
+commercials so hopefully uh it it can be uh useful
+uh uh how do I go
+back yeah so uh I look at the uh data
+Camp assignment is also many student uh half of them half of you uh from
+different because everybody had different background so some of you uh take the python some of you take more
+advanced which is uh reasonable I mean it also can of
+expect it because this is really a class with mixed the background so
+um so yeah in in a way I'm very very thankful data Camp provide this acadamic
+account uh for us and you can uh pick
+the content which fits your level so uh so that's the situation for the
+data camp and the class video so today
+uh oh by the way the uh let me see the class I put my video uh my material on
+the GitHub material there that's so if you click on that
+link it should take to the the public
+material I put it there not everything is um public ghub some of them are still
+private but those are the uh uh material uh either with public data set or I feel
+it's there's not much uh risk to put it there so so those are the at least
+public presentable uh and the data set
+so you actually still see some of the working progress uh some of the material
+even though I put it it's not presentable yet so but and so today uh
+we are going to review the primary for deep learning in gen uh in genomics and
+actually move on to more uh Advanced uh topic uh using the same data set so
+uh so if you if you click on that code it's going to take you to click on
+collab is going to take you to collab directly yeah so but I already I'm
+already onc I'm going to just using the one I'm using instead of open another
+resources so okay so is can can
+everybody uh go to that GitHub site open your collab
+code uh you can give a thumbs up if you are ready uh
+are we are we ready
+oh yeah I'm still logging in into my okay sure
+sure or maybe I put that link uh in the
+[Music] chat okay I put that link uh in the chat
+as well so
+oh I didn't turn on my video did sorry that's
+fine uh but I guess you don't really want to see me the code is more
+important sorry
+okay okay so that's briefly review the first part and then we
+uh briefly review what we have been going through and then start with uh today's content so in this simple
+tutorial We have basically a sequence of the input uh sequence of the input and then
+uh one and zero labels and we have data split into training testing and
+validation uh so uh we those are the code actually
+running uh NP Pand this plotting and then this is just to retrieve the data
+set from the uh the website is actually basically a GitHub
+uh uh GitHub uh with with uh the data there
+and uh yes and then we use
+uh I thought we use one coding
+uh yes we did use one uh integer integer one hard encod yeah yeah we did use the
+we first use the integer encoded and [Music] then yeah and then we finally put into
+one coding so and for the oneing coding in
+this case we have if you look at the first sequence uh
+c c is this one and then another C is also this one the third letter is G
+which is the third row so c g a c
+g uh I want to say I guess that must be the T
+now GCC that's CC a so that's the first one is a okay
+there's a here so a c g the last one must be T So a c GT okay and uh to about
+y label we put it the is say Z and one
+uh like zero and one so it look like uh
+z0 Z the first row is z0 z the last one is one one yeah so just one hard in
+coding and then we use the simple convolution new network uh this is done
+uh this is initial code using the uh caras and this is sequential model
+convolution uh 32 filter kernel size 12
+Max pulling flatten uh become a linear and then
+uh followed with a 16 uh neuron output
+with Ru as activation function and then finally uh two uh neuron output with sof
+Max as a activation function to classify as the the
+probability uh as the optimizer cross entropy as a loss
+function uh Matrix B one this just it is
+literally binary one so there we have the model as
+the uh first layer convolution
+uh 32 is a kernal size it 32 is a kernal size 30 n must be the input size uh Max
+pulling uh and then flatten Den layer for the 16 uh output
+and finally T layer with two of the output
+uh yeah so output layer input layer uh actually just one hidden layer
+those are just flattened they are not doing any operation this a Max ping this is
+Operation so it doesn't count as another layer neuron the neuron one layer two
+layer three layer another input this output is actually just one hidden
+layer very simple neur nwor so this is actually commented BYT uh this must be a
+very old version of T comb on this yeah so uh
+32 feature kernel size
+12 Max fully
+flatten fully connected it caros call the T layer is just fully
+connected uh and then follow with a 2un soft
+Max and there uh so basically this is a com version
+so and and then we model uh fit this model to the input data Epoch 50
+Epoch validation split is 7525 and plotting the result
+so so
+there and so the TR tring loss goes down much faster and slower than validation
+law so this is a clear sign of overfit uh this is actually common in
+almost all neuron networks uh there's very few neuron Network that doesn't have this
+overfitting I'm pretty sure chb all those NE is terribly overfit because
+they have such a high memory that's so I but uh
+so uh accuracy uh that's the L function uh I with the accuracy this uh is
+basically reverse right so the training accuracy show high but
+validation is much less uh 0 actually wow the validation is
+actually 95 is actually not that too bad so yeah it's I mean clearly this is
+still overfitting but validation actually not too bad 95% I can say
+something uh and then we uh use a confusion Matrix to visualize this
+result uh confusion matric is what uh in this case we have two label predicted
+label which basically gr to predicted so
+if it's the so that means uh uh
+this is uh the true label is one predict label
+is one so this is uh correct prediction and this will be
+wrong prediction uh it's it's actually hard to say what's
+FAL because Z on one can be you technically you can flip it uh so uh
+yeah that but if you if zero and one become a testing real one is positive zero is
+negative then we can actually really Sayes that uh this part I still haven't done
+actually we could uh do this as exercise but uh if we have time let's see we can
+do that or not so we can use the post Haw interpretation like share play value
+nowadays there also different other method line method in fact there is also the con Conformity score which is more
+uh uh statistically or at least probabilistic rigor framework shapely
+value is a game theory so there are all different tools to socalled explainable
+AI approach uh uh we which uh if we have
+time maybe next week we we we go this week I haven't prepared but what I have
+I convert this one into py torch and which is actually more popular I mean uh
+the car uh you have to notice this code was first written in
+2018 wow seven years old now yeah and
+the most recent uh machine learning package is actually pytorch um sadly
+Google is become an old company the the Google's technique is oh now that's said
+that remember uh Transformer uh all this method is it is in uh first published by
+Google demand so Google did make some very important contribution to machine
+learning but the Google car that's old consider the old technique now
+so hold on hold on where is oh yeah so so now we have the port
+uh uh apparently if you you click on that TB link what do you see can can
+someone share your screen with me when when you click on that link how does it look like
+uh uh I I shared that GPT notebook I'm not sure how how it look like on your
+side can can someone share your screen uh yeah Professor the screen sharing it
+oh there it goes sorry yeah sorry yeah I just noticed that so yeah yeah sure
+that's fine this is redirecting Google apparently are you kran or you just want
+say it's going to a different [Music]
+website oh wow it works okay yeah can you can you square to the
+top see uh can you square to the very top see what what what happened
+yeah you see that's all I did I I copy P the code and then say convert this to py
+torch yeah that's NE yeah that's all I did uh okay so this can you just copy
+paste that code into into cab the new code see whether it runs or
+not yeah doing the entirely new sale see whether it works or
+not yeah yeah yeah put put it there see whether is runs or
+not it's spaming
+uh okay start can you scroll down uh okay uh you need to you need to run the
+first few section TR f you had to load the data sorry uh can you run the first
+part loading the
+data ah maybe there's another section you haven't run is there a wrong all
+above can you just run all above to make it much easier uh click wrong time yeah wrong
+before wrong before Oh you have to know which sell
+you are at you are at the number 18 uh eight so
+uh okay now we scroll down uh maybe just
+easier just click run all but you have to remember which part you copy paste are sell
+yeah uh do you do you yeah I
+can uh is
+that okay I see again wow that yeah it did work amazing
+uh yeah great yeah that's how I did thank
+you yeah so so now let's go back to uh let me go back to my sharing the
+code uh yeah that's how I did uh I asked so in my case actually copy paste the
+the input those uh encoding and then I think this is
+part that's it this must be the part uh T just copy paste Yeah so
+basically yeah that's how I did uh convert the car into the py so this must
+be a routine work a lot of people have done that because there's a lot people
+had done this hbt use other training data he had learned how to do it
+apparently you learn it pretty well so copy paste the code is actually run yeah
+and then uh we assume everything else is same 50 e par
+as the training uh let's see the pipe torch uh
+oh you that uh you actually you can see the P torch uh you you need to actually
+make more command compared to caros when you look at the pyen neur even though
+it's the same neuron Network you Noti you actually have to specify many other things it doesn't default for
+you apparently for us this is good I mean if you are treating this as a
+consumer the the more one button maybe is easier to use but apparently
+for for us the socalled I I don't know what should we call us now uh
+AI engineering or data science engineering or whatever whatever that is so basically we need to modify the new
+network a little bit to for the particular purpose of a data set
+whatever that profession is uh so apparently Caris doesn't offer this and
+P to offer this flexibility and apparently P wins and Caris losing uh
+that's this is a very good this is one of the reasons yeah
+so so in this case py first Define the neuron netor uh is actually still the here uh
+convolution neur uh oh you see here because the one hard incoder so the
+channel is full uh and then uh 32 that must be the
+max ping uh the next NE uh that must be
+the next layer uh let me see yeah it must be this next layer
+uh 32 kernos size is 12 which is the same
+as the caros and then we follow with a Max pulling
+uh apparently it's called self. the P but that's just max pulling and then flatten uh in this case
+it doesn't look you have we have to specific uh
+specify the flatten the size uh so in a way it doesn't look like
+this is more compers to use than Caris
+but uh this is also the reason P Tor is winning over cares that's my
+understanding because apparently for people who actually doing this AI engineer
+we do need those flexibility so uh okay flatten you also see here
+flatten linear you need flatten size and then 16 which is output uh dimension for
+the next layer the this is the last output layer 16 of input and two neuron
+as output notice all this we didn't specify any activation function and
+clearly this is quite different from car remember in Caris when we specify layer we specify the layer with activation
+function and in one combin but in P we actually do that in the in the forward
+function part here so there and in car
+in P there that's how the neuron network is uh specify and then we specify the
+activation function so here uh
+pulling from the input layer convolution
+layer and then flatten and then from flatten layer to
+the next one is a r Lo is that FC
+one yes yeah this this layer is the r as activation function fc2
+is that's a soft Max yeah F the soft Max what is f f we should import there
+the neuron netork function of F F soft mag so technically if we want to
+write our own activation function we should replace this part
+with our own activation function which is means it's much EAS to modify that
+with carrot that become a bit a bit uh
+not straightforward so even though in py look like we specify a lot of things if
+you want to change it it become a bit easier uh apparently this is how pure
+win uh I mean of course car is still one of the popular use in business but for
+academic research if you just use a package and you publish a conference
+paper and say what's your novelty what's your new idea right that become a issue but in in P we can do this much more
+easily than car right so very good so now
+uh input lens not feature input feature
+and is that yes that's our that's the class name we use can one model and we
+use that Define a model okay and then uh cross
+entropy okay uh did okay so okay look at Cross
+entp also specified outside of that NE dat okay that's also the same uh for the
+carot uh and then specify
+the uh Optimizer here and in this case add an Optimizer put the model
+parameter there and learning rate this learning rate we kind adjust
+it right now it's just a constant learning rate we can actually adapt use a use
+something called the Adaptive learning rate or you can Define your own uh
+learning rate so okay that's the model
+yeah all right and this should be the training part yes
+okay okay so this is one uh oneing
+coding and train the [Music]
+label convert to class index
+interesting 32 bit index really class index has to be 32 is
+it's probably not necessary uh okay any 32 bit index for that
+uh is this a data loader uh chain feature label no this is just uh
+is just uh the object for the data set
+canel data set where did we inut this function
+uh canc data set nothing seem to be still the T data
+set where did we get this one
+sorry so I mean cell 14 I need to come back to
+this nothing El here oh it is from T utility okay data
+loader random spit tensor data set that's is the that's from the utility package
+okay sorry where the cell 14 uh
+six ah I'm going to put this one maybe it's
+easier ah but I don't see the cell number anymore on the
+Cod okay here so so that's the utility function
+put trans size so this is 2575
+split training validation from the training data
+set wait that's not right chaining
+testing size validation size
+okay anyone see there a issue here
+uh there's no
+testing yeah uh apparently this this Pyon Cod doesn't have a separate testing
+data set yeah that's a that's a problem
+mod evaluation okay amen do you see a problem
+here which one Professor yeah it it should have a training testing
+validation and testing apparently TBT forgot to add the testing data
+set yeah you do a simpy 25 split just for the training
+validation uh which is why this one fit so good because the oh it do says this
+validation yes the validation yeah yeah but this confusion Matrix shouldn't be
+using validation it should be using a separate testing data set in this case
+oh wait wait wait it does say testing features uh okay okay oh sorry my bad
+okay it because the I now recall my bad uh the testing feature actually is in
+our initial uh data processing I see so that's correct uh uh my apology so it it
+it does this is correct sorry this is correct because the testing is not from the py is from our initial data Pro
+pre-processing we then there we we we left a testing feature so this is
+correct my apology for a moment I thought I this is perfect example to show CH made a
+mistake then I realized this is correct so is right
+sorry okay uh okay well that's actually pretty good I I thought it making a
+mistake but it is not okay okay so the test uh okay let's go back to see the
+validation so this is this is correct uh
+okay so we have the data loader uh validation training and
+validation optimize this is a still the same thing
+uh EA training training loss yeah go over go over the uh input
+and label training let's see forward pass model
+input output compareed to label that's your loss and
+then backward passing uh Optimizer L
+backward optimize the
+step and then add added the training
+losss p and normalize the loss by the batch
+size okay and then we
+validate mod evaluate validation
+L input labels validation data
+load output model input output
+loss calculation using a loss function add them up
+[Music] and normaliz with P
+size and then this just print in in between uh to show that so e
+one total one trending laws validation law law training loss validation
+law Bly well this one actually uh you see that the overfitting issue
+is a a bit less so the training laws and
+validation law are very close compared to the
+Caris yeah that's is that the car yeah that's the
+car and this is the P although it oh yeah yeah yeah that's
+true the over thing is because the training validation are very close but
+for the convolution you see the training is much lower than the
+validation
+uh evaluation show accuracy is also improved uh this is 99 was what the
+convolution is what 97 what's the 97 was 99 and P torch in
+99 was 100% yeah amazing isn't and this
+is apparently this just uh uh done by just one prom so it converted
+the the following code into a p that's that's his
+done
+amazing I okay uh I I need another volunteer uh amen can can you can you uh
+uh show your side of that uh uh ctivity link and see whether you got the
+Transformer part do you uh can you see whether you can find Transformer part in
+that [Music] oneor I missed the first portion of the
+class so I oh you okay can I have another volunteer M ly or Beth anyone of
+you want to it it's fine no pressure though uh can can you just
+uh show uh what it look like the that c GPT page I I sent to you let me also put
+that link there okay let me see I can show you but I don't know if I have the
+right thing up can you hear me yeah I can hear who who is it who who is talking
+sorry okay yeah can you can you uh thank you can you share
+the yeah
+is this what you were talking about ah yes yes can you copy paste that
+part of the into your uh K see whether that part runs which part the the py
+part yeah copy yeah copy that yeah and then go back to your uh
+collab the GitHub no the collab
+collab uh oh you haven't run the collab yet I see uh click on the uh one of the
+the the primary code click on the yeah click on that I have it up this thing is in the
+way though hold on oh there we go this right no you are still inside of GitHub
+you need to run it on collab can you scroll to the top to can you scroll back
+to the top that code the click on that click on that
+code the icon say Cab in that code yes say yeah open a cab yeah sorry I think
+you introduced this um last time when I couldn't get on computers yeah sure but
+uh it may be easier just say uh wrong everything uh click the wrong time on
+top on your left top with the menu say wrong time wrong all just click run
+all wrong anyway that's fine what can happen is the cloud if it
+exploded Google Cloud explode so sorry that's joking okay so now uh on the on
+the uh book p uh bookmark side uh click the pytor version The Bookmark I say uh
+yeah click on that one okay yes you see that the ref that's
+the the ref I I just sent you uh so let's wait a a little bit uh is actually
+going over all the previous uh uh canas and P torch uh convolution neur netor version
+uh wait wait wait wait wait no this is this is the p in the Run yeah so uh yeah
+let's let's wait until it finished it shouldn't take very long though okay
+uh oh uh hold on hold on it is running okay excellent uh can you oh can you scroll
+down to see whether a p torch bookmark the the the left hand side yeah click on
+the Transformer part yes uh oh it is not running okay so
+it is uh click a code add new the the on the on the book but yeah
+click code at new and then copy paste the the code you just get from T and
+click wrong yeah play that [Music]
+button ah interesting scroll down scroll down does it work oh it actually
+worked no that's the convolution code you just it's not a python
+code it's not a Transformer code you copy huh this let not yeah can you uh oh
+that's the P you need to find the Transformer part scroll down scroll down uh see what
+I do the Transformer part no that's still P scroll down again
+uh I saw I uh scroll up uh no scroll down this is not I thought
+I put a I got a it's right after that python the trans model yes Transformer model
+architecture uh where is
+they maybe just right after that the pation section right after that one uh a
+little bit yeah this one this one oh yeah yeah yeah can copy paste this code
+yeah not that
+one go here yeah you can add a new Right add a
+new me yeah uh paste uh paste again it
+doesn't look like you are in the right cell you need to add a new and click on the new
+one you need to after you add it you need to put your mouse over there yeah
+let scroll down see uh you added you already added huh it's
+not that's funny though can you click add the code again
+that shouldn't be the case no no no yeah click that okay now it work copy paste
+Cod okay I'm just going to hit control V Okay now click it Rong see what
+happen yeah click it wrong I did you did okay then scroll down uh scroll down
+again h no error I guess it is running uh there must be a training part okay
+can you go back to your gtop uhb there must be a running code part uh
+so scroll down the Transformer oh that's the architecture scroll down scroll down see training code yeah copy paste the
+training code and uh after the architecture yeah
+scroll down add yeah yeah add after this part this is a model architecture need
+to add the add the training code after that part yes yeah add code paste again run right see whether
+it works or not oh something yeah scroll down can
+you scroll down see whether dat wow amazing it is
+running yeah it it it's impressive than
+it uh it's not very good but the code wrong so you see this code is not
+converible well it has a extremely high loss and it's not
+converging so the code runs but the new network is not train very well that
+means either our architecture or uh loss function or learning R of batch
+processing job job uh regular learning something we have to change to make this
+training works better uh
+so if you look at the my code it doesn't look like my code Trend a little bit
+that's because I asked it to to to to do try different ways to adjust the
+learning rate what else I just uh I forgot basically
+if you go to the The Notebook use you'll see I ask try to improve the
+learning because currently after the first done it's not the model is not the
+code runs which still impressive but apparently the new network is not
+learning it's not Comming so so uh if you scroll down uh uh best can you
+scroll down uh see what the other things I ask you to do
+uh yeah see what do I see what the new prompt I I asked no SC you need to can
+you scroll down not up hold on hold on one second so this is the one that I copied and pasted ran and then this is
+the last chunk of code right here that's the evaluation yeah that's that's not the that's the evaluation I asked it to
+to somehow improve it a training process I I should have that uh can you scroll it down I have
+new new input right now all you see is chat gbt output I must have a new uh
+prompt ask you to improve it that's it see it doesn't nothing
+yes it was all of this that's all it okay then
+ah oh I see that probably because I did this code in mul multiple days I didn't
+do it that must be from different notebook yeah okay I I got it uh so I uh
+I probably get this Transformer done and then I had another chbt conversation to
+improve it yeah I I did it on several days sorry uh my apology apparently that
+notebook wasn't wasn't there so that's okay yeah sorry but thanks for going
+through this but I don't I if I don't put a link there it's probably lost
+because there just my notes is not very
+organized sorry do you want me to stop sharing my screen yes please yeah thank you
+okay uh but the point is that it's not working but we basically treating chb as another
+research uh we I I think uh uh if I do
+it again what I what I will do I'll just put the current code on the result I say
+as say this code is not really what are the uh uh strategy to to improve the
+fitting or training of this model is going to give us some
+uh General principle like modify well it probably first say modify the model
+architecture try the different learning rate uh different uh
+uh uh fitting uh strategy or activation
+function or job all those things I job is a prob job is for over fitting right
+now it's not even fitting so not J about uh let me see what uh compared to our
+current code it doesn't look like adjusting learning rate really helps
+uh let me share my screen um uh
+yeah yeah so this is the apparent this is the code has been
+modified a little bit so let's
+see I I don't remember I don't recall I could modify the model architect is the
+still the standard Transformer uh yeah yeah that's still the standard
+Transformer uh in fact is by default Transformer encoder uh I didn't do
+anything yeah that's still that's still the uh
+Transformer so what what we did it must be modify the learning
+rate hold on let's see
+no that's is still the standard learning okay so why did this code work uh and uh
+the initial code doesn't work uh
+but this is still terribly overfitting you see oh but no no this is still 50
+okay uh this is uh in this one I try to
+adjust learning rate let's see how I adjust the learning rate well how TP
+adjust the learning rate let me see
+oh we put the DC we DEC we also adjust a learning rate
+schedule of chb does that yeah so
+uh does it does it
+help it didn't it didn't have too much
+yeah similar is still similar over
+fting on the evaluation show this is about 60% accuracy 65% accurate overall
+right so but let say it's impressive I mean all I did is just ask it to to
+convert the uh convolution neur into a Transformer it it get it done
+so but apparently this default Transformer it works terrible compared
+to convolution neet uh uh which is a bit counting too you think
+Transformer should work better because the this is DN so you it should
+Transformer should work better than convolution but it did not so it's something we have to modify the
+Transformer architecture to to make it work better uh but somehow somehow by
+default and this the the default pyro Transformer
+doesn't work very well so yeah in any case is with given that
+this is just a AI help us coding is still work uh still impressive how you
+get to this stat but on the other hand it also show the limitation of AI so that means in
+this case if we want if if we believe Transformer should work
+and there's a lot of work we need to done to improve this to be honest I do believe
+Transformer should work I mean consider Alpha fold that's the it it it it is
+certainly should work uh but apparently this the for this example it's not
+working but I we I I didn't get the time to to take the Transformer model to get
+it work so yeah okay
+uh it's still quite impressive like all those are done with the just some prompt
+uh we converted the uh uh we converted the the carus
+convolution first to py Tor and then from py to Transformer
+so I do realize they jump B to transform directly but given given TBT deep SE all
+those things has been buzzing on the news you probably heard the keyword Transformer already actually I'm kind of
+curious uh how many of you know what Transformer
+means can you raise your hand or
+uh meow B Lily do you know uh have you heard of the word
+transformer for de Network people I've heard of it but I feel like
+if I were to give a definition I wouldn't be able to okay but you you did
+heard it before okay uh F and me how about how about you
+uh
+uh okay that's so I guess the uh the the
+the the the we do need a separate uh lecture to go over the Transformer
+so uh yeah in fact there's a lot of talk on
+on about the all this transform uh Transformer supposed to be more
+powerful for the sequence especially the DNA sequence ution neuron Network
+Transformer is also back of TB uh
+supposedly has uh should be very good at handling sequence data like the D
+sequence but unfortunately for this example it does much worse I don't
+know yeah some somehow uh somehow in this example is not working
+so uh still it's uh quite interesting uh
+so okay so uh for the for the next part of the
+the class I'm going to have break out rooms
+uh so I think I what the purpose I want to learn what you your expectation is
+what do you want to learn so so I'm going to set a Breakout room and then uh talk each one of you individually in the
+breakout room and and you uh uh uh okay let's
+first have the order so we uh a man actually I don't need to talk to individually but so I'm going to talk
+with Terry Beth meow and the Lily so right now is uh
+530 each person maybe 10 or 15 minutes may be enough I I guess uh so who
+uh who want to go what's the order so I'm going to go with alphabetic order
+that means uh alphabet best Lily meow and
+Terry is that okay sounds good sure next time we do
+reverse alphabetic okay so B uh B are you
+there hey B are you there
+uh okay if that's not there uh hold on maybe maybe
+uh Lily can can we first go to breakout room yeah that'll be good okay yeah yeah
+so I'm going to create just one breakout room uh
+okay I'm going to join b l
+yeah hello hey
+Lily Professor we can still hear you from the iPad oh ah let
+me I didn't realize that how do I mute my
