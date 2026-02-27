@@ -1,0 +1,53 @@
+/* Custom styles for Markdown PDF (VS Code) – cleaner PDF output */
+
+/* Use a readable serif for body; keeps headings clear */
+body {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 11pt;
+  line-height: 1.5;
+  color: #1a1a1a;
+}
+
+/* Headings: avoid breaking right after */
+h1, h2, h3, h4 {
+  page-break-after: avoid;
+  font-family: "Helvetica Neue", "Arial", sans-serif;
+}
+
+h1 { font-size: 1.6em; margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+h2 { font-size: 1.25em; margin-top: 1.25em; }
+h3 { font-size: 1.1em; margin-top: 1em; }
+
+/* Keep list blocks together when possible; avoid break inside items */
+ul, ol {
+  page-break-inside: avoid;
+}
+
+li {
+  page-break-inside: avoid;
+  margin-bottom: 0.35em;
+}
+
+/* Horizontal rules: visible and no orphan line */
+hr {
+  border: none;
+  border-top: 1px solid #bbb;
+  margin: 1.25em 0;
+}
+
+/* Strong/bold: ensure consistent weight */
+strong {
+  font-weight: 700;
+}
+
+/* References: keep each reference from splitting across pages */
+.references-list li,
+ul:last-of-type li {
+  page-break-inside: avoid;
+}
+
+/* Slightly more margin around section that had the "p g y p j" glitch */
+h2 + p,
+h2 + ul {
+  margin-top: 0.5em;
+}

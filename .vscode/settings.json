@@ -1,0 +1,8 @@
+{
+  "markdown-pdf.styles": ["markdown-pdf.css"],
+  "markdown-pdf.margin.top": "1.2cm",
+  "markdown-pdf.margin.bottom": "1.2cm",
+  "markdown-pdf.margin.left": "1.5cm",
+  "markdown-pdf.margin.right": "1.5cm",
+  "markdown-pdf.format": "Letter"
+}
