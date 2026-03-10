@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diabetes Prediction Report - Anton Rasmussen</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #1f2937; }
+    h1, h2 { color: #111827; }
+    figure { margin: 1.25rem 0; }
+    img { max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 6px; }
+    figcaption { font-size: 0.95rem; color: #4b5563; margin-top: 0.4rem; }
+    pre { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.9rem; overflow-x: auto; }
+    code { font-family: Menlo, Consolas, monospace; font-size: 0.92rem; }
+  </style>
+</head>
+<body>
+  <h1>Diabetes Prediction Report - Anton Rasmussen</h1>
+
+  <h2>1) Model + Preprocessing</h2>
+  <p>
+    I used <strong>Logistic Regression</strong> as the final model after comparing it against Random Forest.
+    The data came from the Pima Indians Diabetes dataset, with <code>Outcome</code> as the binary target.
+    Preprocessing was handled in a pipeline to avoid leakage: an <strong>80/20 stratified train/test split</strong>,
+    <strong>median imputation</strong> for missing values (after treating physiologically impossible zeros as missing in
+    Glucose, BloodPressure, SkinThickness, Insulin, and BMI), and <strong>standard scaling</strong> for logistic regression.
+    I also used stratified 5-fold cross-validation during model selection.
+  </p>
+
+  <h2>2) Confusion Matrix</h2>
+  <figure>
+    <img src="https://raw.githubusercontent.com/antonrasmussen/cs781-s26/main/assignments/diabetes/confusion_matrix.png" alt="Confusion matrix for logistic regression on diabetes test set">
+    <figcaption>Confusion matrix on the held-out test set at threshold 0.50.</figcaption>
+  </figure>
+  <p>
+    The matrix shows <strong>75 true negatives</strong>, <strong>38 true positives</strong>, <strong>25 false positives</strong>,
+    and <strong>16 false negatives</strong>. False positives are patients predicted diabetic who are not diabetic, which can
+    lead to extra follow-up testing. False negatives are diabetic patients predicted non-diabetic, which is generally the
+    riskier error in screening because cases may be missed.
+  </p>
+
+  <h2>3) SHAP / Shapley Value Plot</h2>
+  <figure>
+    <img src="https://raw.githubusercontent.com/antonrasmussen/cs781-s26/main/assignments/diabetes/shap_importance.png" alt="SHAP global feature importance bar chart">
+    <figcaption>Global SHAP importance (mean absolute SHAP values).</figcaption>
+  </figure>
+  <p>
+    The strongest drivers were <strong>Glucose</strong>, <strong>BMI</strong>, <strong>Pregnancies</strong>,
+    <strong>DiabetesPedigreeFunction</strong>, and <strong>Age</strong>. This ranking is medically plausible:
+    glucose is central to diabetes diagnosis, BMI is linked to insulin resistance, and age/family-history-related
+    effects are expected risk factors. Lower SHAP impact for Insulin and SkinThickness is plausible here because
+    those columns had substantial missingness in this dataset.
+  </p>
+
+  <h2>4) Code (required)</h2>
+  <p>
+    Full implementation is in <code>diabetes_prediction.ipynb</code>. Key snippets:
+  </p>
+  <pre><code># split + train
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, stratify=y, random_state=42
+)
+pipe_lr = Pipeline([
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler()),
+    ("model", LogisticRegression(max_iter=2000, random_state=42))
+])
+pipe_lr.fit(X_train, y_train)
+
+# SHAP
+explainer = shap.LinearExplainer(pipe_lr.named_steps["model"], X_train_scaled)
+shap_values = explainer.shap_values(X_test_scaled)</code></pre>
+</body>
+</html>
