@@ -5,6 +5,7 @@
 | [proposal.md](proposal.md) | Full course project proposal (methodology, timeline, references) |
 | [architecture.md](architecture.md) | Module map, data flow, design decisions |
 | [experiment_protocol.md](experiment_protocol.md) | Splits, decoding, metrics, prompt robustness summary |
+| [execution_modes.md](execution_modes.md) | Local, Flyte sandbox, ODU compute modes |
 | [INVENTORY.md](INVENTORY.md) | Sources of truth classification (audit) |
 | [CONSISTENCY_MATRIX.md](CONSISTENCY_MATRIX.md) | Feature/claim vs. implementation status (audit) |
 | [ISSUES.md](ISSUES.md) | Prioritized consistency issues (audit) |

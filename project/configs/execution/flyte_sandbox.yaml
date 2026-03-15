@@ -1,0 +1,5 @@
+# Flyte sandbox execution: same code, orchestrated by local Flyte
+execution_mode: flyte_sandbox
+compute_env: flyte_sandbox
+inference_mode: mock_inference  # or real when model available
+# Artifact paths remain local; Flyte tasks write to same artifact_root

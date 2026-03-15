@@ -18,6 +18,7 @@ where = ["src"]
 
 [project.optional-dependencies]
 dev = ["pytest"]
+flyte = ["flytekit>=1.0.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

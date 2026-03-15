@@ -15,11 +15,15 @@ def ensure_run_dir(artifact_root: str, run_id: str) -> Path:
 
 
 def save_resolved_config(run_dir: str | Path, config: dict) -> None:
-    """Write resolved_config.yaml."""
+    """Write resolved_config.yaml. Uses PyYAML when available for proper YAML."""
     path = Path(run_dir) / "resolved_config.yaml"
-    with path.open("w", encoding="utf-8") as f:
-        # JSON is valid YAML; this avoids requiring PyYAML for the MVP slice.
-        f.write(json.dumps(config, indent=2))
+    try:
+        import yaml  # type: ignore
+        with path.open("w", encoding="utf-8") as f:
+            yaml.safe_dump(config, f, default_flow_style=False, sort_keys=False)
+    except ImportError:
+        with path.open("w", encoding="utf-8") as f:
+            f.write(json.dumps(config, indent=2))
 
 
 def save_metadata(run_dir: str | Path, metadata: dict) -> None:

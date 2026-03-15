@@ -1,0 +1,9 @@
+# ODU compute profile: heavier runs on remote GPU nodes
+# Same code path; run via script/CLI with this profile
+execution_mode: odu
+compute_env: odu
+inference_mode: real  # expect real model on ODU
+hardware:
+  device_map: "auto"
+  batch_size: 8  # larger batch on GPU
+# Set RELIABILITY_ARTIFACT_ROOT to shared storage path on ODU if needed
