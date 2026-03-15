@@ -19,30 +19,33 @@ Tasks: **PubMed 20k RCT** (5-class) and **MedNLI** (3-class, with PubMed-only fa
   - **`docs/proposal.md`** — Full proposal (methodology, timeline, references).
   - **`docs/scripts/build_pdf.py`** — Build proposal PDF from Markdown.
 - **`configs/`** — Base, dataset, model, precision, prompt, calibration, and sweep YAMLs.
-- **`src/reliability_eval/`** — Python package: data, models, prompting, inference, metrics, calibration, experiments, reporting, flyte (stubs).
-- **`experiments/`** — Entrypoints: `run_local.py`, `run_mvp.py`, `run_grid.py` (TODO).
+- **`src/reliability_eval/`** — Python package: data, models, prompting, inference, metrics, calibration, experiments, reporting, flyte (thin wrappers).
+- **`experiments/`** — Entrypoints: `run_local.py`, `run_mvp.py`, `run_grid.py`.
 - **`artifacts/`** — Run outputs (predictions, metrics, figures). MVP runs use mock inference and the in-repo tiny sample; see `metadata.json` for `mode` and `dataset_source`.
 - **`reports/`** — Generated figures and tables for the report.
 - **`tests/`** — Pytest; start with label codes and config loading.
 
-## Quick start (stub phase)
+## Quick start
 
 ```bash
 cd project
 python -m venv .venv
 source .venv/bin/activate   # or .venv\Scripts\activate on Windows
 pip install -r requirements.txt
-pip install -e .            # if using pyproject.toml
+pip install -e .
 
-# CLI (placeholder)
-python -m reliability_eval.cli --help-commands
+# MVP run (mock inference, tiny sample)
+python experiments/run_mvp.py --sample-size 8 --template-id pubmed_t1
+
+# CLI
+PYTHONPATH=src python -m reliability_eval.cli run --sample-size 8
+PYTHONPATH=src python -m reliability_eval.cli sweep --dry-run
 
 # Tests (from project root; requires pytest)
 PYTHONPATH=src pytest tests/ -v
-# Or after pip install -e .:  pytest tests/ -v
 ```
 
-Full pipeline (load model, run eval, save artifacts) is not yet implemented; this scaffold is the first step.
+See `docs/execution_modes.md` for local, Flyte sandbox, and ODU compute modes.
 
 ## Implementation plan
 

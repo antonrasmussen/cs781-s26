@@ -1,24 +1,11 @@
-"""Prompt rendering for MVP templates."""
+"""Prompt rendering. Loads templates from configs/prompts/*.yaml (canonical source)."""
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from reliability_eval.prompting.label_codes import get_label_codes
-
-
-_PUBMED_TEMPLATES = {
-    "pubmed_t1": (
-        "Classify the following PubMed abstract sentence into one rhetorical role.\n"
-        "{legend}\n"
-        "Sentence: {text}\n"
-        "Answer with a single letter."
-    ),
-    "pubmed_t2": (
-        "Assign the sentence to exactly one category.\n"
-        "{legend}\n"
-        "Input sentence: {text}\n"
-        "Return only one letter."
-    ),
-}
+from reliability_eval.prompting.template_registry import get_template_body
 
 
 def _legend_from_label_codes(label_codes: dict) -> str:
@@ -26,12 +13,18 @@ def _legend_from_label_codes(label_codes: dict) -> str:
     return " ".join(f"{code}={label}" for code, label in by_code)
 
 
-def render(template_id: str, task: str, text: str, label_codes: dict | None = None) -> str:
-    """Render one prompt for a task/template pair."""
-    if task != "pubmed_rct":
-        raise ValueError(f"MVP renderer only supports pubmed_rct, got '{task}'")
-    if template_id not in _PUBMED_TEMPLATES:
-        raise ValueError(f"Unknown template_id '{template_id}'")
+def render(
+    template_id: str,
+    task: str,
+    text: str,
+    label_codes: dict | None = None,
+    config_dir: str | Path | None = None,
+) -> str:
+    """Render one prompt for a task/template pair.
+
+    Uses configs/prompts/<task>_templates.yaml when config_dir is provided.
+    """
     codes = label_codes or get_label_codes(task)
     legend = _legend_from_label_codes(codes)
-    return _PUBMED_TEMPLATES[template_id].format(legend=legend, text=text.strip())
+    body = get_template_body(task=task, template_id=template_id, config_dir=config_dir)
+    return body.format(legend=legend, text=text.strip())

@@ -1,18 +1,50 @@
 #!/usr/bin/env python3
 """Run a single experiment from a resolved config (local harness).
 
-TODO: Resolve config from CLI; call reliability_eval.experiments.run_single.run_single.
+Thin wrapper over reliability_eval.experiments.run_single.
 """
+
+from __future__ import annotations
+
+import argparse
 import sys
-
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-def main():
-    # Stub: not yet implemented
-    from reliability_eval.experiments import run_single as rs
-    print("run_single not yet implemented; config resolution TODO")
-    return 1
+src = Path(__file__).resolve().parent.parent / "src"
+sys.path.insert(0, str(src))
+
+from reliability_eval.config.resolve import resolve_config
+from reliability_eval.experiments.run_single import run_single
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Run single experiment (local harness).")
+    parser.add_argument("--sweep", type=str, default="mvp_pubmed", help="Sweep config id")
+    parser.add_argument("--dataset", type=str, default="pubmed_rct")
+    parser.add_argument("--model", type=str, default="biomistral_7b")
+    parser.add_argument("--precision", type=str, default="fp16")
+    parser.add_argument("--template", type=str, default="pubmed_t1")
+    parser.add_argument("--calibration", type=str, default="none")
+    parser.add_argument("--profile", type=str, default="local", choices=["local", "flyte_sandbox", "odu"])
+    parser.add_argument("--sample-size", type=int, default=None, help="Cap examples for small runs")
+    args = parser.parse_args()
+
+    project_root = Path(__file__).resolve().parent.parent
+    config = resolve_config(
+        project_root,
+        sweep_id=args.sweep,
+        dataset_id=args.dataset,
+        model_id=args.model,
+        precision_id=args.precision,
+        template_id=args.template,
+        calibration_id=args.calibration,
+        execution_profile=args.profile,
+        sample_size=args.sample_size,
+    )
+
+    run_id = run_single(config=config)
+    print(run_id)
+    return 0
 
 
 if __name__ == "__main__":
