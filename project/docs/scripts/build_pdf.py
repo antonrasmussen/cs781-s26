@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
-"""Convert project_topics.md to a professionally styled PDF."""
+"""Convert docs/proposal.md to a professionally styled PDF."""
 
 import markdown
 import weasyprint
 import os
+from pathlib import Path
 
-MD_FILE = os.path.join(os.path.dirname(__file__), "project_topics.md")
-OUT_FILE = os.path.join(os.path.dirname(__file__), "project_topics.pdf")
+# Resolve paths relative to project root (parent of docs/)
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_DOCS_DIR = _SCRIPT_DIR.parent
+_PROJECT_ROOT = _DOCS_DIR.parent
+
+MD_FILE = str(_PROJECT_ROOT / "docs" / "proposal.md")
+OUT_PDF = str(_PROJECT_ROOT / "docs" / "generated" / "proposal.pdf")
+OUT_HTML = str(_PROJECT_ROOT / "docs" / "generated" / "proposal.html")
 
 CSS = """
 @page {
@@ -198,6 +205,7 @@ pre {
 }
 """
 
+
 def build_html(md_text: str) -> str:
     lines = md_text.split("\n")
 
@@ -229,7 +237,6 @@ def build_html(md_text: str) -> str:
 
     project_title = ""
     clean_body = []
-    skip_next_bold = False
     i = 0
     while i < len(body_lines):
         line = body_lines[i]
@@ -281,15 +288,15 @@ def build_html(md_text: str) -> str:
 
 
 if __name__ == "__main__":
+    Path(OUT_PDF).parent.mkdir(parents=True, exist_ok=True)
     with open(MD_FILE, "r") as f:
         md_text = f.read()
 
     html = build_html(md_text)
 
-    html_path = OUT_FILE.replace(".pdf", ".html")
-    with open(html_path, "w") as f:
+    with open(OUT_HTML, "w") as f:
         f.write(html)
 
-    doc = weasyprint.HTML(string=html, base_url=os.path.dirname(__file__))
-    doc.write_pdf(OUT_FILE)
-    print(f"PDF written to {OUT_FILE}")
+    doc = weasyprint.HTML(string=html, base_url=str(_PROJECT_ROOT))
+    doc.write_pdf(OUT_PDF)
+    print(f"PDF written to {OUT_PDF}")

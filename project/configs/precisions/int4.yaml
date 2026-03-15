@@ -1,0 +1,4 @@
+precision: int4
+quantization:
+  method: nf4  # bitsandbytes NF4, double quant
+  # TODO: load_in_4bit=True

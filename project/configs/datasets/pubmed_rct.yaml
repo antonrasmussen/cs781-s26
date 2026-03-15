@@ -1,0 +1,9 @@
+# PubMed 20k RCT (5-class sequential sentence classification)
+dataset_id: pubmed_rct
+task: pubmed_rct
+path_or_hf_id: "pubmed_rct"  # TODO: set HuggingFace id or local path
+splits:
+  train: train
+  val: validation
+  test: test
+  calibration_fraction: 0.15  # from val

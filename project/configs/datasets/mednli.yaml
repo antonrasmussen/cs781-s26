@@ -1,0 +1,9 @@
+# MedNLI (3-class). PhysioNet access; fallback to PubMed-only if needed.
+dataset_id: mednli
+task: mednli
+path_or_hf_id: ""  # TODO: PhysioNet path or HF id when available
+splits:
+  train: train
+  val: validation
+  test: test
+  calibration_fraction: 0.15

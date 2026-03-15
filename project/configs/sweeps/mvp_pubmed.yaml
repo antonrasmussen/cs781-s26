@@ -1,0 +1,14 @@
+# MVP sweep: PubMed only, FP16 + INT8, 2 templates, no calibration
+experiment_name: mvp_pubmed_reliability
+extends: base
+combinations:
+  dataset: [pubmed_rct]
+  model: [biomistral_7b]
+  precision: [fp16, int8]
+  prompt_template: [pubmed_t1, pubmed_t2]
+  calibration: [none]
+evaluation:
+  metrics: [macro_f1, per_class_f1, accuracy, ece]
+  reliability_diagram: true
+output:
+  artifact_root: artifacts/runs

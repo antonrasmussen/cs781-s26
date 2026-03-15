@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Artifacts and runs (optional: track small samples)
+artifacts/runs/*
+!artifacts/runs/.gitkeep
+
+# Reports and figures (regenerate from code)
+reports/figures/
+reports/tables/
+!reports/.gitkeep
+
+# IDE and OS
+.idea/
+.DS_Store
+*.swp
+
+# Environment and secrets
+.env
+*.pem
+
+# Jupyter
+.ipynb_checkpoints/
+
+# PDF build (generated)
+project_topics.html
+project_topics.pdf
+docs/generated/*.html
+docs/generated/*.pdf

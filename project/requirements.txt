@@ -1,0 +1,17 @@
+# Minimal for stub phase. Expand in Phase 1–2.
+# Python >=3.10,<3.12
+pyyaml>=6.0
+pytest>=7.0
+
+# TODO: add when implementing
+# torch
+# transformers
+# accelerate
+# bitsandbytes
+# datasets
+# numpy
+# pandas
+# scikit-learn
+# matplotlib
+# pydantic
+# pyarrow
