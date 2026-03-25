@@ -6,14 +6,14 @@ import warnings
 from pathlib import Path
 
 import pytest
+import yaml
 
 
 def test_base_config_loadable():
-    """Base config file exists and contains expected seed key."""
+    """Base config file exists and seed is exactly 42."""
     path = Path(__file__).resolve().parent.parent / "configs" / "base.yaml"
-    text = path.read_text(encoding="utf-8")
-    assert "seed:" in text
-    assert "42" in text
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert data["seed"] == 42
 
 
 def test_resolve_config_raises_on_missing_execution_profile():

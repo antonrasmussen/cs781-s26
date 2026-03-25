@@ -3,13 +3,37 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Iterable
 
 
+def _safe_run_id_segment(run_id: str) -> str:
+    if not isinstance(run_id, str) or not run_id.strip():
+        raise ValueError("run_id must be a non-empty string")
+    if ".." in run_id:
+        raise ValueError(f"Invalid run_id {run_id!r}: parent segments ('..') are not allowed")
+    if os.sep in run_id or (os.altsep and os.altsep in run_id):
+        raise ValueError(f"Invalid run_id {run_id!r}: path separators are not allowed")
+    safe = Path(run_id).name
+    if safe != run_id or safe in (".", ".."):
+        raise ValueError(f"Invalid run_id {run_id!r}: must be a single path segment")
+    return safe
+
+
 def ensure_run_dir(artifact_root: str, run_id: str) -> Path:
-    """Create and return run directory."""
-    run_dir = Path(artifact_root) / run_id
+    """Create and return run directory under artifact_root.
+
+    run_id must be a single path segment (no ``..`` or separators) so the run
+    directory cannot escape artifact_root after resolution.
+    """
+    root = Path(artifact_root).resolve()
+    safe_name = _safe_run_id_segment(run_id)
+    run_dir = (root / safe_name).resolve()
+    if not run_dir.is_relative_to(root):
+        raise ValueError(
+            f"Resolved run directory {run_dir} is outside artifact root {root}"
+        )
     (run_dir / "figures").mkdir(parents=True, exist_ok=True)
     return run_dir
 

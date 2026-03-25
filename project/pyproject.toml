@@ -16,7 +16,7 @@ dependencies = [
 where = ["src"]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0"]
+dev = ["pytest>=9.0.2"]
 flyte = ["flytekit>=1.0.0"]
 
 [tool.pytest.ini_options]

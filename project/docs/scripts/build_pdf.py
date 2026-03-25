@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Convert docs/proposal.md to a professionally styled PDF."""
+"""Convert docs/proposal.md to a professionally styled PDF.
+
+Related: ``gen_audit_todo_count.py`` in this directory refreshes the TODO /
+NotImplementedError tally used in audit documentation.
+"""
 
 import html
 import os
