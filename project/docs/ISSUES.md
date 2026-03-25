@@ -28,6 +28,6 @@ Issues identified during the audit. Fix immediately vs. later.
 
 | # | Issue | Location | Action |
 |---|-------|----------|--------|
-| 7 | PubMed loader silently falls back to tiny sample | `pubmed_rct.py` | Log warning when falling back; document in docstring |
+| 7 | PubMed loader silently falls back to tiny sample | `pubmed_rct.py` | **Resolved** — Loader now logs a warning when falling back; docstring updated to describe behavior |
 | 8 | MedNLI, ACE, bootstrap CIs, Fleiss' kappa, calibration recovery | Various stubs | Implement per phase plan |
 | 9 | Reliability diagram can emit 1x1 placeholder PNG | `reliability_diagrams.py` | Add matplotlib to requirements or document fallback behavior |
