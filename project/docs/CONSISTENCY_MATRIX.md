@@ -75,18 +75,18 @@ Maps documentation statements to implementation status. Status key: **implemente
 
 ## Prompt Template Sources (duplication risk)
 
-| Item | YAML config | Code (`render.py`) | Status |
-|------|-------------|--------------------|--------|
-| PubMed t1 | `configs/prompts/pubmed_templates.yaml` | `_PUBMED_TEMPLATES["pubmed_t1"]` | **duplicated** — same content, two sources |
-| PubMed t2 | Same | Same | **duplicated** |
-| MedNLI | `mednli_templates.yaml` has ids only, no body | Not in `render.py` | **stubbed** — MedNLI not supported in renderer |
+| Item | YAML config | Registry (`prompting/template_registry.py`) | Status |
+|------|-------------|---------------------------------------------|--------|
+| PubMed t1 | `configs/prompts/pubmed_templates.yaml` | PubMed template entry (e.g., `pubmed_t1`) in the template registry | **implemented** — template bodies live in the registry; YAML is loaded when `config_dir` is set |
+| PubMed t2 | Same | PubMed template entry (e.g., `pubmed_t2`) in the template registry | **implemented** — same mechanism as PubMed t1 (registry + YAML when `config_dir` is set) |
+| MedNLI | `mednli_templates.yaml` has ids only, no body | No corresponding full template bodies wired through the template registry/renderer | **stubbed** — MedNLI not yet supported end-to-end in the renderer |
 
 ---
 
 ## Summary
 
-- **Implemented**: ECE, reliability diagrams, macro/per-class F1, accuracy, MVP artifact writing, PubMed data loader (with tiny-sample fallback), mock inference path.
+- **Implemented**: ECE, reliability diagrams, macro/per-class F1, accuracy, MVP artifact writing, PubMed data loader (with tiny-sample fallback), mock inference path, prompt template registry.
 - **Mock-only**: Current runnable path uses mock scoring and tiny sample; artifacts are MVP/demo outputs, not real experimental results.
-- **Stubbed**: ACE, bootstrap CIs, temperature scaling, isotonic regression, Fleiss' kappa, MedNLI, real model loading, quantization, batch inference, splits, template registry.
+- **Stubbed**: ACE, bootstrap CIs, temperature scaling, isotonic regression, Fleiss' kappa, MedNLI, real model loading, quantization, batch inference, splits.
 - **Outdated**: Docs claim 5 templates per task; only 2 PubMed templates exist.
-- **Duplicated**: Prompt template bodies exist in both YAML and `render.py`; risk of drift.
+- **Duplicated**: None currently known for prompt templates; bodies are centralized in `prompting/template_registry.py`, with YAML configs loaded when `config_dir` is set.
