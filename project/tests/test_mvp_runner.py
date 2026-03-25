@@ -8,6 +8,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Subprocess guard: MVP runner should finish quickly; avoids hung CI
+TIMEOUT_SEC = 120
+
 # Required provenance fields in metadata.json (artifact contract)
 REQUIRED_METADATA_KEYS = [
     "run_id",
@@ -30,16 +33,24 @@ def test_mvp_runner_creates_artifacts(tmp_path):
     env["RELIABILITY_ARTIFACT_ROOT"] = str(tmp_path / "runs")
 
     cmd = [sys.executable, "experiments/run_mvp.py", "--sample-size", "6", "--template-id", "pubmed_t1"]
-    completed = subprocess.run(
-        cmd,
-        cwd=str(project_root),
-        env=env,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
+    try:
+        completed = subprocess.run(
+            cmd,
+            cwd=str(project_root),
+            env=env,
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=TIMEOUT_SEC,
+        )
+    except subprocess.TimeoutExpired as e:
+        raise AssertionError(f"MVP runner timed out after {TIMEOUT_SEC}s") from e
 
     lines = [line.strip() for line in completed.stdout.splitlines() if line.strip()]
+    assert lines, (
+        "MVP runner produced no stdout lines; "
+        f"stderr={completed.stderr!r}"
+    )
     run_dir = Path(lines[0])
     assert run_dir.exists()
     assert (run_dir / "resolved_config.yaml").exists()
@@ -56,14 +67,18 @@ def test_metadata_has_required_provenance_fields(tmp_path):
     env["PYTHONPATH"] = str(project_root / "src")
     env["RELIABILITY_ARTIFACT_ROOT"] = str(tmp_path / "runs")
 
-    subprocess.run(
-        [sys.executable, "experiments/run_mvp.py", "--sample-size", "4", "--template-id", "pubmed_t2"],
-        cwd=str(project_root),
-        env=env,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
+    try:
+        subprocess.run(
+            [sys.executable, "experiments/run_mvp.py", "--sample-size", "4", "--template-id", "pubmed_t2"],
+            cwd=str(project_root),
+            env=env,
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=TIMEOUT_SEC,
+        )
+    except subprocess.TimeoutExpired as e:
+        raise AssertionError(f"MVP runner timed out after {TIMEOUT_SEC}s") from e
 
     run_dirs = list((tmp_path / "runs").iterdir())
     assert len(run_dirs) >= 1

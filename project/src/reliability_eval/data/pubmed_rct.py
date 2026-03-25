@@ -6,6 +6,7 @@ The MVP loader supports local JSONL files and an in-repo tiny sample fixture.
 from __future__ import annotations
 
 import json
+import warnings
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -58,6 +59,13 @@ def load_pubmed_rct(
     if path_or_hf_id and Path(path_or_hf_id).exists():
         path = Path(path_or_hf_id)
     else:
+        if path_or_hf_id:
+            warnings.warn(
+                f"path_or_hf_id={path_or_hf_id!r} is not an existing local path; "
+                f"falling back to in-repo sample {_SAMPLE_PATH}",
+                UserWarning,
+                stacklevel=2,
+            )
         path = _SAMPLE_PATH
     examples = _read_jsonl(path)
     if sample_size is not None:

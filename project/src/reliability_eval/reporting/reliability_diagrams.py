@@ -37,7 +37,7 @@ def plot_reliability(
 
     try:
         import matplotlib.pyplot as plt  # type: ignore
-    except Exception:
+    except ImportError:
         _write_placeholder_png(out)
         return {"x": xs, "y": ys, "bins": bins}
 

@@ -11,7 +11,7 @@ Evaluate how post-training quantization of **BioMistral-7B** affects:
 1. **Calibration** — ECE, ACE, reliability diagrams; recovery via temperature scaling and isotonic regression.
 2. **Prompt stability** — agreement across meaning-preserving prompt templates (e.g. Fleiss’ kappa).
 
-Tasks: **PubMed 20k RCT** (5-class) and **MedNLI** (3-class, with PubMed-only fallback). Precisons: FP16, INT8, INT4 (bitsandbytes). Probability extraction uses **single-token class codes** (A–E / A–C), not natural-language verbalizers.
+Tasks: **PubMed 20k RCT** (5-class) and **MedNLI** (3-class, with PubMed-only fallback). Precisions: FP16, INT8, INT4 (bitsandbytes). Probability extraction uses **single-token class codes** (A–E / A–C), not natural-language verbalizers.
 
 ## Repo layout
 
@@ -31,8 +31,7 @@ Tasks: **PubMed 20k RCT** (5-class) and **MedNLI** (3-class, with PubMed-only fa
 cd project
 python -m venv .venv
 source .venv/bin/activate   # or .venv\Scripts\activate on Windows
-pip install -r requirements.txt
-pip install -e .
+pip install -e ".[dev]"
 
 # MVP run (mock inference, tiny sample)
 python experiments/run_mvp.py --sample-size 8 --template-id pubmed_t1
@@ -41,7 +40,7 @@ python experiments/run_mvp.py --sample-size 8 --template-id pubmed_t1
 PYTHONPATH=src python -m reliability_eval.cli run --sample-size 8
 PYTHONPATH=src python -m reliability_eval.cli sweep --dry-run
 
-# Tests (from project root; requires pytest)
+# Tests (from project root)
 PYTHONPATH=src pytest tests/ -v
 ```
 
