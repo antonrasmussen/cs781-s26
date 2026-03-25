@@ -5,6 +5,19 @@ from __future__ import annotations
 from typing import Dict, List, Sequence
 
 
+def _validate_confidences(confidences: Sequence[float]) -> None:
+    for i, c in enumerate(confidences):
+        if isinstance(c, bool) or not isinstance(c, (int, float)):
+            raise ValueError(
+                f"All confidences must be numeric in [0.0, 1.0]; index {i} has {c!r}"
+            )
+        cf = float(c)
+        if cf < 0.0 or cf > 1.0:
+            raise ValueError(
+                f"All confidences must be in [0.0, 1.0]; index {i} has {c!r}"
+            )
+
+
 def reliability_bins(
     confidences: Sequence[float],
     correctness: Sequence[int],
@@ -15,6 +28,7 @@ def reliability_bins(
         raise ValueError("confidences and correctness length mismatch")
     if n_bins <= 0:
         raise ValueError("n_bins must be positive")
+    _validate_confidences(confidences)
 
     bins: List[Dict] = []
     for i in range(n_bins):
@@ -66,7 +80,7 @@ def expected_calibration_error(y_true, y_pred, confidences, n_bins: int = 15) ->
     """Compute ECE from true labels, predictions, and confidences."""
     if not (len(y_true) == len(y_pred) == len(confidences)):
         raise ValueError("Input length mismatch")
-    correctness = [1 if t == p else 0 for t, p in zip(y_true, y_pred)]
+    correctness = [1 if t == p else 0 for t, p in zip(y_true, y_pred, strict=True)]
     return expected_calibration_error_from_confidence(
         confidences=confidences,
         correctness=correctness,

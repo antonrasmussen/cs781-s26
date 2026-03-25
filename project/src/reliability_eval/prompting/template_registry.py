@@ -38,7 +38,9 @@ def _load_prompt_config(config_dir: str | Path, task: str) -> dict[str, Any]:
     filename = _TASK_PROMPT_FILES.get(task, f"{task}_templates.yaml")
     path = Path(config_dir) / "prompts" / filename
     if not path.exists():
-        return {}
+        raise FileNotFoundError(
+            f"Prompt config for task {task!r} not found: {path}"
+        )
     with path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
 

@@ -51,7 +51,9 @@ def create_manifest(
         "compute_env": config.get("compute_env", "unknown"),
         "code_version": _get_code_version(),
         "dataset_source": dataset_source or "unknown",
-        "inference_mode": inference_mode or config.get("mode", "unknown"),
+        "inference_mode": inference_mode
+        or config.get("inference_mode")
+        or config.get("mode", "unknown"),
         "n_examples": n_examples,
         "figure": figure_path,
     }

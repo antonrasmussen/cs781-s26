@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from reliability_eval.data.mednli import load_mednli
 from reliability_eval.data.pubmed_rct import load_pubmed_rct
 from reliability_eval.inference.score_class_codes import mock_score_example
 from reliability_eval.io.artifact_store import (
@@ -24,6 +25,40 @@ from reliability_eval.metrics.classification import compute_metrics
 from reliability_eval.prompting.label_codes import get_label_codes
 from reliability_eval.prompting.render import render
 from reliability_eval.reporting.reliability_diagrams import plot_reliability
+
+
+def _load_dataset_examples(
+    dataset_cfg: dict,
+    *,
+    sample_size: int | None,
+    split: str = "test",
+) -> list:
+    """Load examples for the configured dataset."""
+    dataset_id = dataset_cfg.get("dataset_id", "pubmed_rct")
+    path_or_hf_id = dataset_cfg.get("path_or_hf_id")
+
+    if dataset_id == "pubmed_rct":
+        return load_pubmed_rct(
+            path_or_hf_id=path_or_hf_id,
+            split=split,
+            sample_size=sample_size,
+        )
+    if dataset_id == "mednli":
+        try:
+            examples = load_mednli(
+                path_or_hf_id=path_or_hf_id if path_or_hf_id is not None else "",
+                split=split,
+            )
+        except NotImplementedError as e:
+            raise ValueError(
+                "MedNLI dataset loading is not implemented yet; use dataset_id "
+                "'pubmed_rct' or implement load_mednli."
+            ) from e
+        if sample_size is not None:
+            return examples[: max(0, int(sample_size))]
+        return examples
+
+    raise ValueError(f"Unsupported dataset_id: {dataset_id!r}")
 
 
 def run_single(config: dict, run_id: str | None = None) -> str:
@@ -51,11 +86,7 @@ def run_single(config: dict, run_id: str | None = None) -> str:
     # Load dataset
     dataset_cfg = config.get("dataset", {})
     path_or_hf_id = dataset_cfg.get("path_or_hf_id")
-    examples = load_pubmed_rct(
-        path_or_hf_id=path_or_hf_id,
-        split="test",
-        sample_size=sample_size,
-    )
+    examples = _load_dataset_examples(dataset_cfg, sample_size=sample_size, split="test")
 
     label_codes = get_label_codes(task)
     predictions = []
@@ -64,7 +95,7 @@ def run_single(config: dict, run_id: str | None = None) -> str:
     confidences = []
 
     # Run inference (mock path for MVP; real model path will replace this)
-    inference_mode = config.get("mode", "mock_inference")
+    inference_mode = config.get("inference_mode") or config.get("mode", "mock_inference")
     config_dir = config.get("config_dir")
     for ex in examples:
         prompt = render(
@@ -113,7 +144,7 @@ def run_single(config: dict, run_id: str | None = None) -> str:
     )
 
     # Generate reliability diagram
-    correctness = [1 if t == p else 0 for t, p in zip(y_true, y_pred)]
+    correctness = [1 if t == p else 0 for t, p in zip(y_true, y_pred, strict=True)]
     figure_path = run_dir / "figures" / "reliability.png"
     plot_reliability(
         confidences=confidences,

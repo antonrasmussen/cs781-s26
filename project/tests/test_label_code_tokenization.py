@@ -6,7 +6,7 @@ import pytest
 
 
 def test_label_codes_pubmed_rct():
-    """Label codes for PubMed RCT are A–E."""
+    """Label codes for PubMed RCT are A-E."""
     from reliability_eval.prompting.label_codes import get_label_codes
     codes = get_label_codes("pubmed_rct")
     assert set(codes.values()) == {"A", "B", "C", "D", "E"}
@@ -15,7 +15,7 @@ def test_label_codes_pubmed_rct():
 
 
 def test_label_codes_mednli():
-    """Label codes for MedNLI are A–C."""
+    """Label codes for MedNLI are A-C."""
     from reliability_eval.prompting.label_codes import get_label_codes
     codes = get_label_codes("mednli")
     assert set(codes.values()) == {"A", "B", "C"}

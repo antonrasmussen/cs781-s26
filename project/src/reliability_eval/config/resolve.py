@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import os
+import warnings
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
 
 def _load_yaml(path: Path) -> dict:
-    """Load YAML file; return empty dict on error or missing file."""
+    """Load YAML file; return empty dict on error or missing file.
+
+    Non-mapping document roots (e.g. a list or scalar) are treated as invalid and
+    return {} with a warning.
+    """
     try:
         import yaml  # type: ignore
     except ImportError:
@@ -16,7 +22,16 @@ def _load_yaml(path: Path) -> dict:
     if not path.exists():
         return {}
     with path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
+        loaded = yaml.safe_load(f)
+    if loaded is None:
+        return {}
+    if not isinstance(loaded, Mapping):
+        warnings.warn(
+            f"YAML root at {path} is not a mapping; using empty dict",
+            stacklevel=2,
+        )
+        return {}
+    return dict(loaded)
 
 
 def _deep_merge(base: dict, overlay: dict) -> dict:
@@ -28,6 +43,24 @@ def _deep_merge(base: dict, overlay: dict) -> dict:
         else:
             result[key] = value
     return result
+
+
+def _validated_sample_size(sample_size: Any) -> int:
+    """Return a positive int sample_size or raise ValueError."""
+    if isinstance(sample_size, bool):
+        raise ValueError("sample_size must be a positive integer, not bool")
+    if isinstance(sample_size, int):
+        n = sample_size
+    else:
+        try:
+            n = int(sample_size)
+        except (TypeError, ValueError) as e:
+            raise ValueError(
+                f"sample_size must be a positive integer, got {sample_size!r}"
+            ) from e
+    if n <= 0:
+        raise ValueError(f"sample_size must be positive, got {n}")
+    return n
 
 
 def resolve_config(
@@ -80,7 +113,7 @@ def resolve_config(
     dataset_cfg = _load_yaml(configs_dir / "datasets" / f"{dataset_id}.yaml") or {
         "dataset_id": dataset_id,
         "task": dataset_id,
-        "path_or_hf_id": "",
+        "path_or_hf_id": None,
     }
     model_cfg = _load_yaml(configs_dir / "models" / f"{model_id}.yaml") or {
         "model_id": model_id,
@@ -93,9 +126,13 @@ def resolve_config(
         "calibration": calibration_id,
     }
 
-    # Execution profile
+    # Execution profile (required; typos must not silently fall back)
     profile_path = configs_dir / "execution" / f"{execution_profile}.yaml"
-    profile_cfg = _load_yaml(profile_path) if profile_path.exists() else {}
+    if not profile_path.exists():
+        raise FileNotFoundError(
+            f"Execution profile {execution_profile!r} not found: {profile_path.resolve()}"
+        )
+    profile_cfg = _load_yaml(profile_path)
 
     # Artifact root: env override > sweep output > base
     artifact_root = os.environ.get(
@@ -125,12 +162,14 @@ def resolve_config(
     }
 
     if sample_size is not None:
-        resolved["sample_size"] = sample_size
+        resolved["sample_size"] = _validated_sample_size(sample_size)
 
+    inference_mode = profile_cfg.get("inference_mode", "mock_inference")
     # Execution profile overlay
     resolved["execution_mode"] = profile_cfg.get("execution_mode", execution_profile)
     resolved["compute_env"] = profile_cfg.get("compute_env", execution_profile)
-    resolved["mode"] = profile_cfg.get("inference_mode", "mock_inference")
+    resolved["mode"] = inference_mode
+    resolved["inference_mode"] = inference_mode
 
     return resolved
 

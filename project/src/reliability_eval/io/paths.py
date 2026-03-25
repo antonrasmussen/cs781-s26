@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+import secrets
+from datetime import datetime, timezone
 
 
 def artifact_root(base: str = "artifacts/runs") -> str:
@@ -11,6 +12,8 @@ def artifact_root(base: str = "artifacts/runs") -> str:
 
 
 def make_run_id(prefix: str = "mvp_pubmed") -> str:
-    """Create a timestamped run identifier."""
-    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-    return f"{prefix}_{ts}"
+    """Create a timestamped run identifier (UTC, sub-second + random suffix)."""
+    now = datetime.now(timezone.utc)
+    stem = now.strftime("%Y%m%dT%H%M%S_%fZ")
+    suffix = secrets.token_hex(3)
+    return f"{prefix}_{stem}_{suffix}"
