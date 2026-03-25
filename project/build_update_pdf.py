@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
-"""Convert docs/proposal.md to a professionally styled PDF."""
-
-import html
-import os
+"""Convert project_update.md to a professionally styled PDF."""
 
 import markdown
 import weasyprint
-from pathlib import Path
+import os
 
-# Resolve paths relative to project root (parent of docs/)
-_SCRIPT_DIR = Path(__file__).resolve().parent
-_DOCS_DIR = _SCRIPT_DIR.parent
-_PROJECT_ROOT = _DOCS_DIR.parent
-
-MD_FILE = str(_PROJECT_ROOT / "docs" / "proposal.md")
-OUT_PDF = str(_PROJECT_ROOT / "docs" / "generated" / "proposal.pdf")
-OUT_HTML = str(_PROJECT_ROOT / "docs" / "generated" / "proposal.html")
+MD_FILE = os.path.join(os.path.dirname(__file__), "project_update.md")
+OUT_FILE = os.path.join(os.path.dirname(__file__), "project_update.pdf")
 
 CSS = """
 @page {
@@ -207,7 +198,6 @@ pre {
 }
 """
 
-
 def build_html(md_text: str) -> str:
     lines = md_text.split("\n")
 
@@ -217,6 +207,19 @@ def build_html(md_text: str) -> str:
             title_block_end = i
             break
 
+    # Validate that a title block delimiter was found and that it follows
+    # at least one non-empty title line. Otherwise, rendering would produce
+    # an empty or misleading title block.
+    if title_block_end == 0:
+        raise ValueError(
+            "Expected a '---' delimiter separating the title block from the body "
+            "in project_update.md, but none was found."
+        )
+    if not any(line.strip() for line in lines[:title_block_end]):
+        raise ValueError(
+            "Found a '---' delimiter for the title block, but there are no "
+            "non-empty title lines before it."
+        )
     title_lines = lines[:title_block_end]
     body_lines = lines[title_block_end:]
 
@@ -262,18 +265,17 @@ def build_html(md_text: str) -> str:
     extensions = ["tables", "fenced_code", "sane_lists"]
     body_html = markdown.markdown(body_md, extensions=extensions)
 
-    ec = html.escape
     title_html = f"""<div class="title-block">
-    <h1>{ec(course)}</h1>
-    <h2>{ec(subtitle)}</h2>
-    <p class="author">{ec(author)}</p>
-    <p class="meta">{ec(meta)}</p>
+    <h1>{course}</h1>
+    <h2>{subtitle}</h2>
+    <p class="author">{author}</p>
+    <p class="meta">{meta}</p>
 </div>"""
 
     project_title_html = ""
     if project_title:
         project_title_html = f"""<div class="project-title">
-    <p>{ec(project_title)}</p>
+    <p>{project_title}</p>
 </div>"""
 
     return f"""<!DOCTYPE html>
@@ -291,15 +293,15 @@ def build_html(md_text: str) -> str:
 
 
 if __name__ == "__main__":
-    Path(OUT_PDF).parent.mkdir(parents=True, exist_ok=True)
-    with open(MD_FILE, "r") as f:
+    with open(MD_FILE, "r", encoding="utf-8") as f:
         md_text = f.read()
 
     html = build_html(md_text)
 
-    with open(OUT_HTML, "w") as f:
+    html_path = OUT_FILE.replace(".pdf", ".html")
+    with open(html_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
 
-    doc = weasyprint.HTML(string=html, base_url=str(_PROJECT_ROOT))
-    doc.write_pdf(OUT_PDF)
-    print(f"PDF written to {OUT_PDF}")
+    doc = weasyprint.HTML(string=html, base_url=os.path.dirname(__file__))
+    doc.write_pdf(OUT_FILE)
+    print(f"PDF written to {OUT_FILE}")
