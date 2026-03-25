@@ -207,6 +207,19 @@ def build_html(md_text: str) -> str:
             title_block_end = i
             break
 
+    # Validate that a title block delimiter was found and that it follows
+    # at least one non-empty title line. Otherwise, rendering would produce
+    # an empty or misleading title block.
+    if title_block_end == 0:
+        raise ValueError(
+            "Expected a '---' delimiter separating the title block from the body "
+            "in project_update.md, but none was found."
+        )
+    if not any(line.strip() for line in lines[:title_block_end]):
+        raise ValueError(
+            "Found a '---' delimiter for the title block, but there are no "
+            "non-empty title lines before it."
+        )
     title_lines = lines[:title_block_end]
     body_lines = lines[title_block_end:]
 
