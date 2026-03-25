@@ -12,3 +12,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+# Generated project update artifacts
+project/project_update.pdf
+project/project_update.html
