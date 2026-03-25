@@ -34,6 +34,9 @@ reports/tables/
 # If these files are already tracked, run:
 #   git rm --cached project_topics.html project_topics.pdf
 # so that these ignore rules can take effect.
+# If these files are already tracked, run:
+#   git rm --cached project_topics.html project_topics.pdf
+# so that these ignore rules can take effect.
 project_topics.html
 project_topics.pdf
 docs/generated/*.html
