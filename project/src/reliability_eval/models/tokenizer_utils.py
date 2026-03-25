@@ -1,6 +1,6 @@
 """Tokenizer helpers: resolve label codes to token IDs.
 
-TODO: Single-token class codes (A–E PubMed, A–C MedNLI); verify single-token.
+TODO: Single-token class codes (A-E PubMed, A-C MedNLI); verify single-token.
 """
 
 

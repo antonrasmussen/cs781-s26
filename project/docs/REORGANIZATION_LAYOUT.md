@@ -7,7 +7,7 @@ Target structure for documentation and generated artifacts. Code layout (`src/`,
 ## Current vs. Target
 
 ### Root (before)
-```
+```text
 project/
 ├── README.md
 ├── project_topics.md          # proposal source
@@ -30,7 +30,7 @@ project/
 ```
 
 ### Root (after)
-```
+```text
 project/
 ├── README.md
 ├── pyproject.toml

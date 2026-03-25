@@ -3,9 +3,9 @@
 ## Inline Comments and TODOs
 
 ### Summary
-- **44 TODO/NotImplementedError** markers across `src/reliability_eval/`
+- **TODO / `NotImplementedError` tally (as of 2026-03-24):** see `docs/generated/audit_marker_count.txt`, produced by `python docs/scripts/gen_audit_todo_count.py` (use `--write` to refresh that file). Counts drift as the codebase changes; do not rely on a hard-coded number in prose alone.
 - Comments generally align with docs: they describe planned work, not overstate current capability
-- One potential drift: `pubmed_rct.py` docstring says "path_or_hf_id: Local JSONL file path or None to use tiny in-repo sample" but does not warn that an invalid path silently triggers fallback
+- `pubmed_rct.load_pubmed_rct` emits a `UserWarning` when a truthy `path_or_hf_id` is not an existing local path before falling back to the in-repo tiny sample.
 
 ### Key Comment Locations
 | File | Comment / TODO | Aligns with docs? |
@@ -14,7 +14,7 @@
 | `score_class_codes.py` | "temporary mock inference path for MVP" | Yes |
 | `pubmed_rct.py` | "TODO: Use split when full dataset integration is added" | Yes |
 | `calibration.py` | No TODO; ECE implemented | Yes |
-| `prompt_stability.py` | "Fleiss' kappa... TODO: Implement" | Yes |
+| `prompt_stability.py` | Fleiss' kappa implemented; per-template flip rate still TODO | Yes |
 | `template_registry.py` | "5 templates per task, validated on dev" | Docs say 5; only 2 exist for PubMed |
 
 ---
@@ -27,7 +27,7 @@
 | `configs/prompts/pubmed_templates.yaml` | "Classify the following PubMed abstract sentence..." | "Assign the sentence to exactly one category..." |
 | `src/reliability_eval/prompting/render.py` | Same body | Same body |
 
-**Verdict**: Content matches. **Risk**: Two sources of truth; `render.py` does not load from YAML. Future edits could cause drift.
+**Verdict**: Content matches. **Risk**: low — `render.py` resolves bodies via `template_registry` loading `configs/prompts/*.yaml`; keep YAML as the canonical template source.
 
 ### MedNLI
 | Source | Status |
@@ -44,8 +44,8 @@
 ### Dataset Paths
 | Config | `path_or_hf_id` | Loader behavior |
 |--------|------------------|-----------------|
-| `configs/datasets/pubmed_rct.yaml` | `"pubmed_rct"` (HF id) | `pubmed_rct.py` treats non-existent path as fallback to `data/samples/pubmed_rct_tiny.jsonl` |
-| `configs/datasets/mednli.yaml` | `""` | MedNLI loader raises `NotImplementedError` |
+| `configs/datasets/pubmed_rct.yaml` | `null` (YAML) until a real path/HF id is set | `pubmed_rct.py` warns and falls back to `data/samples/pubmed_rct_tiny.jsonl` when the path is missing |
+| `configs/datasets/mednli.yaml` | `null` (YAML) | `mednli.load_mednli` is a stub and raises `NotImplementedError` |
 
 **Verdict**: PubMed config suggests HuggingFace; MVP uses local tiny sample. Docs should clarify that current runs use the in-repo sample.
 
@@ -56,7 +56,7 @@
 ---
 
 ## Recommendations
-1. Add a single source of truth for prompt templates: either load from YAML in `render.py` or remove YAML and keep code as source.
-2. Add a log/warning in `load_pubmed_rct` when falling back to tiny sample.
-3. Extend `metadata.json` in MVP runs to include `mode: "mock_inference"` and `dataset_source: "pubmed_rct_tiny"`.
-4. Add a test or docstring noting that `render.py` supports only `pubmed_rct` and `pubmed_t1`/`pubmed_t2`.
+1. Keep prompt templates in YAML under `configs/prompts/` (loaded via `template_registry`); avoid duplicating bodies in Python.
+2. ~~Add a log/warning in `load_pubmed_rct` when falling back to tiny sample.~~ Done (`warnings.warn`).
+3. ~~Extend `metadata.json` in MVP runs~~ — MVP manifest includes `inference_mode`, `dataset_source`, etc.; keep contract tests in sync.
+4. Add a test or docstring noting that `render.py` / template loading supports `pubmed_rct` and `pubmed_t1`/`pubmed_t2` first; MedNLI templates remain placeholder.

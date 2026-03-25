@@ -1,8 +1,16 @@
 """Tests for label-code mapping and single-token tokenization.
 
-TODO: Use real tokenizer; assert each code maps to exactly one token.
+TODO: When a real tokenizer is wired, replace ``xfail`` on
+``test_tokenization_single_token`` with assertions that each class code maps to
+exactly one token id.
 """
 import pytest
+
+
+@pytest.mark.xfail(reason="Pending real tokenizer; remove xfail once codes are checked.")
+def test_tokenization_single_token():
+    """Placeholder for single-token checks (A-E / A-C) against the live tokenizer."""
+    pytest.fail("requires tokenizer fixture")
 
 
 def test_label_codes_pubmed_rct():

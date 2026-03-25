@@ -4,9 +4,15 @@ from typing import Dict, List
 
 
 def _f1_for_label(y_true: List[str], y_pred: List[str], label: str) -> float:
-    tp = sum(1 for t, p in zip(y_true, y_pred) if t == label and p == label)
-    fp = sum(1 for t, p in zip(y_true, y_pred) if t != label and p == label)
-    fn = sum(1 for t, p in zip(y_true, y_pred) if t == label and p != label)
+    tp = sum(
+        1 for t, p in zip(y_true, y_pred, strict=True) if t == label and p == label
+    )
+    fp = sum(
+        1 for t, p in zip(y_true, y_pred, strict=True) if t != label and p == label
+    )
+    fn = sum(
+        1 for t, p in zip(y_true, y_pred, strict=True) if t == label and p != label
+    )
     if tp == 0 and (fp > 0 or fn > 0):
         return 0.0
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
@@ -27,7 +33,9 @@ def compute_metrics(y_true, y_pred, y_proba=None) -> Dict:
     labels = sorted(set(y_true) | set(y_pred))
     per_class_f1 = {label: _f1_for_label(y_true, y_pred, label) for label in labels}
     macro_f1 = sum(per_class_f1.values()) / len(per_class_f1)
-    accuracy = sum(1 for t, p in zip(y_true, y_pred) if t == p) / len(y_true)
+    accuracy = sum(1 for t, p in zip(y_true, y_pred, strict=True) if t == p) / len(
+        y_true
+    )
 
     return {
         "accuracy": accuracy,

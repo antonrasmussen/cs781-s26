@@ -44,6 +44,11 @@ PYTHONPATH=src python -m reliability_eval.cli sweep --dry-run
 PYTHONPATH=src pytest tests/ -v
 ```
 
+**Windows:** after `pip install -e ".[dev]"`, you can run `pytest tests/ -v` from the project root (see `[tool.pytest.ini_options]` in `pyproject.toml` for `pythonpath`). To mirror the POSIX one-liner explicitly:
+
+- **cmd.exe:** `set PYTHONPATH=src&& pytest tests/ -v`
+- **PowerShell:** `$env:PYTHONPATH="src"; pytest tests/ -v`
+
 See `docs/execution_modes.md` for local, Flyte sandbox, and ODU compute modes.
 
 ## Implementation plan

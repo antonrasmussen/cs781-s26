@@ -8,8 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from reliability_eval.data.mednli import load_mednli
-from reliability_eval.data.pubmed_rct import load_pubmed_rct
+from reliability_eval.data.dataset_registry import get_loader
 from reliability_eval.inference.score_class_codes import mock_score_example
 from reliability_eval.io.artifact_store import (
     ensure_run_dir,
@@ -37,18 +36,20 @@ def _load_dataset_examples(
     dataset_id = dataset_cfg.get("dataset_id", "pubmed_rct")
     path_or_hf_id = dataset_cfg.get("path_or_hf_id")
 
+    try:
+        loader = get_loader(dataset_id)
+    except KeyError as e:
+        raise ValueError(f"Unsupported dataset_id: {dataset_id!r}") from e
+
     if dataset_id == "pubmed_rct":
-        return load_pubmed_rct(
+        return loader(
             path_or_hf_id=path_or_hf_id,
             split=split,
             sample_size=sample_size,
         )
     if dataset_id == "mednli":
         try:
-            examples = load_mednli(
-                path_or_hf_id=path_or_hf_id if path_or_hf_id is not None else "",
-                split=split,
-            )
+            examples = loader(path_or_hf_id=path_or_hf_id, split=split)
         except NotImplementedError as e:
             raise ValueError(
                 "MedNLI dataset loading is not implemented yet; use dataset_id "
@@ -58,7 +59,9 @@ def _load_dataset_examples(
             return examples[: max(0, int(sample_size))]
         return examples
 
-    raise ValueError(f"Unsupported dataset_id: {dataset_id!r}")
+    raise ValueError(
+        f"dataset_id {dataset_id!r} is registered but not wired in _load_dataset_examples"
+    )
 
 
 def run_single(config: dict, run_id: str | None = None) -> str:

@@ -2,6 +2,13 @@
 """Run a single experiment from a resolved config (local harness).
 
 Thin wrapper over reliability_eval.experiments.run_single.
+
+Run with the package on ``PYTHONPATH`` (repository ``src`` layout), for example::
+
+    PYTHONPATH=src python experiments/run_local.py
+
+From the project root after ``pip install -e ".[dev]"``, ``python -m pytest`` uses
+``pyproject.toml``'s ``pythonpath``; for this script, set ``PYTHONPATH=src`` explicitly.
 """
 
 from __future__ import annotations
@@ -9,9 +16,6 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
-
-src = Path(__file__).resolve().parent.parent / "src"
-sys.path.insert(0, str(src))
 
 from reliability_eval.config.resolve import resolve_config
 from reliability_eval.experiments.run_single import run_single
