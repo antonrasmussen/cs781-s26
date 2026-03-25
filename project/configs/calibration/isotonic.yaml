@@ -1,0 +1,2 @@
+calibration: isotonic
+# Per-class isotonic regression on calibration set.

@@ -1,0 +1,10 @@
+# MedNLI templates (3 classes: A/B/C)
+task: mednli
+label_codes:
+  entailment: A
+  contradiction: B
+  neutral: C
+templates:
+  - id: mednli_t1
+  - id: mednli_t2
+  # TODO: add 5 templates when MedNLI is active

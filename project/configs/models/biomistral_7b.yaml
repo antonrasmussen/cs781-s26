@@ -1,0 +1,4 @@
+# BioMistral-7B (Labrak et al., 2024)
+model_id: biomistral_7b
+name_or_path: "BioMistral/BioMistral-7B"  # HuggingFace
+architecture: mistral
