@@ -1,6 +1,5 @@
 # MVP sweep: PubMed only, FP16 + INT8, 2 templates, no calibration
 experiment_name: mvp_pubmed_reliability
-extends: base
 combinations:
   dataset: [pubmed_rct]
   model: [biomistral_7b]
