@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Convert project_topics.md to a professionally styled PDF."""
 
+import html
+import os
+
 import markdown
 import weasyprint
-import os
 
 MD_FILE = os.path.join(os.path.dirname(__file__), "project_topics.md")
 OUT_FILE = os.path.join(os.path.dirname(__file__), "project_topics.pdf")
@@ -253,17 +255,18 @@ def build_html(md_text: str) -> str:
     extensions = ["tables", "fenced_code", "sane_lists"]
     body_html = markdown.markdown(body_md, extensions=extensions)
 
+    ec = html.escape
     title_html = f"""<div class="title-block">
-    <h1>{course}</h1>
-    <h2>{subtitle}</h2>
-    <p class="author">{author}</p>
-    <p class="meta">{meta}</p>
+    <h1>{ec(course)}</h1>
+    <h2>{ec(subtitle)}</h2>
+    <p class="author">{ec(author)}</p>
+    <p class="meta">{ec(meta)}</p>
 </div>"""
 
     project_title_html = ""
     if project_title:
         project_title_html = f"""<div class="project-title">
-    <p>{project_title}</p>
+    <p>{ec(project_title)}</p>
 </div>"""
 
     return f"""<!DOCTYPE html>
