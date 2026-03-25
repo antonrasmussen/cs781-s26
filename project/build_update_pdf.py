@@ -293,13 +293,13 @@ def build_html(md_text: str) -> str:
 
 
 if __name__ == "__main__":
-    with open(MD_FILE, "r") as f:
+    with open(MD_FILE, "r", encoding="utf-8") as f:
         md_text = f.read()
 
     html = build_html(md_text)
 
     html_path = OUT_FILE.replace(".pdf", ".html")
-    with open(html_path, "w") as f:
+    with open(html_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
 
     doc = weasyprint.HTML(string=html, base_url=os.path.dirname(__file__))
