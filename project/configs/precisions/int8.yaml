@@ -1,0 +1,4 @@
+precision: int8
+quantization:
+  method: llm_int8  # bitsandbytes
+  # TODO: load_in_8bit=True

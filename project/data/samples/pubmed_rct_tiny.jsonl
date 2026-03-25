@@ -1,0 +1,8 @@
+{"example_id":"pm1","text":"Background: Hypertension remains a leading cause of cardiovascular morbidity worldwide.","label":"BACKGROUND"}
+{"example_id":"pm2","text":"Objective: We evaluated whether a pharmacist-led intervention improves blood pressure control.","label":"OBJECTIVE"}
+{"example_id":"pm3","text":"Methods: In this randomized trial, adults were assigned to intervention or usual care for 12 weeks.","label":"METHODS"}
+{"example_id":"pm4","text":"Results: Systolic blood pressure decreased by 8.2 mmHg in the intervention group versus 2.1 mmHg in controls.","label":"RESULTS"}
+{"example_id":"pm5","text":"Conclusions: Pharmacist-led care improved blood pressure outcomes and should be considered in primary care.","label":"CONCLUSIONS"}
+{"example_id":"pm6","text":"Methods: We analyzed adverse events using intention-to-treat logistic regression.","label":"METHODS"}
+{"example_id":"pm7","text":"Results: Serious adverse events were rare and not significantly different between groups.","label":"RESULTS"}
+{"example_id":"pm8","text":"Background: Prior evidence for this intervention in community clinics is limited.","label":"BACKGROUND"}

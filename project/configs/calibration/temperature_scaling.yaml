@@ -1,0 +1,2 @@
+calibration: temperature_scaling
+# Fit T on calibration split; apply at test time.

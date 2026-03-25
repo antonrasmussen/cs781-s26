@@ -1,0 +1,21 @@
+# Meaning-preserving prompt templates for PubMed RCT (5 classes: A–E)
+task: pubmed_rct
+label_codes:
+  BACKGROUND: A
+  OBJECTIVE: B
+  METHODS: C
+  RESULTS: D
+  CONCLUSIONS: E
+templates:
+  - id: pubmed_t1
+    body: |
+      Classify the following PubMed abstract sentence into one rhetorical role.
+      {legend}
+      Sentence: {text}
+      Answer with a single letter.
+  - id: pubmed_t2
+    body: |
+      Assign the sentence to exactly one category.
+      {legend}
+      Input sentence: {text}
+      Return only one letter.

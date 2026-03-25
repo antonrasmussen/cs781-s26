@@ -1,0 +1,5 @@
+# Local execution profile: dev/small runs on laptop
+execution_mode: local
+compute_env: local
+inference_mode: mock_inference  # or real when model available
+# Override artifact_root via RELIABILITY_ARTIFACT_ROOT env if needed
