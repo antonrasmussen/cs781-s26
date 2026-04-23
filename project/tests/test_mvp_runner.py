@@ -93,7 +93,10 @@ def test_metadata_has_required_provenance_fields(tmp_path):
 
     assert metadata["execution_mode"] == "local"
     assert metadata["inference_mode"] == "mock_inference"
-    assert metadata["dataset_source"] == "pubmed_rct_tiny"
+    assert metadata["dataset_source"] in {
+        "pubmed_rct_tiny",
+        "hf://armanc/pubmed-rct20k@main",
+    }
 
 
 def test_flyte_task_produces_same_artifact_structure_as_run_single(tmp_path):

@@ -1,16 +1,27 @@
-"""Tests for label-code mapping and single-token tokenization.
+"""Tests for label-code mapping and single-token tokenization."""
 
-TODO: When a real tokenizer is wired, replace ``xfail`` on
-``test_tokenization_single_token`` with assertions that each class code maps to
-exactly one token id.
-"""
 import pytest
 
 
-@pytest.mark.xfail(reason="Pending real tokenizer; remove xfail once codes are checked.")
 def test_tokenization_single_token():
-    """Placeholder for single-token checks (A-E / A-C) against the live tokenizer."""
-    pytest.fail("requires tokenizer fixture")
+    """Class-code letters map to one token each for BioMistral tokenizer."""
+    transformers = pytest.importorskip("transformers")
+    from reliability_eval.models.tokenizer_utils import get_code_token_ids
+
+    try:
+        tokenizer = transformers.AutoTokenizer.from_pretrained(
+            "BioMistral/BioMistral-7B"
+        )
+    except Exception as e:  # pragma: no cover - environment dependent
+        pytest.skip(f"Tokenizer unavailable in this environment: {e}")
+
+    pubmed_ids = get_code_token_ids(tokenizer, task="pubmed_rct")
+    mednli_ids = get_code_token_ids(tokenizer, task="mednli")
+
+    assert len(pubmed_ids) == 5
+    assert len(set(pubmed_ids)) == 5
+    assert len(mednli_ids) == 3
+    assert len(set(mednli_ids)) == 3
 
 
 def test_label_codes_pubmed_rct():

@@ -1,0 +1,5 @@
+execution_mode: local
+compute_env: local
+inference_mode: real_inference
+hardware:
+  device_map: "auto"

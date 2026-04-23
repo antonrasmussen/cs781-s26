@@ -18,6 +18,14 @@ where = ["src"]
 [project.optional-dependencies]
 dev = ["pytest>=9.0.2"]
 flyte = ["flytekit>=1.0.0"]
+gpu = [
+    "torch>=2.2",
+    "transformers>=4.40,<5.0",
+    "accelerate>=0.29",
+    "bitsandbytes>=0.43",
+    "datasets>=2.18",
+    "sentencepiece>=0.2",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

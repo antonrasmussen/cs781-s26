@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from reliability_eval.data.dataset_registry import get_loader
+from reliability_eval.inference.batch_runner import run_eval
 from reliability_eval.inference.score_class_codes import mock_score_example
 from reliability_eval.io.artifact_store import (
     ensure_run_dir,
@@ -21,6 +22,7 @@ from reliability_eval.io.paths import make_run_id
 from reliability_eval.io.run_manifest import create_manifest
 from reliability_eval.metrics.calibration import expected_calibration_error
 from reliability_eval.metrics.classification import compute_metrics
+from reliability_eval.models.load_model import load_biomistral
 from reliability_eval.prompting.label_codes import get_label_codes
 from reliability_eval.prompting.render import render
 from reliability_eval.reporting.reliability_diagrams import plot_reliability
@@ -35,6 +37,7 @@ def _load_dataset_examples(
     """Load examples for the configured dataset."""
     dataset_id = dataset_cfg.get("dataset_id", "pubmed_rct")
     path_or_hf_id = dataset_cfg.get("path_or_hf_id")
+    hf_revision = dataset_cfg.get("hf_revision")
 
     try:
         loader = get_loader(dataset_id)
@@ -46,6 +49,7 @@ def _load_dataset_examples(
             path_or_hf_id=path_or_hf_id,
             split=split,
             sample_size=sample_size,
+            hf_revision=hf_revision,
         )
     if dataset_id == "mednli":
         try:
@@ -91,51 +95,68 @@ def run_single(config: dict, run_id: str | None = None) -> str:
     path_or_hf_id = dataset_cfg.get("path_or_hf_id")
     examples = _load_dataset_examples(dataset_cfg, sample_size=sample_size, split="test")
 
-    label_codes = get_label_codes(task)
-    predictions = []
-    y_true = []
-    y_pred = []
-    confidences = []
-
-    # Run inference (mock path for MVP; real model path will replace this)
     inference_mode = config.get("inference_mode") or config.get("mode", "mock_inference")
     config_dir = config.get("config_dir")
-    for ex in examples:
-        prompt = render(
-            template_id=template_id,
-            task=task,
-            text=ex["text"],
-            label_codes=label_codes,
-            config_dir=config_dir,
-        )
-        if inference_mode == "mock_inference":
+    if inference_mode == "mock_inference":
+        label_codes = get_label_codes(task)
+        predictions = []
+        y_true = []
+        y_pred = []
+        confidences = []
+        for ex in examples:
+            prompt = render(
+                template_id=template_id,
+                task=task,
+                text=ex["text"],
+                label_codes=label_codes,
+                config_dir=config_dir,
+            )
             result = mock_score_example(
                 prompt=prompt,
                 task=task,
                 example_id=ex["example_id"],
                 true_label=ex["label"],
             )
-        else:
-            raise NotImplementedError(
-                f"Real inference not yet implemented; mode={inference_mode}"
+            y_true.append(ex["label"])
+            y_pred.append(result["predicted_label"])
+            confidences.append(float(result["confidence"]))
+            predictions.append(
+                {
+                    "example_id": ex["example_id"],
+                    "text": ex["text"],
+                    "true_label": ex["label"],
+                    "template_id": template_id,
+                    "prompt": prompt,
+                    "predicted_label": result["predicted_label"],
+                    "predicted_code": result["predicted_code"],
+                    "confidence": result["confidence"],
+                    "probabilities": result["probabilities"],
+                }
             )
-
-        y_true.append(ex["label"])
-        y_pred.append(result["predicted_label"])
-        confidences.append(float(result["confidence"]))
-        predictions.append(
-            {
-                "example_id": ex["example_id"],
-                "text": ex["text"],
-                "true_label": ex["label"],
-                "template_id": template_id,
-                "prompt": prompt,
-                "predicted_label": result["predicted_label"],
-                "predicted_code": result["predicted_code"],
-                "confidence": result["confidence"],
-                "probabilities": result["probabilities"],
-            }
+    elif inference_mode == "real_inference":
+        model_cfg = config.get("model", {})
+        precision_cfg = config.get("precision", {})
+        model, tokenizer = load_biomistral(
+            precision=precision_cfg.get("precision", "fp16"),
+            name_or_path=model_cfg.get("name_or_path", "BioMistral/BioMistral-7B"),
+            revision=model_cfg.get("revision"),
+            device_map=config.get("hardware", {}).get("device_map", "auto"),
         )
+        outputs = run_eval(
+            model=model,
+            tokenizer=tokenizer,
+            dataset=examples,
+            template_id=template_id,
+            task=task,
+            config_dir=config_dir,
+            run_generation_sanity_check=bool(config.get("sanity_check_generation", False)),
+        )
+        predictions = outputs["predictions"]
+        y_true = outputs["y_true"]
+        y_pred = outputs["y_pred"]
+        confidences = outputs["confidences"]
+    else:
+        raise ValueError(f"Unsupported inference_mode: {inference_mode}")
 
     # Compute metrics
     metrics = compute_metrics(y_true=y_true, y_pred=y_pred)
@@ -179,5 +200,10 @@ def _infer_dataset_source(config: dict, path_or_hf_id: str | None) -> str:
     """Infer dataset source for provenance metadata."""
     if path_or_hf_id and Path(path_or_hf_id).exists():
         return str(path_or_hf_id)
+    if path_or_hf_id:
+        revision = config.get("dataset", {}).get("hf_revision")
+        if revision:
+            return f"hf://{path_or_hf_id}@{revision}"
+        return f"hf://{path_or_hf_id}"
     dataset_id = config.get("dataset", {}).get("dataset_id", "unknown")
     return f"{dataset_id}_tiny"

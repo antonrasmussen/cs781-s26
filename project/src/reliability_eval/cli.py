@@ -81,14 +81,22 @@ def main() -> int:
     run_parser.add_argument("--precision", default="fp16")
     run_parser.add_argument("--template", default="pubmed_t1")
     run_parser.add_argument("--calibration", default="none")
-    run_parser.add_argument("--profile", default="local", choices=["local", "flyte_sandbox", "odu"])
+    run_parser.add_argument(
+        "--profile",
+        default="local",
+        choices=["local", "local_real", "flyte_sandbox", "odu"],
+    )
     run_parser.add_argument("--sample-size", type=int, default=None)
     run_parser.set_defaults(func=_cmd_run)
 
     # sweep
     sweep_parser = subparsers.add_parser("sweep", help="Run sweep grid")
     sweep_parser.add_argument("--sweep", default="mvp_pubmed")
-    sweep_parser.add_argument("--profile", default="local", choices=["local", "flyte_sandbox", "odu"])
+    sweep_parser.add_argument(
+        "--profile",
+        default="local",
+        choices=["local", "local_real", "flyte_sandbox", "odu"],
+    )
     sweep_parser.add_argument("--sample-size", type=int, default=None)
     sweep_parser.add_argument("--dry-run", action="store_true")
     sweep_parser.set_defaults(func=_cmd_sweep)
