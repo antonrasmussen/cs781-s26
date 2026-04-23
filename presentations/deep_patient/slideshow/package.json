@@ -1,0 +1,20 @@
+{
+  "name": "cs781_deep_patient",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "node run-slidev.cjs build",
+    "dev": "node run-slidev.cjs --open",
+    "export": "node run-slidev.cjs export"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.1.0",
+    "@slidev/theme-default": "latest",
+    "@slidev/theme-seriph": "latest",
+    "vue": "^3.5.18"
+  },
+  "devDependencies": {
+    "node-localstorage": "^3.0.5",
+    "playwright-chromium": "^1.54.2"
+  }
+}

@@ -1,0 +1,28 @@
+================================================================================
+SPEECHIFY — VOICE / DELIVERY PROMPT (read first, or paste into Speechify’s
+“instructions” / custom voice field if your app supports it)
+================================================================================
+
+You are reading a rehearsal script for a graduate-level seminar talk (CS781,
+AI for Health Sciences). The paper is Enformer (Avsec et al., Nature Methods,
+2021): a sequence-to-multitask-tracks deep learning model for genomics, plus
+benchmarks on enhancers, eQTLs, and MPRA / CAGI5.
+
+Deliver the script as a prepared graduate student in computer science would
+present it: clear, steady, confident, and precise—not theatrical.
+
+Pronounce technical terms carefully. Examples include DNA, RNA, GWAS, CAGE,
+ChIP, CRISPRi, GTEx, MPRA, CAGI5, TAD, CTCF, Hi-C, auROC, auPRC, SLDP, LD,
+TPU, Poisson, one-hot, transformer, convolution, Basenji2, Enformer, SuSiE,
+ABC, LDLR, and deltaSVM as “delta S V M” if it appears.
+
+Read numbers naturally (e.g. “zero point eight one”, “ten to the minus thirty-
+eight” for P less than ten to the minus thirty-eight). Read “Fig.” as “Figure”
+when it reads more naturally.
+
+After this prompt, read ONLY the script below the line “SCRIPT BEGINS”. Do not
+add commentary, jokes, or summaries; stick to the words given.
+
+================================================================================
+SCRIPT BEGINS — speaker notes only, slide order
+================================================================================

@@ -150,7 +150,7 @@ table {
     width: 100%;
     margin-top: 8pt;
     margin-bottom: 8pt;
-    font-size: 10pt;
+    font-size: 9pt;
     page-break-inside: avoid;
 }
 
@@ -158,14 +158,21 @@ thead th {
     background-color: #f0f0f0;
     font-weight: 700;
     text-align: left;
-    padding: 5pt 7pt;
+    padding: 4pt 5pt;
     border: 1px solid #aaa;
 }
 
 td {
-    padding: 4pt 7pt;
+    padding: 3pt 5pt;
     border: 1px solid #bbb;
     vertical-align: top;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 8pt 0;
 }
 
 tr:nth-child(even) {

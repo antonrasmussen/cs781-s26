@@ -1,0 +1,74 @@
+/* Deep Patient presentation - reduce text size for better fit on slides */
+
+.slidev-layout {
+  font-size: 0.88rem;
+}
+
+.slidev-layout h1 {
+  font-size: 1.6em;
+}
+
+.slidev-layout h2 {
+  font-size: 1.25em;
+}
+
+.slidev-layout h3 {
+  font-size: 1.1em;
+}
+
+.slidev-layout table {
+  font-size: 0.95em;
+}
+
+/* Dense slides: smaller type so tables and long bullets fit vertically */
+.slidev-page.compact-slide .slidev-layout,
+.compact-slide .slidev-layout {
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.slidev-page.compact-slide .slidev-layout h1,
+.compact-slide .slidev-layout h1 {
+  font-size: 1.45em;
+}
+
+.slidev-page.compact-slide .slidev-layout h2,
+.compact-slide .slidev-layout h2 {
+  font-size: 1.08em;
+  margin-top: 0.15em;
+  margin-bottom: 0.35em;
+}
+
+.slidev-page.compact-slide .slidev-layout h3,
+.compact-slide .slidev-layout h3 {
+  font-size: 1em;
+}
+
+.slidev-page.compact-slide .slidev-layout table,
+.compact-slide .slidev-layout table {
+  font-size: 0.82em;
+}
+
+.slidev-page.compact-slide .slidev-layout ul,
+.slidev-page.compact-slide .slidev-layout ol,
+.compact-slide .slidev-layout ul,
+.compact-slide .slidev-layout ol {
+  margin: 0.35em 0;
+}
+
+.slidev-page.compact-slide .slidev-layout li,
+.compact-slide .slidev-layout li {
+  margin: 0.12em 0;
+}
+
+/* KaTeX blocks on math slide */
+.slidev-page.compact-slide .slidev-layout .katex,
+.compact-slide .slidev-layout .katex {
+  font-size: 0.92em;
+}
+
+/* Mermaid diagrams on stacked-architecture slide */
+.slidev-page.compact-slide .mermaid,
+.compact-slide .mermaid {
+  font-size: 0.85em;
+}
