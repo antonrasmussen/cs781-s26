@@ -16,3 +16,7 @@ build/
 # Generated project update artifacts
 project/project_update.pdf
 project/project_update.html
+
+# Node dependencies
+node_modules/
+**/node_modules/
