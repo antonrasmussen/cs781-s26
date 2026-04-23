@@ -1,0 +1,161 @@
+Hi everyone. I'm presenting Enformer, from Avsec and colleagues in Nature Methods, twenty twenty-one.
+
+The main idea is that they replace the very deep dilated convolution stack used in models like Basenji2 with transformer blocks, so the network can use regulatory DNA out to roughly one hundred kilobases instead of about twenty. That is not a small tweak: it changes which enhancers the model can even see when it predicts chromatin and expression from sequence alone.
+
+I'll keep clear what's actually in the paper on held-out sequence and benchmarks, and I'll say out loud when something is broader clinical context and not from the paper.
+
+This slide has the full citation and a one-line summary of the work.
+
+
+The training scale line is from Methods and figure captions: one-hot DNA of length one hundred ninety-six thousand six hundred eight base pairs; five thousand three hundred thirteen human tracks and one thousand six hundred forty-three mouse tracks; each track is a vector along the center window at one hundred twenty-eight base pair bins.
+
+The one-sentence summary here matches the abstract and the architecture story, and every number here is taken directly from the paper.
+
+
+I'll start with motivation and framing, then the method and training, then results with the paper's figures, then limitations and a short critique, and I'll close with takeaways.
+
+Every training number I cite comes from Avsec et al. When I mention All of Us or deployment later, that's course framing, not from the Enformer paper itself.
+
+
+The diagram has two chains reading left to right. The upper chain is genome-wide association hits, then mostly noncoding hits, then the need to go from sequence to function, then variant interpretation—which change might alter regulation or expression in a relevant cell type.
+
+The lower chain is a distal enhancer, then three-dimensional contact in the nucleus, then the promoter at the transcription start site, then cell-type expression. An enhancer can sit far away on the chromosome; folding brings it near the promoter. If a model's receptive field cannot span from enhancer to promoter along sequence, it cannot represent that biology.
+
+Most association signals are noncoding. We cannot run MPRAs or CRISPR screens on every variant in every tissue, so computational models that map DNA to readouts complement population genetics; they do not replace it.
+
+A stronger held-out predictor means the model fit the training assays well; that is not by itself proof of causality in a patient.
+
+
+On the left, the cartoon shows two topologically associating domains: on the left, enhancer A loops to promoter one; in the middle, a CTCF-rich insulator and TAD boundary; on the right, a second domain with enhancer B and promoter two. The boundary is drawn to block promiscuous enhancer–promoter pairing across domains.
+
+Avsec and colleagues later show attention patterns at real TAD boundaries that look like reduced interaction across the boundary; I'm not claiming this cartoon is a Hi-C map.
+
+The point I want you to carry is that linear distance along the chromosome is not the same as regulatory distance: an enhancer can be hundreds of kilobases away on the DNA string and still regulate a gene. A model that only sees about twenty kilobases from the transcription start site can miss the enhancer entirely.
+
+
+The table is the paper's own comparison: forty-seven percent of high-confidence enhancer–gene pairs fall within twenty kilobases of the transcription start site, but eighty-four percent fall within one hundred kilobases. Under the table, the short gray bar is about twenty kilobases of reach for Basenji2-style models; the long blue bar is about one hundred kilobases for Enformer. Widening reach changes which experimentally supported pairs the model can even use as supervision, not just a leaderboard number.
+
+When I say receptive field here, I mean how far along the sequence the network can integrate for a prediction at the transcription start site—the information path in the model—not physical three-dimensional distance in the nucleus.
+
+
+Starting at the top, the input is one-hot DNA of length one hundred ninety-six thousand six hundred eight, including N for unknown bases.
+
+Seven convolutional blocks with attention pooling shrink the length while widening channels until each position represents one hundred twenty-eight base pairs—that is motif-level resolution without running transformers on every single base at full length.
+
+Then come eleven transformer blocks with multi-head self-attention, so every binned position can attend to every other at that stage; in practice that gives you long-range context on the order of one hundred kilobases.
+
+They crop three hundred twenty bins on each side before the loss so edge bins are not evaluated without symmetric sequence context.
+
+Finally, separate human and mouse heads output the multitask tracks. The two bullets under the diagram repeat the block counts and spell out the length of the scored output window along the center in base pairs.
+
+
+The small diagram on the left shows a transcription start site as query, a nearby enhancer, and a distal enhancer. A deep convolutional path needs many hops to reach even the nearby enhancer, while one self-attention layer can connect the query to both nearby and distal positions in one step.
+
+Under that sketch is Extended Data Figure 5a: validation curves where they swap transformer layers for tuned dilated convolutions or shrink the attention neighborhood toward Basenji2-scale reach. Those variants underperform across model sizes and data fractions, and shrinking attention wipes out much of the gain—so attention is doing real work here, not just chasing a trend.
+
+Saying "transformers beat CNNs" is too blunt. The fair statement from this paper is that on multitask regulatory prediction at one hundred twenty-eight base pair bins, their convolutional stem plus global attention beat the best dilated CNN baseline they could train within memory limits.
+
+The bullets on the right say the same thing in short form: convolution mixes locally; attention is a weighted sum over all positions; and they use custom relative positional encodings so the model knows distance and strand relative to the transcription start site, detailed in Extended Data Figure 6 and Methods.
+
+
+They train with Poisson negative log-likelihood at each position against observed counts, which matches count-type sequencing reads.
+
+The train, validation, and test split is homology-aware across syntenic megabase blocks, so you do not get an easy cheat where a human test region is trivially paired with a mouse training region.
+
+Basenji2 comparisons use the released weights; the Extended Data Figure 5 ablations retrain smaller-channel models so the comparisons are fair on compute.
+
+Under the table, one line notes that the multitask picture—thousands of tracks at once—shows up as a cloud of points per assay type on Figure 1c in the gene expression results.
+
+
+Figure 1b shows two scatter panels: in one, each point is a CAGE experiment; in the other, each point is a gene. The axes are Pearson correlation on log-one-plus counts at the transcription start site, with the standardization written in the figure caption, comparing Enformer to Basenji2. Corner means are printed on the figure when the export includes them.
+
+Mean CAGE correlation across genes goes from zero point eight one to zero point eight five—that improvement is about twice the jump from Basenji1 to Basenji2, and it closes roughly a third of what remains to a zero point nine four replicate ceiling from Extended Data Figure 2.
+
+That does not mean you cancel wet-lab CAGE in a brand-new cell type. It means that trained on a large compendium, Enformer's predictions match held-out chromosome CAGE better than Basenji2.
+
+
+Figure 1c is four columns—CAGE, ChIP histone, ChIP transcription factor, and DNase or ATAC—with one dot per track out of five thousand three hundred thirteen, comparing Enformer to Basenji2 on Pearson correlation along the genome.
+
+So the improvement is not a single-assay cherry-pick: every cloud shifts upward versus Basenji2 with the same paired Wilcoxon statement as in the paper.
+
+Histone and accessibility improve too; the paper emphasizes the largest relative lift for CAGE, which fits the story that distal regulation drives a lot of tissue-specific expression.
+
+
+Figure 2a is a locus strip—read the tracks from bottom to top: predicted K562 CAGE, measured H3K27ac, candidate versus CRISPRi-validated enhancers, then Enformer versus Basenji2 gradient-times-input and attention. Basenji2's attributions fall toward zero past about twenty kilobases, so they never light up distal validated enhancers; Enformer does.
+
+Figure 2b summarizes enhancer–gene pairs with area under the precision–recall curve versus distance on the Gasperini and Fulco CRISPRi maps. Enformer and its scoring variants beat Basenji2 and random baselines and sit near ABC-style scores that normally lean on Hi-C and chromatin experiments, while Enformer here is DNA-only at prediction time.
+
+Attention is not a causal certificate—it is an internal weighting—but in this paper it lines up with the perturbation maps.
+
+
+Figure 2c is a square difference heatmap of attention centered on topologically associating domain boundaries. Rows are query positions and columns are key positions. You see a warmer vertical stripe right on the boundary—extra attention at the boundary—and bluer off-diagonal blocks, meaning less attention from one side of the boundary to the other than when you center on matched random controls.
+
+That pattern matches textbook insulation: the model is not claiming to replace a Hi-C map; it is showing sequence-level consistency with known nuclear organization.
+
+I also want to name Figure 2d quantiles and Extended Data Figure 8, where CTCF-like motifs emerge from gradient-times-input at boundaries without anyone labeling for CTCF—those panels are in the paper but I am not showing them here.
+
+
+On the left, Figure 3d is a tissue-by-tissue scatter of area under the ROC for fine-mapped GTEx variants using SuSiE high-posterior inclusion probability positives, Enformer on one axis and Basenji2 on the other, with corner means when the figure export includes them. On the right, Figure 3e bins variants by distance to the transcription start site and compares models—distance-binned violins in the full paper.
+
+Signed LD profile regression for genome-wide concordance with GTEx while accounting for linkage disequilibrium is in Figures 3a through 3c in the paper; I am only summarizing that block in words here, not reproducing those panels.
+
+For SLDP, they score reference versus alternate forward passes and ask whether those signed scores line up with GTEx summary statistics while respecting LD. In the paper's headline count, three hundred seventy-nine of six hundred forty-eight CAGE setups gain in maximum cross-tissue Z for Enformer over Basenji2; two hundred twenty-eight move up by more than one sigma and forty-six move down by that much. That is broad movement, not a solved fine-mapping problem.
+
+For fine-mapped classification, they train random forests on delta-prediction features using SuSiE high-PIP causal variants against matched negatives. Forty-seven of forty-eight tissues favor Enformer, and mean area under the ROC rises from zero point seven two nine to zero point seven four seven.
+
+That still does not prove Enformer always names the true causal base in vivo; it shows their sequence-derived features carry more signal for that classifier than Basenji2's do.
+
+
+Figure 4a is a horizontal bar chart of how well each method's predicted variant effects correlate with measured massively parallel reporter assay readouts across fifteen disease-linked loci from CAGI5, with fixed train-test splits for a fair bake-off.
+
+Figure 4b scatters Enformer's lasso correlation against the CAGI5 winning Group 3 submission per locus, with corner summaries on the figure.
+
+MPRA measures variant effects in reporter assays at scale; CAGI5 standardized fifteen loci so methods could be compared apples to apples.
+
+When they say training-free, they sometimes skip per-locus lasso and score variants from a principal-component summary of a subset of delta-prediction features, and those scores still beat many submitted pipelines—the paper discusses that in the Discussion.
+
+The paper also shows a LDLR saturation example in Figure 4c where predicted tracks track measurements and known motifs better than deltaSVM on that locus; I am only showing Figures 4a and 4b here.
+
+None of this replaces prospective clinical validation or exhaustive cell-type coverage.
+
+
+First, Enformer reaches on the order of one hundred kilobases of sequence context versus about twenty for Basenji2 or ExPecto, with ablations in Extended Data Figure 5, and that matters because most high-confidence enhancer–gene pairs in their estimate fall inside the longer window.
+
+Second, one forward pass predicts thousands of human and mouse tracks with Poisson training, so statistical strength is shared across assays.
+
+Third, enhancer prioritization from DNA alone is benchmarked against CRISPRi maps and ABC-style scores in Figure 2.
+
+Fourth, variant-effect benchmarks tie sequence models to GTEx fine-mapping and to MPRA and CAGI5, bridging population genetics and functional assays.
+
+
+In their Discussion, the authors stress that you only get cell types and marks that were in training; Hi-C is not an explicit input and fusion with structure models like Akita or DeepC could help; one hundred twenty-eight base pair bins trade off against quadratic attention cost; and they could use more CRISPR or MPRA as training signal, not only evaluation.
+
+Separately, better correlation on predicted tracks does not automatically give you causal mechanism in a patient; matching CAGE tracks to GTEx tissues was manual and messy, and Methods say they skipped ambiguous cases; Extended Data Figure 10 shows both models still struggle on sign prediction when variants sit far from promoters; and turning any of this into deployed medicine still needs compute, calibration, prospective validation, and ancestry-aware checks.
+
+
+The paper itself says improved fine-mapping and variant prioritization are plausible next steps, and they released precomputed thousand-genomes scores to lower the engineering barrier.
+
+Separately, in clinical genomics we still need prospective validation, clear intended use, and wet-lab follow-up—Enformer is not a standalone diagnostic.
+
+For this course, the first anchor talk was electronic health record representation learning; Enformer is the sequence-to-function anchor. Connecting All of Us respiratory phenotypes to cis-regulatory hypotheses is a natural place to use a model like Enformer to prioritize noncoding variants, but that idea comes from our course memo, not from the Enformer paper, and it is not a substitute for cohort design, ancestry-aware validation, or confirmation in the lab.
+
+
+Longer receptive field and multitask training beat Basenji2 in their setup—when you use this in your own work, ask which enhancers actually fall inside the window around your variant of interest.
+
+Attention plus their custom relative positional encodings beat dilated CNN ablations in their sweeps—that is architecture and inductive bias together, not a trophy for the word "transformer."
+
+They show strong enhancer work and solid GTEx and MPRA benchmarks, but every benchmark is a specific pipeline; linkage disequilibrium and tissue matching still matter.
+
+Released weights and variant scores make a useful research tool; they are not automatic clinical truth.
+
+Enformer is a useful twenty twenty-one snapshot of how far sequence-to-function models had come before even larger models took off; it pairs strong benchmarks with honest limits on generalization and mechanism.
+
+
+This list is the primary citation plus the dependencies I name aloud—Basenji and Basenji2, the Gasperini and Fulco CRISPRi maps, GTEx and SuSiE fine mapping, and Kircher and Shigaki for saturation mutagenesis and CAGI5. The paper's full bibliography is longer; this is the short list that matches what I cited in the talk.
+
+
+Thank you for listening. Have a great day!
+
+================================================================================
+SCRIPT END
+================================================================================

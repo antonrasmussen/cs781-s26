@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <style>
+@page {
+    size: letter;
+    margin: 1in 1in 0.9in 1in;
+    @bottom-center {
+        content: counter(page);
+        font-size: 9pt;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #888;
+    }
+}
+
+@page :first {
+    @bottom-center { content: none; }
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.45;
+    color: #1a1a1a;
+    orphans: 3;
+    widows: 3;
+}
+
+.title-block {
+    text-align: center;
+    margin-bottom: 20pt;
+    padding-bottom: 14pt;
+    border-bottom: 2px solid #333;
+}
+
+.title-block h1 {
+    font-size: 18pt;
+    font-weight: 700;
+    margin: 0 0 4pt 0;
+    color: #000;
+    letter-spacing: 0.5pt;
+}
+
+.title-block h2 {
+    font-size: 14pt;
+    font-weight: 400;
+    margin: 0 0 10pt 0;
+    color: #333;
+    border-bottom: none;
+}
+
+.title-block .author {
+    font-size: 12pt;
+    font-weight: 600;
+    margin: 0;
+}
+
+.title-block .meta {
+    font-size: 10.5pt;
+    color: #444;
+    margin: 2pt 0 0 0;
+}
+
+.project-title {
+    text-align: center;
+    margin: 18pt 0 24pt 0;
+    padding: 0 20pt;
+}
+
+.project-title p {
+    font-size: 13pt;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #111;
+    text-align: center;
+}
+
+h1 {
+    font-size: 14pt;
+    font-weight: 700;
+    margin-top: 22pt;
+    margin-bottom: 8pt;
+    color: #000;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4pt;
+    page-break-after: avoid;
+}
+
+h2 {
+    font-size: 12pt;
+    font-weight: 700;
+    margin-top: 16pt;
+    margin-bottom: 6pt;
+    color: #111;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    margin-top: 12pt;
+    margin-bottom: 4pt;
+    color: #222;
+    page-break-after: avoid;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 7pt;
+    text-align: justify;
+    hyphens: auto;
+}
+
+strong {
+    font-weight: 700;
+}
+
+em {
+    font-style: italic;
+}
+
+hr {
+    display: none;
+}
+
+ol, ul {
+    margin-top: 4pt;
+    margin-bottom: 7pt;
+    padding-left: 22pt;
+}
+
+li {
+    margin-bottom: 3pt;
+}
+
+li > ul, li > ol {
+    margin-top: 2pt;
+    margin-bottom: 2pt;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 8pt;
+    margin-bottom: 8pt;
+    font-size: 10pt;
+    page-break-inside: avoid;
+}
+
+thead th {
+    background-color: #f0f0f0;
+    font-weight: 700;
+    text-align: left;
+    padding: 5pt 7pt;
+    border: 1px solid #aaa;
+}
+
+td {
+    padding: 4pt 7pt;
+    border: 1px solid #bbb;
+    vertical-align: top;
+}
+
+tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+blockquote {
+    border-left: 3pt solid #ccc;
+    margin-left: 0;
+    padding-left: 12pt;
+    color: #444;
+}
+
+code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10pt;
+    background-color: #f4f4f4;
+    padding: 1pt 3pt;
+    border-radius: 2pt;
+}
+
+pre {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 9.5pt;
+    background-color: #f4f4f4;
+    padding: 8pt 10pt;
+    border: 1px solid #ddd;
+    border-radius: 3pt;
+    page-break-inside: avoid;
+}
+</style>
+</head>
+<body>
+<div class="title-block">
+    <h1>CS781 – AI for Health Sciences</h1>
+    <h2>Course Project Milestone 2: Research Progress Checkpoint</h2>
+    <p class="author">Anton Rasmussen</p>
+    <p class="meta">Spring 2026 | Update Date: April 6, 2026</p>
+</div>
+
+<hr />
+<h1>1. Project Title and Team</h1>
+<p><strong>Beyond Accuracy Loss: Measuring and Recovering Calibration Degradation in a Quantized Biomedical Large Language Model</strong></p>
+<ul>
+<li><strong>Author:</strong> Anton Rasmussen (sole contributor)</li>
+<li><strong>Course:</strong> CS781 – AI for Health Sciences, Spring 2026</li>
+<li><strong>Repository:</strong> <a href="https://github.com/antonrasmussen/cs781-s26">antonrasmussen/cs781-s26</a>, <code>main</code> branch (26 commits through 2026-03-24)</li>
+<li><strong>Project package:</strong> <code>reliability_eval</code> (Python, under <code>project/src/</code>)</li>
+</ul>
+<hr />
+<h1>2. Research Goal</h1>
+<p>This project investigates whether post-training quantization of BioMistral-7B degrades calibration (measured by Expected Calibration Error, ECE) more than classification accuracy (measured by macro F1), and whether standard post-hoc calibration methods can recover the lost calibration. The work targets two widely used biomedical classification benchmarks — PubMed 20k RCT (5-class sequential sentence classification) and MedNLI (3-class natural language inference, accessed via PhysioNet) — evaluated across three precision levels (FP16, INT8, INT4) using the bitsandbytes quantization backend.</p>
+<p><strong>Three testable hypotheses:</strong></p>
+<ol>
+<li><strong>Primary:</strong> INT4 quantization degrades ECE by a greater relative magnitude than it degrades macro F1 (|Δ_ECE| &gt; |Δ_F1|), tested via paired bootstrap comparison.</li>
+<li><strong>Secondary:</strong> Temperature scaling applied after quantization recovers ECE to within 110% of the FP16 baseline without materially reducing accuracy.</li>
+<li><strong>Tertiary:</strong> INT4 quantization increases prompt sensitivity (decreased inter-template agreement via Fleiss' kappa), and this effect is <em>not</em> recovered by post-hoc calibration.</li>
+</ol>
+<p>The core motivation is that existing evaluations of quantized biomedical LLMs focus almost exclusively on aggregate accuracy, which is insufficient for safety-critical clinical deployment. This project extends prior observations that quantization degrades calibration by testing whether post-hoc methods can <em>recover</em> it — and at what cost to classification accuracy and prompt stability.</p>
+<hr />
+<h1>3. Progress Update and Evidence</h1>
+<h2>3.1 Completed Components</h2>
+<p>The following table lists completed components with representative evidence files and their connection to the research goal.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Evidence (file : function)</th>
+<th>Research-Goal Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project scaffold and documentation</td>
+<td><code>docs/proposal.md</code>, <code>architecture.md</code>, <code>experiment_protocol.md</code>, <code>CONSISTENCY_MATRIX.md</code>, <code>INVENTORY.md</code></td>
+<td>Reproducible experimental design; audit trail for documentation-code consistency</td>
+</tr>
+<tr>
+<td>Hierarchical YAML config system</td>
+<td><code>src/reliability_eval/config/resolve.py</code> : <code>resolve_config</code>, <code>resolve_mvp_config</code></td>
+<td>Enables the 30–60 run sweep matrix without manual config editing</td>
+</tr>
+<tr>
+<td>CLI and 3 experiment runners</td>
+<td><code>src/reliability_eval/cli.py</code> : <code>_cmd_run</code>, <code>_cmd_sweep</code>; <code>experiments/run_mvp.py</code>, <code>run_local.py</code>, <code>run_grid.py</code></td>
+<td>Multiple execution paths (local, grid, Flyte) for different compute environments</td>
+</tr>
+<tr>
+<td>Artifact I/O</td>
+<td><code>src/reliability_eval/io/artifact_store.py</code> : <code>ensure_run_dir</code>, <code>save_predictions</code>, <code>save_metrics</code>; <code>io/run_manifest.py</code> : <code>create_manifest</code></td>
+<td>Structured provenance for every experiment run</td>
+</tr>
+<tr>
+<td>Classification metrics</td>
+<td><code>src/reliability_eval/metrics/classification.py</code> : <code>compute_metrics</code></td>
+<td>Macro F1 is the denominator in Hypothesis 1 (Δ_F1)</td>
+</tr>
+<tr>
+<td>ECE and reliability diagrams</td>
+<td><code>src/reliability_eval/metrics/calibration.py</code> : <code>expected_calibration_error</code>, <code>reliability_bins</code>; <code>reporting/reliability_diagrams.py</code> : <code>plot_reliability</code></td>
+<td>ECE is the primary metric for Hypothesis 1; reliability diagrams are the primary visualization</td>
+</tr>
+<tr>
+<td>Prompt rendering and label-code mappings</td>
+<td><code>src/reliability_eval/prompting/render.py</code> : <code>render</code>; <code>prompting/label_codes.py</code> : <code>get_label_codes</code></td>
+<td>Single-letter class codes are the intended probability extraction method (proposal Section 5.2); single-token mapping must be verified with the BioMistral tokenizer</td>
+</tr>
+<tr>
+<td>Mock inference pipeline</td>
+<td><code>src/reliability_eval/inference/score_class_codes.py</code> : <code>mock_score_example</code></td>
+<td>Validates the pipeline end-to-end without GPU; reduces integration risk for real inference</td>
+</tr>
+<tr>
+<td>PubMed RCT data loader</td>
+<td><code>src/reliability_eval/data/pubmed_rct.py</code> : <code>load_pubmed_rct</code></td>
+<td>Data adapter for the primary benchmark task</td>
+</tr>
+<tr>
+<td>Fleiss' kappa (prompt stability)</td>
+<td><code>src/reliability_eval/metrics/prompt_stability.py</code> : <code>fleiss_kappa</code> (fully implemented with edge-case handling)</td>
+<td>Core metric for Hypothesis 3 (prompt robustness under quantization)</td>
+</tr>
+<tr>
+<td>Temperature scaling (apply + fit)</td>
+<td><code>src/reliability_eval/calibration/temperature_scaling.py</code> : <code>apply_temperature_scaling</code>, <code>fit_temperature</code> (64-point geometric grid search)</td>
+<td>The intervention tested in Hypothesis 2 (calibration recovery)</td>
+</tr>
+<tr>
+<td>Isotonic calibration (apply)</td>
+<td><code>src/reliability_eval/calibration/isotonic.py</code> : <code>isotonic_calibration</code>, <code>_apply_monotone_then_renorm</code></td>
+<td>Alternative calibration method for the recovery analysis</td>
+</tr>
+<tr>
+<td>Calibration dispatch</td>
+<td><code>src/reliability_eval/calibration/apply.py</code> : <code>apply_calibration</code></td>
+<td>Routes to temperature/isotonic/none based on config</td>
+</tr>
+<tr>
+<td>Sweep grid expansion</td>
+<td><code>src/reliability_eval/experiments/run_grid.py</code> : <code>expand_sweep</code></td>
+<td>Generates the Cartesian product of precision × dataset × template × calibration</td>
+</tr>
+<tr>
+<td>Flyte orchestration wrappers</td>
+<td><code>src/reliability_eval/flyte/tasks.py</code>, <code>flyte/workflows.py</code></td>
+<td>Optional reproducible workflow orchestration</td>
+</tr>
+<tr>
+<td>Test suite (10 modules, 38 tests)</td>
+<td><code>tests/test_mvp_runner.py</code>, <code>test_config_resolution.py</code>, <code>test_calibration_apply.py</code>, <code>test_calibration_metrics.py</code>, <code>test_probability_extraction.py</code>, <code>test_prompt_rendering.py</code>, <code>test_prompt_stability.py</code>, <code>test_dataset_registry.py</code>, <code>test_label_code_tokenization.py</code>, <code>test_artifact_store.py</code></td>
+<td>Validates correctness of metrics, config resolution, calibration, and pipeline integration</td>
+</tr>
+</tbody>
+</table>
+<p>The mock inference pipeline validates the full data flow end-to-end: config resolution → data loading → prompt rendering → scoring → metrics computation → artifact writing → reliability diagram generation. Once real model inference is connected, the experimental sweep should be able to run through this already-tested infrastructure with minimal additional changes.</p>
+<p><strong>Progress since the March 24 update:</strong> The prior update document (<code>project_update.md</code>) lists Fleiss' kappa, temperature scaling, and isotonic calibration as "not started." All three are now implemented and tested. This Milestone 2 document reflects the actual code state as of April 6, 2026.</p>
+<h2>3.2 Overall Project Status</h2>
+<p>By Milestone 2, the experiment infrastructure is largely ready, but no real model results have been produced yet because model loading and GPU-backed inference remain the main blocking dependency. The project is currently more developed as an evaluation scaffold than as an experimental study — the measurement infrastructure is in place, but it has not yet been exercised on real model outputs. The table below summarizes where each research phase stands:</p>
+<table>
+<thead>
+<tr>
+<th>Research Phase</th>
+<th>Status</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Infrastructure (config, CLI, metrics, calibration, artifact I/O, tests)</td>
+<td>Complete</td>
+<td>16 components implemented and tested; end-to-end pipeline validated with mock inference</td>
+</tr>
+<tr>
+<td>Experiments (real model loading, inference, full dataset, prompt sweep)</td>
+<td>Not started</td>
+<td>Blocked on BioMistral-7B loading + GPU access; remaining stubs depend on the same model-loading implementation</td>
+</tr>
+<tr>
+<td>Analysis (hypothesis testing, bootstrap CIs, reporting, final paper)</td>
+<td>Not started</td>
+<td>Depends on experiment outputs; analysis code (ECE, Fleiss' kappa, temperature scaling) is ready</td>
+</tr>
+</tbody>
+</table>
+<h2>3.3 Partially Complete</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What Exists</th>
+<th>What Is Missing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PubMed data adapter</td>
+<td>Tiny 8-example JSONL sample (<code>data/samples/pubmed_rct_tiny.jsonl</code>) + loader</td>
+<td>Full HuggingFace dataset integration; real train/val/calib/test splits</td>
+</tr>
+<tr>
+<td>Dataset splits</td>
+<td><code>src/reliability_eval/data/splits.py</code> : <code>get_splits</code> returns hardcoded list <code>["train", "val", "calibration", "test"]</code></td>
+<td>Actual split logic that partitions loaded data into those splits</td>
+</tr>
+<tr>
+<td>Prompt templates</td>
+<td>2 PubMed templates (<code>pubmed_t1</code>, <code>pubmed_t2</code>)</td>
+<td>3 more PubMed + 5 MedNLI templates (proposal requires 5 per task)</td>
+</tr>
+<tr>
+<td>Isotonic calibration</td>
+<td>Apply + renormalize implemented</td>
+<td><code>fit_isotonic</code> raises <code>NotImplementedError</code></td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>run</code> and <code>sweep</code> subcommands work</td>
+<td><code>report</code> subcommand prints "not yet implemented"</td>
+</tr>
+</tbody>
+</table>
+<h2>3.4 Not Started</h2>
+<p><strong>Real inference integration:</strong> The following stubs all depend on BioMistral-7B model loading. Rather than independent gaps, they form a single blocking dependency:</p>
+<ul>
+<li>Model loading at FP16/INT8/INT4: <code>src/reliability_eval/models/load_model.py</code>, <code>models/quantization.py</code>, <code>models/tokenizer_utils.py</code></li>
+<li>Real single-token class-code logit extraction: <code>src/reliability_eval/inference/score_class_codes.py</code> : <code>score_example</code></li>
+<li>Batch runner: <code>src/reliability_eval/inference/batch_runner.py</code> : <code>run_eval</code></li>
+</ul>
+<p><strong>Downstream items (depend on real inference):</strong></p>
+<ul>
+<li>MedNLI dataset loader (<code>src/reliability_eval/data/mednli.py</code> — contingent on PhysioNet access; proposal fallback is PubMed-only)</li>
+<li>ACE (adaptive calibration error), bootstrap confidence intervals, per-sample flip rate</li>
+<li>Cross-run aggregation (<code>src/reliability_eval/experiments/aggregate.py</code>)</li>
+<li>Reporting tables and export (<code>src/reliability_eval/reporting/tables.py</code>, <code>reporting/export_summary.py</code>)</li>
+<li>Efficiency metrics (<code>src/reliability_eval/metrics/efficiency.py</code>)</li>
+</ul>
+<h2>3.5 Pipeline Validation Artifacts</h2>
+<p>The following artifacts were generated on April 6, 2026 by running the MVP pipeline (<code>experiments/run_mvp.py</code>) with mock inference on the 8-example PubMed RCT tiny sample. They demonstrate that the pipeline functions correctly end-to-end. <strong>These are synthetic outputs from the deterministic mock scorer and do not represent real model performance.</strong></p>
+<h3>Reliability Diagram</h3>
+<p><img alt="Pipeline validation artifact: reliability diagram from mock inference" src="artifacts/runs/mvp_pubmed_20260407T013817_632223Z_b64ad8/figures/reliability.png" /></p>
+<p><em>Generated from mock inference on 8-example PubMed RCT sample. Demonstrates that ECE computation, binning, and plot generation function correctly end-to-end.</em></p>
+<h3>Metrics Output</h3>
+<pre><code class="language-json">{
+  &quot;accuracy&quot;: 0.375,
+  &quot;macro_f1&quot;: 0.26,
+  &quot;per_class_f1&quot;: {
+    &quot;BACKGROUND&quot;: 0.0,
+    &quot;CONCLUSIONS&quot;: 0.5,
+    &quot;METHODS&quot;: 0.0,
+    &quot;OBJECTIVE&quot;: 0.0,
+    &quot;RESULTS&quot;: 0.8
+  },
+  &quot;n_examples&quot;: 8,
+  &quot;ece&quot;: 0.13724415660881062
+}
+</code></pre>
+<p><em>Metrics output from mock inference. Values are synthetic (mock scorer artificially inflates confidence for the correct label by +0.35) and do not represent model performance.</em></p>
+<h3>Test Suite</h3>
+<pre><code>======================== 37 passed, 1 xfailed in 19.10s ========================
+</code></pre>
+<p>All 37 tests pass across 10 test modules covering config resolution, metrics computation, calibration, prompt rendering, probability extraction, artifact I/O, and end-to-end pipeline integration. The single <code>xfail</code> is a placeholder test (<code>test_tokenization_single_token</code>) that verifies single-letter class codes map to exactly one token ID in the real BioMistral tokenizer — it cannot pass until the actual model tokenizer is loaded, which is expected.</p>
+<hr />
+<h1>4. Choke Point Analysis</h1>
+<h2>4.1 Primary Bottleneck: Real Model Loading and Inference</h2>
+<p>The entire experimental pipeline — from FP16 baselines through quantization experiments and calibration recovery — is blocked on a single dependency: implementing real model loading and single-token logit extraction in the <code>models/</code> and <code>inference/</code> subpackages.</p>
+<p>Three functions must be implemented:</p>
+<ol>
+<li><code>src/reliability_eval/models/load_model.py</code> : <code>load_biomistral</code> — load BioMistral-7B at FP16, INT8, and INT4 precision levels</li>
+<li><code>src/reliability_eval/models/tokenizer_utils.py</code> : <code>get_code_token_ids</code> — map class-code letters (A–E) to their token IDs</li>
+<li><code>src/reliability_eval/inference/score_class_codes.py</code> : <code>score_example</code> — extract logits at the first generated token position, select code-token logits, compute restricted softmax</li>
+</ol>
+<p>Every module downstream — calibration recovery, prompt stability across real templates, bootstrap CIs, reporting — depends on having <em>real</em> probability distributions. The mock inference pipeline has validated the plumbing, but produces synthetic distributions that cannot test the research hypotheses.</p>
+<h2>4.2 Why This Is Technically Non-Trivial</h2>
+<p>This is not simply "code that hasn't been written yet." Four specific technical risks make the implementation uncertain:</p>
+<p><strong>Tokenizer behavior.</strong> The project assumes that single-letter codes (A, B, C, D, E) each map to exactly one token ID, but this must be verified empirically for the BioMistral tokenizer before experiments proceed. BioMistral extends the base Mistral tokenizer with biomedical vocabulary; there is a risk that the tokenizer treats <code>" A"</code> (with leading space) differently from <code>"A"</code>, or that the extended vocabulary introduces unexpected token splits. The <code>test_label_code_tokenization.py</code> test has an <code>xfail</code> placeholder for exactly this verification, which cannot pass until the real tokenizer is loaded.</p>
+<p><strong>Logit extraction position.</strong> For a decoder-only model with a prompt followed by a completion cue, the logits at the <em>correct token position</em> must be extracted. Off-by-one errors in the position index would silently produce nonsense probability distributions. The mock scorer sidesteps this entirely by generating probabilities directly; the real implementation must correctly identify the first generated token position after the prompt.</p>
+<p><strong>Quantization configuration.</strong> <code>bitsandbytes</code> INT4 (NF4) with double quantization requires specific <code>BitsAndBytesConfig</code> parameters. Incorrect configuration can silently fall back to FP16, producing misleading results that appear to show "no quantization effect." The quantization module must verify the model is actually loaded at the intended precision by checking weight dtypes or memory footprint.</p>
+<p><strong>Hardware dependency.</strong> As a rough weights-only estimate, a 7B model requires about 14 GB at FP16 and about 3.5 GB at 4-bit precision, though actual inference memory depends on KV cache, activations, and framework overhead. The project needs access to a GPU with at least 16 GB VRAM. The current compute options are ODU HPC nodes or a cloud GPU (Colab Pro, Lambda, etc.), neither of which is configured yet.</p>
+<h2>4.3 Secondary Bottleneck: Full Dataset Integration</h2>
+<p>The PubMed loader currently uses an 8-example fixture (<code>data/samples/pubmed_rct_tiny.jsonl</code>). Real experiments need the full 20k-abstract PubMed RCT dataset loaded from HuggingFace, with proper train/val/calibration/test split logic implemented in <code>src/reliability_eval/data/splits.py</code> (currently a stub returning hardcoded split names).</p>
+<h2>4.4 Timeline Context</h2>
+<p>The proposal's Phase 3 (quantization experiments) was scheduled to end April 6 — today. The project is approximately three weeks behind the original timeline. This delay reflects a deliberate trade-off: the scaffold phase was more extensive than initially planned — building a full config composition system, CLI tooling, Flyte wrappers, a 10-module test suite, and a documentation audit trail. I prioritized infrastructure and testing early, which should reduce integration risk when real inference is connected, but it means the first real model run has not happened yet. In retrospect, the time spent on reproducibility infrastructure was probably worthwhile, but it did push back the start of actual experiments further than I expected.</p>
+<hr />
+<h1>5. To-Do List for the Next Phase</h1>
+<p>Three steps bridge the gap between the current state (validated mock pipeline) and the research goal (tested hypotheses with real model outputs), aligned to remaining deadlines.</p>
+<h2>Step 1: Real Model Loading and Probability Extraction</h2>
+<p><strong>Target: April 13 (before Milestone 3)</strong></p>
+<ul>
+<li>Implement <code>load_model.py</code> : <code>load_biomistral</code> for FP16, INT8, INT4 using <code>transformers</code> + <code>bitsandbytes</code></li>
+<li>Implement <code>tokenizer_utils.py</code> : <code>get_code_token_ids</code> to map class-code letters to token IDs</li>
+<li>Implement <code>score_class_codes.py</code> : <code>score_example</code> for single-token logit extraction + restricted softmax</li>
+<li>Pass the proposal's validation gate (Section 5.2): on 200 held-out examples, verify probability normalization, argmax consistency with greedy decode, and visual plausibility of FP16 reliability diagrams</li>
+<li><strong>Dependency:</strong> Secure GPU access (ODU or cloud). Add <code>torch</code>, <code>transformers</code>, <code>bitsandbytes</code>, <code>accelerate</code> to <code>requirements.txt</code> (currently listed as TODO)</li>
+</ul>
+<h2>Step 2: Full Data Pipeline and Prompt Expansion</h2>
+<p><strong>Target: April 20 (Milestone 3 delivery)</strong></p>
+<ul>
+<li>Integrate PubMed 20k RCT via HuggingFace <code>datasets</code> library; implement real train/val/calib/test splits in <code>data/splits.py</code></li>
+<li>Expand PubMed prompt templates from 2 to 5 (meaning-preserving variation per proposal Section 5.3.3)</li>
+<li>Validate all 5 templates on 50 dev examples at FP16 (template validation gate)</li>
+<li>If PhysioNet access is confirmed, implement <code>data/mednli.py</code> loader and 5 MedNLI templates; otherwise invoke the proposal fallback (PubMed-only)</li>
+<li>Implement <code>fit_isotonic</code> in <code>calibration/isotonic.py</code></li>
+<li><strong>Milestone 3 target:</strong> FP16 baselines complete on PubMed RCT; at least INT8 evaluated</li>
+</ul>
+<h2>Step 3: Full Experimental Sweep and Statistical Analysis</h2>
+<p><strong>Target: May 1 (3 days before final submission)</strong></p>
+<ul>
+<li>Execute the 3 precision × 1–2 tasks × 5 templates × 2 calibration states = 30–60 run matrix via <code>run_grid.py</code></li>
+<li>Implement bootstrap CIs (n=1000) for all classification and calibration metrics</li>
+<li>Implement ACE (adaptive calibration error, equal-mass bins)</li>
+<li>Implement per-sample flip rate alongside the existing Fleiss' kappa</li>
+<li>Implement <code>aggregate_metrics</code> for cross-run synthesis</li>
+<li>Test the three hypotheses with paired bootstrap comparisons</li>
+<li>Generate publication-quality reliability diagrams, calibration recovery plots, and efficiency summary table</li>
+<li>Write IEEE-format final report (May 1–4)</li>
+</ul>
+<h2>Fallback Plan</h2>
+<p>I am not fully confident that GPU access and model loading can be resolved within one week, so the fallback plan below is a realistic contingency rather than a formality.</p>
+<p><strong>Decision rule:</strong> If FP16 real inference is not working by April 13, the project will formally narrow to PubMed-only and INT8-first execution. Specifically:</p>
+<ul>
+<li><strong>April 13 checkpoint — no working FP16 inference:</strong> Narrow scope to PubMed RCT only (drop MedNLI), halving the experiment matrix. Allocate all remaining GPU-setup effort to a single precision level (INT8) before attempting INT4.</li>
+<li><strong>April 18 checkpoint — no working INT8 inference:</strong> Escalate to cloud GPU (Colab Pro or Lambda) with a 48-hour time-box. If that also fails, document the validated pipeline as the main deliverable and frame real inference results as future work.</li>
+<li><strong>INT4 technical failure at any point:</strong> The INT8 results would still support a meaningful analysis on their own. INT4 is a stretch goal rather than a requirement.</li>
+</ul>
+<hr />
+<h1>6. Experiment Pipeline Architecture</h1>
+<p>The following diagram shows the end-to-end pipeline. Nodes marked with <strong>[done]</strong> are implemented and tested; nodes marked with <strong>[stub]</strong> are not yet implemented.</p>
+<pre><code class="language-mermaid">flowchart LR
+    subgraph config [Configuration]
+        YAML[&quot;YAML Configs\n[done]&quot;]
+        Resolve[&quot;resolve_config\n[done]&quot;]
+    end
+
+    subgraph data [Data Loading]
+        PubMed[&quot;PubMed RCT Loader\n[done, tiny sample]&quot;]
+        MedNLI[&quot;MedNLI Loader\n[stub]&quot;]
+        Splits[&quot;Split Logic\n[stub]&quot;]
+    end
+
+    subgraph model [Model + Inference]
+        LoadModel[&quot;load_biomistral\n[stub]&quot;]
+        Quantize[&quot;apply_quantization\n[stub]&quot;]
+        Tokenizer[&quot;get_code_token_ids\n[stub]&quot;]
+        Score[&quot;score_example\n[stub]&quot;]
+        MockScore[&quot;mock_score_example\n[done]&quot;]
+    end
+
+    subgraph metrics [Metrics + Calibration]
+        ClassMetrics[&quot;accuracy, macro F1\n[done]&quot;]
+        ECE[&quot;ECE + reliability bins\n[done]&quot;]
+        Kappa[&quot;Fleiss kappa\n[done]&quot;]
+        TempScale[&quot;temperature scaling\n[done]&quot;]
+        Isotonic[&quot;isotonic apply\n[done]&quot;]
+    end
+
+    subgraph output [Output]
+        Artifacts[&quot;artifact_store\n[done]&quot;]
+        RelDiagram[&quot;reliability diagram\n[done]&quot;]
+        Tables[&quot;tables + export\n[stub]&quot;]
+    end
+
+    YAML --&gt; Resolve
+    Resolve --&gt; PubMed
+    Resolve --&gt; MedNLI
+    PubMed --&gt; Splits
+    MedNLI --&gt; Splits
+
+    Resolve --&gt; LoadModel
+    LoadModel --&gt; Quantize
+    Quantize --&gt; Tokenizer
+    Tokenizer --&gt; Score
+    Splits --&gt; Score
+    Splits --&gt; MockScore
+
+    Score --&gt; ClassMetrics
+    MockScore --&gt; ClassMetrics
+    Score --&gt; ECE
+    MockScore --&gt; ECE
+    Score --&gt; Kappa
+    MockScore --&gt; Kappa
+
+    ECE --&gt; TempScale
+    ECE --&gt; Isotonic
+    TempScale --&gt; Artifacts
+    Isotonic --&gt; Artifacts
+    ClassMetrics --&gt; Artifacts
+    Kappa --&gt; Artifacts
+    ECE --&gt; RelDiagram
+    RelDiagram --&gt; Artifacts
+    ClassMetrics --&gt; Tables
+    ECE --&gt; Tables
+</code></pre>
+<p>The main dependency chain runs through <code>LoadModel → Quantize → Tokenizer → Score</code>. Once this chain is implemented, all downstream metrics and output nodes already function correctly (validated via the <code>MockScore</code> path).</p>
+<hr />
+<h1>7. Questions for Peer Review</h1>
+<p>I would appreciate feedback on the following architectural and methodological decisions:</p>
+<ol>
+<li>
+<p><strong>Probability extraction validity.</strong> My approach extracts class probabilities by taking the softmax over only the logits of 5 (or 3) single-letter code tokens, discarding the rest of the vocabulary. Could this restricted softmax introduce systematic bias in the probability estimates compared to the full-vocabulary distribution, and if so, how would you control for that?</p>
+</li>
+<li>
+<p><strong>Calibration measurement under distribution shift.</strong> Temperature scaling is fitted on a held-out calibration split (15% of validation data) and evaluated on the test set. Given that quantization may shift the model's internal representations, is it valid to fit the calibration method on quantized-model outputs and evaluate on the same quantized model — or should the calibration set also be used to measure the <em>shift</em> relative to FP16 as a reference?</p>
+</li>
+<li>
+<p><strong>Prompt stability as an independent failure mode.</strong> The tertiary hypothesis claims that prompt instability under quantization is independent of calibration degradation. What additional evidence — beyond showing that temperature scaling does not recover Fleiss' kappa — would you need to convincingly argue these are genuinely separate failure modes rather than correlated symptoms of the same underlying representational damage?</p>
+</li>
+</ol>
+<hr />
+<h1>References</h1>
+<ul>
+<li>Dettmers, T., Lewis, M., Belkada, Y., &amp; Zettlemoyer, L. (2022). GPT3.int8(): 8-bit Matrix Multiplication for Transformers at Scale. <em>NeurIPS 2022</em>.</li>
+<li>Dettmers, T., Pagnoni, A., Holtzman, A., &amp; Zettlemoyer, L. (2023). QLoRA: Efficient Finetuning of Quantized Language Models. <em>NeurIPS 2023</em>.</li>
+<li>Dernoncourt, F., &amp; Lee, J.Y. (2017). PubMed 200k RCT: a Dataset for Sequential Sentence Classification in Medical Abstracts. <em>IJCNLP 2017</em>.</li>
+<li>Fleiss, J.L. (1971). Measuring nominal scale agreement among many raters. <em>Psychological Bulletin</em>, 76(5), 378–382.</li>
+<li>Guo, C., Pleiss, G., Sun, Y., &amp; Weinberger, K.Q. (2017). On Calibration of Modern Neural Networks. <em>ICML 2017</em>.</li>
+<li>Labrak, Y., Bazoge, A., Morin, E., Gourraud, P.-A., Rouvier, M., &amp; Dufour, R. (2024). BioMistral: A Collection of Open-Source Pretrained Large Language Models for Medical Domains. <em>ACL 2024 Findings</em>.</li>
+<li>Romanov, A., &amp; Shivade, C. (2018). Lessons from Natural Language Inference in the Clinical Domain. <em>EMNLP 2018</em>.</li>
+<li>Zadrozny, B., &amp; Elkan, C. (2002). Transforming Classifier Scores into Accurate Multiclass Probability Estimates. <em>KDD 2002</em>.</li>
+</ul>
+</body>
+</html>

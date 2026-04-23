@@ -1,0 +1,64 @@
+flowchart LR
+    subgraph config [Configuration]
+        YAML["YAML Configs\n[done]"]
+        Resolve["resolve_config\n[done]"]
+    end
+
+    subgraph data [Data Loading]
+        PubMed["PubMed RCT Loader\n[done, tiny sample]"]
+        MedNLI["MedNLI Loader\n[stub]"]
+        Splits["Split Logic\n[stub]"]
+    end
+
+    subgraph model [Model + Inference]
+        LoadModel["load_biomistral\n[stub]"]
+        Quantize["apply_quantization\n[stub]"]
+        Tokenizer["get_code_token_ids\n[stub]"]
+        Score["score_example\n[stub]"]
+        MockScore["mock_score_example\n[done]"]
+    end
+
+    subgraph metrics [Metrics + Calibration]
+        ClassMetrics["accuracy, macro F1\n[done]"]
+        ECE["ECE + reliability bins\n[done]"]
+        Kappa["Fleiss kappa\n[done]"]
+        TempScale["temperature scaling\n[done]"]
+        Isotonic["isotonic apply\n[done]"]
+    end
+
+    subgraph output [Output]
+        Artifacts["artifact_store\n[done]"]
+        RelDiagram["reliability diagram\n[done]"]
+        Tables["tables + export\n[stub]"]
+    end
+
+    YAML --> Resolve
+    Resolve --> PubMed
+    Resolve --> MedNLI
+    PubMed --> Splits
+    MedNLI --> Splits
+
+    Resolve --> LoadModel
+    LoadModel --> Quantize
+    Quantize --> Tokenizer
+    Tokenizer --> Score
+    Splits --> Score
+    Splits --> MockScore
+
+    Score --> ClassMetrics
+    MockScore --> ClassMetrics
+    Score --> ECE
+    MockScore --> ECE
+    Score --> Kappa
+    MockScore --> Kappa
+
+    ECE --> TempScale
+    ECE --> Isotonic
+    TempScale --> Artifacts
+    Isotonic --> Artifacts
+    ClassMetrics --> Artifacts
+    Kappa --> Artifacts
+    ECE --> RelDiagram
+    RelDiagram --> Artifacts
+    ClassMetrics --> Tables
+    ECE --> Tables
