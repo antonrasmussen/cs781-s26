@@ -1,1 +1,1 @@
-"""Post-hoc calibration: temperature scaling, isotonic regression. TODO: Implement."""
+"""Post-hoc calibration utilities: temperature scaling and isotonic hooks."""

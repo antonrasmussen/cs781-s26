@@ -1,1 +1,1 @@
-"""Dataset adapters and split logic. TODO: Implement loaders and splits."""
+"""Dataset adapters and deterministic split helpers."""

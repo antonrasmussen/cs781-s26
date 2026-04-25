@@ -1,1 +1,1 @@
-"""Prompt templates and label-code mapping. TODO: Implement."""
+"""Prompt template loading, rendering, and label-code mappings."""

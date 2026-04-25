@@ -2,6 +2,8 @@
 """Run a single experiment from a resolved config (local harness).
 
 Thin wrapper over reliability_eval.experiments.run_single.
+For CUDA handoff operations, prefer ``python -m reliability_eval.cli run ...``
+so docs and execution paths stay aligned.
 
 Run with the package on ``PYTHONPATH`` (repository ``src`` layout), for example::
 
@@ -29,7 +31,12 @@ def main() -> int:
     parser.add_argument("--precision", type=str, default="fp16")
     parser.add_argument("--template", type=str, default="pubmed_t1")
     parser.add_argument("--calibration", type=str, default="none")
-    parser.add_argument("--profile", type=str, default="local", choices=["local", "flyte_sandbox", "odu"])
+    parser.add_argument(
+        "--profile",
+        type=str,
+        default="local",
+        choices=["local", "local_real", "flyte_sandbox", "odu"],
+    )
     parser.add_argument("--sample-size", type=int, default=None, help="Cap examples for small runs")
     args = parser.parse_args()
 

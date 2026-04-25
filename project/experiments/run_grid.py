@@ -2,6 +2,8 @@
 """Run full config grid (e.g. 3 precisions x 2 tasks x 5 templates).
 
 Thin wrapper over reliability_eval.experiments.run_single and expand_sweep.
+For CUDA handoff operations, prefer ``python -m reliability_eval.cli run ...``
+for the first gate before using this sweep helper.
 """
 
 from __future__ import annotations
@@ -20,7 +22,12 @@ from reliability_eval.experiments.run_single import run_single
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run sweep grid (local harness).")
     parser.add_argument("--sweep", type=str, default="mvp_pubmed", help="Sweep config id")
-    parser.add_argument("--profile", type=str, default="local", choices=["local", "flyte_sandbox", "odu"])
+    parser.add_argument(
+        "--profile",
+        type=str,
+        default="local",
+        choices=["local", "local_real", "flyte_sandbox", "odu"],
+    )
     parser.add_argument("--sample-size", type=int, default=None, help="Cap examples per run")
     parser.add_argument("--dry-run", action="store_true", help="Only expand configs, do not run")
     args = parser.parse_args()

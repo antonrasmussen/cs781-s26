@@ -1,10 +1,10 @@
-# MVP sweep: PubMed only, FP16 + INT8, 2 templates, no calibration
+# MVP sweep: PubMed only, FP16 + INT8, five templates, no calibration
 experiment_name: mvp_pubmed_reliability
 combinations:
   dataset: [pubmed_rct]
   model: [biomistral_7b]
   precision: [fp16, int8]
-  prompt_template: [pubmed_t1, pubmed_t2]
+  prompt_template: [pubmed_t1, pubmed_t2, pubmed_t3, pubmed_t4, pubmed_t5]
   calibration: [none]
 evaluation:
   metrics: [macro_f1, per_class_f1, accuracy, ece]

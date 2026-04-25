@@ -1,1 +1,1 @@
-"""Experiment runners: single run, grid, aggregate. TODO: Implement."""
+"""Experiment runners: single run, grid expansion, and aggregation."""

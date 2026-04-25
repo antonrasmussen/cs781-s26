@@ -1,1 +1,1 @@
-"""I/O: paths, artifact store, run manifests. TODO: Implement."""
+"""I/O helpers for paths, artifacts, and run manifests."""

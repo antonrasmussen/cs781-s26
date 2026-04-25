@@ -1,1 +1,1 @@
-"""Model loading and quantization. TODO: Implement BioMistral + bitsandbytes."""
+"""Model loading and quantization helpers."""

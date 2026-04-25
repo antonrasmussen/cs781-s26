@@ -1,1 +1,1 @@
-"""Inference: class-code probability extraction and batch runner. TODO: Implement."""
+"""Inference components for class-code scoring and batch evaluation."""

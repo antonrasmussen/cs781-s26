@@ -1,0 +1,4 @@
+# Deterministic local PubMed dev subset for pre-CUDA gate checks.
+dataset_id: pubmed_rct_dev200
+task: pubmed_rct
+path_or_hf_id: "data/samples/pubmed_rct_dev200.jsonl"

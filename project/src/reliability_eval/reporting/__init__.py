@@ -1,1 +1,1 @@
-"""Figures and tables for paper. TODO: Implement."""
+"""Reporting helpers for figures and summary tables."""
