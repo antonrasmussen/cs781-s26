@@ -2,7 +2,7 @@
 # Same code path; run via script/CLI with this profile
 execution_mode: odu
 compute_env: odu
-inference_mode: mock_inference  # use mock inference on ODU until real mode is implemented
+inference_mode: real_inference
 hardware:
   device_map: "auto"
   batch_size: 8  # larger batch on GPU

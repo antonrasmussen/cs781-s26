@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from reliability_eval.models.quantization import build_quantization_config
+from reliability_eval.models.quantization import (
+    assert_quantized_footprint,
+    build_quantization_config,
+)
 
 
 def load_biomistral(
@@ -51,6 +54,10 @@ def load_biomistral(
 
     if precision_key in {"int8", "int4"}:
         bnb_config = build_quantization_config(precision_key)
+        fp16_reference_bytes = None
+        if precision_key == "int8":
+            # Lightweight FP16 estimate for 7B-class models (~2 bytes/param).
+            fp16_reference_bytes = int(7_000_000_000 * 2)
         model = AutoModelForCausalLM.from_pretrained(
             name_or_path,
             revision=revision,
@@ -58,6 +65,11 @@ def load_biomistral(
             quantization_config=bnb_config,
             offload_folder=str(offload_folder),
             use_safetensors=False,
+        )
+        assert_quantized_footprint(
+            model,
+            precision=precision_key,
+            fp16_reference_bytes=fp16_reference_bytes,
         )
         model.eval()
         return model, tokenizer

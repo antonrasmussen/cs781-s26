@@ -117,7 +117,16 @@ def load_pubmed_rct(
         path = Path(path_or_hf_id)
         examples = _read_jsonl(path)
     elif path_or_hf_id:
-        examples = _read_hf_split(path_or_hf_id, split=split, revision=hf_revision)
+        try:
+            examples = _read_hf_split(path_or_hf_id, split=split, revision=hf_revision)
+        except Exception as e:  # pragma: no cover - environment dependent
+            warnings.warn(
+                "Failed to load Hugging Face split; falling back to tiny sample "
+                f"{_SAMPLE_PATH}: {e}",
+                UserWarning,
+                stacklevel=2,
+            )
+            examples = _read_jsonl(_SAMPLE_PATH)
     else:
         warnings.warn(
             "path_or_hf_id is unset; falling back to in-repo tiny sample "

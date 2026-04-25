@@ -2,5 +2,29 @@
 
 
 def metrics_table(run_metrics: list) -> str:
-    """Return markdown or CSV table. TODO: Implement."""
-    raise NotImplementedError("TODO: implement reporting.tables.metrics_table")
+    """Return a simple Markdown table for run metrics rows."""
+    headers = [
+        "run_id",
+        "precision",
+        "template_id",
+        "n_examples",
+        "accuracy",
+        "macro_f1",
+        "ece",
+        "ece_calibrated",
+        "temperature",
+    ]
+    lines = [
+        "| " + " | ".join(headers) + " |",
+        "| " + " | ".join(["---"] * len(headers)) + " |",
+    ]
+    for row in run_metrics:
+        values = []
+        for key in headers:
+            value = row.get(key, "")
+            if isinstance(value, float):
+                values.append(f"{value:.6f}")
+            else:
+                values.append(str(value))
+        lines.append("| " + " | ".join(values) + " |")
+    return "\n".join(lines) + "\n"

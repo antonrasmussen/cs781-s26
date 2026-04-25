@@ -1,43 +1,64 @@
-# Milestone 3 Status (Real Inference Bridge)
+# Milestone 3 Status (Execution Update)
 
-Date: 2026-04-22
+Date: 2026-04-23
 
-## What is now real (not mock)
+## What was implemented in this pass
 
-- Real BioMistral loading is wired through `load_biomistral` for FP16 and quantized branches (`int8`/`int4`).
-- Real class-code token id extraction is implemented and validated against the BioMistral tokenizer.
-- Real first-token logit extraction with restricted softmax over class-code letters is implemented.
-- Real batch evaluation is implemented and integrated into `run_single` under `inference_mode=real_inference`.
-- PubMed loader now supports Hugging Face dataset loading (`armanc/pubmed-rct20k`) in addition to tiny local JSONL.
-- A real FP16 run artifact exists with `inference_mode=real_inference`:
-  - `artifacts/runs/mvp_pubmed_reliabili_20260423T034428_611367Z_603ebe/`
-  - `metadata.json` shows `dataset_source=hf://armanc/pubmed-rct20k@main`
-  - `n_examples=8`, with real `predictions.jsonl`, `metrics.json`, and `figures/reliability.png`
+- Temperature-scaling calibration is now wired into the real pipeline in `src/reliability_eval/experiments/run_single.py`.
+  - When `calibration.calibration == "temperature_scaling"` and `inference_mode == "real_inference"`, the runner:
+    1) loads a validation calibration slice,
+    2) fits `T` via `fit_temperature`,
+    3) applies post-hoc scaling on test probabilities,
+    4) writes `ece_calibrated` and `temperature`.
+  - Calibration probabilities are saved to `calibration_probs.jsonl`.
+- Quantized-load guard added:
+  - `src/reliability_eval/models/quantization.py` now has `assert_quantized_footprint(...)`.
+  - `src/reliability_eval/models/load_model.py` now calls this check for `int8` to detect silent fallback to higher precision.
+- Minimal aggregation/reporting path implemented:
+  - `src/reliability_eval/experiments/aggregate.py` now aggregates real-inference runs from `artifacts/runs`.
+  - `src/reliability_eval/reporting/tables.py` now renders a simple markdown metrics table.
+  - New script `experiments/build_m3_report.py` generates:
+    - `reports/m3_metrics.md`
+    - `reports/figures/m3_reliability.png`
+- Test coverage update:
+  - Added regression test `test_temperature_one_preserves_ece` in `tests/test_calibration_apply.py`.
+  - Targeted tests pass in this environment: `21 passed`.
 
-## Real-run evidence summary
+## Current real-inference evidence in repo
 
-- Run ID: `mvp_pubmed_reliabili_20260423T034428_611367Z_603ebe`
-- Precision: FP16
-- Dataset source: Hugging Face PubMed RCT (`armanc/pubmed-rct20k`, revision `main`)
-- Template: `pubmed_t1`
-- Sample size: 8 (reduced due hardware/runtime limits on local execution)
-- Metrics:
-  - accuracy: `0.125`
-  - macro_f1: `0.07407407407407407`
-  - ece: `0.66925048828125`
+Real-inference runs currently available for milestone reporting:
 
-## Explicit deferrals and blockers
+- `artifacts/runs/mvp_pubmed_reliabili_20260423T034108_378616Z_fecfb0/` (FP16, n=2)
+- `artifacts/runs/mvp_pubmed_reliabili_20260423T034428_611367Z_603ebe/` (FP16, n=8)
 
-- MedNLI: deferred.
-- Full split logic (`data/splits.py`): deferred.
-- 5-template prompt sweep / Fleiss kappa on real runs: deferred.
-- Aggregate report generation modules: deferred.
-- Quantized real runs:
-  - `int4` run failed in this local environment due quantized memory/device-map constraints.
-  - `int8` run failed in this local environment due bitsandbytes/accelerate runtime incompatibility on this stack.
-  - Recommendation: run `int8`/`int4` on CUDA Linux GPU runtime (Kaggle/Colab/Lambda/HPC).
+Generated summary artifacts (from those run IDs):
 
-## Notes on artifact interpretation
+- `reports/m3_metrics.md`
+- `reports/figures/m3_reliability.png`
 
-- Prior run folders in `artifacts/runs/` include mock outputs from milestone-2-era wiring (`inference_mode=mock_inference`).
-- Milestone 3 claims should cite only runs where `metadata.json` has `inference_mode=real_inference`.
+## Honest blocker status
+
+- This execution environment has no CUDA or MPS backend (`torch.cuda.is_available() == False`, `mps_available == False`), so Milestone 3 target runs (`n=200` FP16 and `n=200` INT8) could not be executed here.
+- Hugging Face network/cache access is restricted in this environment; `load_pubmed_rct` now gracefully falls back to the in-repo tiny sample when HF loading fails.
+
+## Required final Milestone 3 runs (still pending on cloud GPU)
+
+Run these on Colab Pro / Lambda / HPC CUDA Linux:
+
+1. FP16 real inference, PubMed, `n=200`, calibration `none`.
+2. INT8 real inference, PubMed, `n=200`, calibration `none`.
+3. FP16 real inference, PubMed, `n=200`, calibration `temperature_scaling`.
+4. INT8 real inference, PubMed, `n=200`, calibration `temperature_scaling`.
+
+Then regenerate:
+
+- `reports/m3_metrics.md`
+- `reports/figures/m3_reliability.png`
+
+## Deferrals retained (intentional)
+
+- INT4 runs: deferred to final report phase.
+- MedNLI integration: deferred.
+- Isotonic fit (`fit_isotonic`): deferred.
+- 5-template PubMed sweep and Fleiss' kappa claims: deferred.
+- Bootstrap CIs, ACE, and flip-rate analysis: deferred.

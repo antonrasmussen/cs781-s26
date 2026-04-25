@@ -6,8 +6,11 @@ ODU) should call this function rather than duplicating orchestration logic.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
+from reliability_eval.calibration.apply import apply_calibration
+from reliability_eval.calibration.temperature_scaling import fit_temperature
 from reliability_eval.data.dataset_registry import get_loader
 from reliability_eval.inference.batch_runner import run_eval
 from reliability_eval.inference.score_class_codes import mock_score_example
@@ -89,6 +92,9 @@ def run_single(config: dict, run_id: str | None = None) -> str:
     sample_size = config.get("sample_size")
     eval_cfg = config.get("evaluation", {})
     n_bins = int(eval_cfg.get("ece_bins", 15))
+    calibration_cfg = config.get("calibration", {})
+    calibration_method = str(calibration_cfg.get("calibration", "none")).lower()
+    calibration_sample_size = int(config.get("calibration_sample_size", sample_size or 200))
 
     # Load dataset
     dataset_cfg = config.get("dataset", {})
@@ -98,6 +104,8 @@ def run_single(config: dict, run_id: str | None = None) -> str:
     inference_mode = config.get("inference_mode") or config.get("mode", "mock_inference")
     config_dir = config.get("config_dir")
     if inference_mode == "mock_inference":
+        model = None
+        tokenizer = None
         label_codes = get_label_codes(task)
         predictions = []
         y_true = []
@@ -158,7 +166,7 @@ def run_single(config: dict, run_id: str | None = None) -> str:
     else:
         raise ValueError(f"Unsupported inference_mode: {inference_mode}")
 
-    # Compute metrics
+    # Compute metrics (uncalibrated)
     metrics = compute_metrics(y_true=y_true, y_pred=y_pred)
     metrics["ece"] = expected_calibration_error(
         y_true=y_true,
@@ -166,6 +174,41 @@ def run_single(config: dict, run_id: str | None = None) -> str:
         confidences=confidences,
         n_bins=n_bins,
     )
+
+    if calibration_method == "temperature_scaling":
+        if inference_mode != "real_inference":
+            raise ValueError(
+                "temperature_scaling requires inference_mode=real_inference "
+                "to fit on a calibration split"
+            )
+        probs_test = _prediction_probs(predictions=predictions)
+        probs_calib, labels_calib_codes = _load_calibration_probabilities(
+            config=config,
+            model=model,
+            tokenizer=tokenizer,
+            task=task,
+            template_id=template_id,
+            config_dir=config_dir,
+            sample_size=calibration_sample_size,
+        )
+        temperature = fit_temperature(probs_calib=probs_calib, labels_calib=labels_calib_codes)
+        calibrated_probs = apply_calibration(
+            probs_test,
+            "temperature_scaling",
+            calibrator_params={"temperature": float(temperature)},
+        )
+        calibrated_eval = _preds_and_conf_from_probs(
+            probs=calibrated_probs,
+            task=task,
+        )
+        metrics["ece_calibrated"] = expected_calibration_error(
+            y_true=y_true,
+            y_pred=calibrated_eval["y_pred"],
+            confidences=calibrated_eval["confidences"],
+            n_bins=n_bins,
+        )
+        metrics["temperature"] = float(temperature)
+        _save_calibration_probs(run_dir=run_dir, probs_calib=probs_calib, labels_calib=labels_calib_codes)
 
     # Generate reliability diagram
     correctness = [1 if t == p else 0 for t, p in zip(y_true, y_pred, strict=True)]
@@ -191,6 +234,10 @@ def run_single(config: dict, run_id: str | None = None) -> str:
         dataset_source=dataset_source,
         inference_mode=inference_mode,
     )
+    if "temperature" in metrics:
+        metadata["temperature"] = metrics["temperature"]
+        metadata["calibration_method"] = calibration_method
+        metadata["calibration_sample_size"] = calibration_sample_size
     save_metadata(run_dir, metadata)
 
     return run_id
@@ -207,3 +254,57 @@ def _infer_dataset_source(config: dict, path_or_hf_id: str | None) -> str:
         return f"hf://{path_or_hf_id}"
     dataset_id = config.get("dataset", {}).get("dataset_id", "unknown")
     return f"{dataset_id}_tiny"
+
+
+def _prediction_probs(*, predictions: list[dict]) -> list[dict]:
+    return [dict(row["probabilities"]) for row in predictions]
+
+
+def _preds_and_conf_from_probs(*, probs: list[dict], task: str) -> dict:
+    code_to_label = {v: k for k, v in get_label_codes(task).items()}
+    y_pred = []
+    confidences = []
+    for row in probs:
+        pred_code = max(row, key=row.get)
+        y_pred.append(code_to_label[pred_code])
+        confidences.append(float(row[pred_code]))
+    return {"y_pred": y_pred, "confidences": confidences}
+
+
+def _load_calibration_probabilities(
+    *,
+    config: dict,
+    model,
+    tokenizer,
+    task: str,
+    template_id: str,
+    config_dir: str | None,
+    sample_size: int,
+) -> tuple[list[dict], list[str]]:
+    dataset_cfg = config.get("dataset", {})
+    examples_calib = _load_dataset_examples(
+        dataset_cfg,
+        sample_size=sample_size,
+        split=dataset_cfg.get("splits", {}).get("val", "validation"),
+    )
+    outputs_calib = run_eval(
+        model=model,
+        tokenizer=tokenizer,
+        dataset=examples_calib,
+        template_id=template_id,
+        task=task,
+        config_dir=config_dir,
+        run_generation_sanity_check=False,
+    )
+    label_to_code = get_label_codes(task)
+    probs_calib = [dict(row["probabilities"]) for row in outputs_calib["predictions"]]
+    labels_calib = [label_to_code[label] for label in outputs_calib["y_true"]]
+    return probs_calib, labels_calib
+
+
+def _save_calibration_probs(*, run_dir: Path, probs_calib: list[dict], labels_calib: list[str]) -> None:
+    path = run_dir / "calibration_probs.jsonl"
+    with path.open("w", encoding="utf-8") as f:
+        for i in range(len(probs_calib)):
+            row = {"index": i, "true_code": labels_calib[i], "probabilities": probs_calib[i]}
+            f.write(json.dumps(row) + "\n")

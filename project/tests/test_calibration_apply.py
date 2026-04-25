@@ -6,6 +6,7 @@ import pytest
 
 from reliability_eval.calibration.apply import apply_calibration
 from reliability_eval.calibration.temperature_scaling import fit_temperature
+from reliability_eval.metrics.calibration import expected_calibration_error_from_confidence
 
 
 def test_apply_none_returns_copy():
@@ -84,3 +85,30 @@ def test_fit_temperature_single_row():
 def test_fit_temperature_length_mismatch():
     with pytest.raises(ValueError, match="mismatch"):
         fit_temperature([{"A": 1.0}], [])
+
+
+def test_temperature_one_preserves_ece():
+    probs = [
+        {"A": 0.9, "B": 0.1},
+        {"A": 0.2, "B": 0.8},
+        {"A": 0.6, "B": 0.4},
+    ]
+    correctness = [1, 1, 0]
+    conf_before = [max(row.values()) for row in probs]
+    ece_before = expected_calibration_error_from_confidence(
+        confidences=conf_before,
+        correctness=correctness,
+        n_bins=5,
+    )
+    scaled = apply_calibration(
+        probs,
+        "temperature_scaling",
+        calibrator_params={"temperature": 1.0},
+    )
+    conf_after = [max(row.values()) for row in scaled]
+    ece_after = expected_calibration_error_from_confidence(
+        confidences=conf_after,
+        correctness=correctness,
+        n_bins=5,
+    )
+    assert ece_after == pytest.approx(ece_before)

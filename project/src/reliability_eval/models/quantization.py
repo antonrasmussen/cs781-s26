@@ -42,3 +42,23 @@ def apply_quantization(model, mode: str):
     """
     _ = mode
     return model
+
+
+def assert_quantized_footprint(model, *, precision: str, fp16_reference_bytes: int | None = None):
+    """Sanity-check quantized model footprint to catch silent FP16 fallback."""
+    try:
+        footprint = int(model.get_memory_footprint())
+    except Exception as e:  # pragma: no cover - model impl dependent
+        raise RuntimeError("Could not read model memory footprint for quantization check") from e
+
+    if footprint <= 0:
+        raise RuntimeError("Invalid model memory footprint reported for quantized model")
+
+    if precision == "int8" and fp16_reference_bytes is not None:
+        # INT8 should be materially smaller than FP16 weights in practice.
+        if footprint >= int(0.80 * fp16_reference_bytes):
+            raise RuntimeError(
+                "INT8 model footprint is too close to FP16 reference; "
+                "possible silent fallback to higher precision"
+            )
+    return footprint
