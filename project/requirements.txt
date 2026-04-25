@@ -1,7 +1,7 @@
 # Dependencies are defined in pyproject.toml. Install editable package + dev tools:
 #   pip install -e ".[dev]"
 #
-# Optional: pip install -e ".[flyte]" for Flyte sandbox orchestration
+# For CUDA experiments:
+#   pip install -e ".[gpu,dev]"
 #
-# TODO: add when implementing (torch, transformers, accelerate, bitsandbytes,
-# datasets, numpy, pandas, scikit-learn, matplotlib, pydantic, pyarrow)
+# Optional: pip install -e ".[flyte]" for Flyte sandbox orchestration

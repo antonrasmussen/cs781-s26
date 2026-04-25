@@ -27,6 +27,9 @@ gpu = [
     "sentencepiece>=0.2",
 ]
 
+[project.scripts]
+reliability-eval = "reliability_eval.cli:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
