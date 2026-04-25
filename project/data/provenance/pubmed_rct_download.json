@@ -1,0 +1,56 @@
+{
+  "dataset_id": "armanc/pubmed-rct20k",
+  "hf_revision": "main",
+  "download_date_utc": "2026-04-25T01:33:08.773435+00:00",
+  "split_sizes": {
+    "train": 176642,
+    "validation": 29672,
+    "test": 29578
+  },
+  "field_names_observed": [
+    "abstract_id",
+    "label",
+    "sentence_id",
+    "text"
+  ],
+  "status": "ok",
+  "error": null,
+  "samples_normalized_first_two_per_split": {
+    "train": [
+      {
+        "example_id": "24293578_0",
+        "text": "To investigate the efficacy of @ weeks of daily low-dose oral prednisolone in improving pain , mobility , and systemic low-grade inflammation in the short term and whether the effect would be sustained at @ weeks in older adults with moderate to severe knee osteoarthritis ( OA ) .",
+        "label": "OBJECTIVE"
+      },
+      {
+        "example_id": "24293578_1",
+        "text": "A total of @ patients with primary knee OA were randomized @:@ ; @ received @ mg/day of prednisolone and @ received placebo for @ weeks .",
+        "label": "METHODS"
+      }
+    ],
+    "validation": [
+      {
+        "example_id": "24290286_0",
+        "text": "IgE sensitization to Aspergillus fumigatus and a positive sputum fungal culture result are common in patients with refractory asthma .",
+        "label": "BACKGROUND"
+      },
+      {
+        "example_id": "24290286_1",
+        "text": "It is not clear whether these patients would benefit from antifungal treatment .",
+        "label": "BACKGROUND"
+      }
+    ],
+    "test": [
+      {
+        "example_id": "24845963_0",
+        "text": "This study analyzed liver function abnormalities in heart failure patients admitted with severe acute decompensated heart failure ( ADHF ) .",
+        "label": "BACKGROUND"
+      },
+      {
+        "example_id": "24845963_1",
+        "text": "A post hoc analysis was conducted with the use of data from the Evaluation Study of Congestive Heart Failure and Pulmonary Artery Catheterization Effectiveness ( ESCAPE ) .",
+        "label": "RESULTS"
+      }
+    ]
+  }
+}

@@ -19,3 +19,29 @@ templates:
       {legend}
       Input sentence: {text}
       Return only one letter.
+  - id: pubmed_t3
+    body: |
+      You are labeling one sentence from a biomedical abstract.
+      Categories (numbered — ignore letter order):
+      1) BACKGROUND  2) OBJECTIVE  3) METHODS  4) RESULTS  5) CONCLUSIONS
+      Map your answer to letters A–E in the same order as above (A=first category, …, E=fifth).
+      Sentence: {text}
+      Output format: one uppercase letter A through E only, no punctuation.
+  - id: pubmed_t4
+    body: |
+      {legend}
+      Which single label letter best describes the rhetorical role of the next sentence?
+      Sentence:
+      {text}
+      Respond on the first line with exactly one uppercase letter (A–E). Do not repeat the legend.
+  - id: pubmed_t5
+    body: |
+      Read the sentence, then choose ONE role code from the list below.
+      List order is intentionally not alphabetical — read all lines before answering.
+      E=CONCLUSIONS
+      D=RESULTS
+      C=METHODS
+      B=OBJECTIVE
+      A=BACKGROUND
+      Sentence: {text}
+      Answer with a single letter A–E (role code only).

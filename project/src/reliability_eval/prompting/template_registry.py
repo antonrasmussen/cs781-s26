@@ -26,6 +26,32 @@ _PUBMED_FALLBACK: dict[str, str] = {
         "Input sentence: {text}\n"
         "Return only one letter."
     ),
+    "pubmed_t3": (
+        "You are labeling one sentence from a biomedical abstract.\n"
+        "Categories (numbered — ignore letter order):\n"
+        "1) BACKGROUND  2) OBJECTIVE  3) METHODS  4) RESULTS  5) CONCLUSIONS\n"
+        "Map your answer to letters A–E in the same order as above (A=first category, …, E=fifth).\n"
+        "Sentence: {text}\n"
+        "Output format: one uppercase letter A through E only, no punctuation."
+    ),
+    "pubmed_t4": (
+        "{legend}\n"
+        "Which single label letter best describes the rhetorical role of the next sentence?\n"
+        "Sentence:\n"
+        "{text}\n"
+        "Respond on the first line with exactly one uppercase letter (A–E). Do not repeat the legend."
+    ),
+    "pubmed_t5": (
+        "Read the sentence, then choose ONE role code from the list below.\n"
+        "List order is intentionally not alphabetical — read all lines before answering.\n"
+        "E=CONCLUSIONS\n"
+        "D=RESULTS\n"
+        "C=METHODS\n"
+        "B=OBJECTIVE\n"
+        "A=BACKGROUND\n"
+        "Sentence: {text}\n"
+        "Answer with a single letter A–E (role code only)."
+    ),
 }
 
 

@@ -1,0 +1,16 @@
+{
+  "source": "hf://armanc/pubmed-rct20k@main",
+  "split": "test",
+  "seed": 42,
+  "method": "stratified_40_per_class_after_shuffle_per_class",
+  "n_rows": 200,
+  "per_class_counts": {
+    "BACKGROUND": 40,
+    "CONCLUSIONS": 40,
+    "METHODS": 40,
+    "OBJECTIVE": 40,
+    "RESULTS": 40
+  },
+  "created_date_utc": "2026-04-25T01:33:26.747407+00:00",
+  "output_path": "data/samples/pubmed_rct_dev200.jsonl"
+}

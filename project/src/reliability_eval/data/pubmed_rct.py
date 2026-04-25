@@ -34,7 +34,16 @@ def _normalize_record(record: Dict, idx: int) -> Dict[str, str]:
         "CONCLUSIONS": "CONCLUSIONS",
     }
     label = label_aliases.get(raw_label.upper(), raw_label.upper())
-    example_id = str(record.get("example_id", f"pubmed_{idx}"))
+    ex = record.get("example_id")
+    if ex is not None and str(ex).strip():
+        example_id = str(ex).strip()
+    else:
+        aid = record.get("abstract_id")
+        sid = record.get("sentence_id")
+        if aid is not None and sid is not None:
+            example_id = f"{aid}_{sid}"
+        else:
+            example_id = f"pubmed_{idx}"
     if not text:
         raise ValueError(f"Empty text in record {idx}")
     valid_labels = set(get_label_codes("pubmed_rct").keys())
@@ -91,7 +100,13 @@ def _read_hf_split(
             }
             label = idx_to_label.get(label, str(label))
         ex = _normalize_record(
-            {"example_id": record.get("example_id", f"pubmed_{idx}"), "text": text, "label": label},
+            {
+                "example_id": record.get("example_id"),
+                "abstract_id": record.get("abstract_id"),
+                "sentence_id": record.get("sentence_id"),
+                "text": text,
+                "label": label,
+            },
             idx,
         )
         examples.append(ex)

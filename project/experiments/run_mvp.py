@@ -22,7 +22,12 @@ from reliability_eval.io.paths import make_run_id
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run tiny PubMed MVP slice.")
     parser.add_argument("--sample-size", type=int, default=8, help="Number of examples from tiny sample.")
-    parser.add_argument("--template-id", type=str, default="pubmed_t1", choices=["pubmed_t1", "pubmed_t2"])
+    parser.add_argument(
+        "--template-id",
+        type=str,
+        default="pubmed_t1",
+        choices=["pubmed_t1", "pubmed_t2", "pubmed_t3", "pubmed_t4", "pubmed_t5"],
+    )
     parser.add_argument(
         "--profile",
         type=str,

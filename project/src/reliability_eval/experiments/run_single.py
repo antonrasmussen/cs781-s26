@@ -12,6 +12,7 @@ from pathlib import Path
 from reliability_eval.calibration.apply import apply_calibration
 from reliability_eval.calibration.temperature_scaling import fit_temperature
 from reliability_eval.data.dataset_registry import get_loader
+from reliability_eval.data.splits import make_calibration_split
 from reliability_eval.inference.batch_runner import run_eval
 from reliability_eval.inference.score_class_codes import mock_score_example
 from reliability_eval.io.artifact_store import (
@@ -282,11 +283,23 @@ def _load_calibration_probabilities(
     sample_size: int,
 ) -> tuple[list[dict], list[str]]:
     dataset_cfg = config.get("dataset", {})
-    examples_calib = _load_dataset_examples(
+    splits_cfg = dataset_cfg.get("splits") or {}
+    val_split = splits_cfg.get("val", "validation")
+    cal_frac = float(splits_cfg.get("calibration_fraction", 0.15))
+
+    examples_val = _load_dataset_examples(
         dataset_cfg,
-        sample_size=sample_size,
-        split=dataset_cfg.get("splits", {}).get("val", "validation"),
+        sample_size=None,
+        split=val_split,
     )
+    partitioned = make_calibration_split(
+        examples_val,
+        seed=42,
+        calibration_fraction=cal_frac,
+    )
+    examples_calib = partitioned["calibration"]
+    if sample_size is not None and len(examples_calib) > int(sample_size):
+        examples_calib = examples_calib[: int(sample_size)]
     outputs_calib = run_eval(
         model=model,
         tokenizer=tokenizer,

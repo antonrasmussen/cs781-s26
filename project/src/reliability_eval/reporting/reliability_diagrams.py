@@ -36,6 +36,9 @@ def plot_reliability(
     out.parent.mkdir(parents=True, exist_ok=True)
 
     try:
+        import matplotlib
+
+        matplotlib.use("Agg")
         import matplotlib.pyplot as plt  # type: ignore
     except ImportError:
         _write_placeholder_png(out)
