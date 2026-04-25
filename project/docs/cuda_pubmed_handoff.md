@@ -26,6 +26,7 @@ Known bad prior run:
 - Run artifact: `artifacts/runs/mvp_pubmed_reliabili_20260423T034428_611367Z_603ebe/`
 - Template: `pubmed_t1`
 - Inference mode: `real_inference`
+- Dataset: `data/samples/pubmed_rct_tiny.jsonl` (n=8)
 - Result: every prediction was `A` / `BACKGROUND`
 
 The first gate is therefore a non-collapsed `pubmed_t5` real-inference run on `dev200`.
@@ -54,27 +55,13 @@ Expected environment:
 Use local `dev200` first. It is deterministic, balanced 40 per class, already normalized, and avoids HF/network/sample-order surprises while checking collapse.
 
 ```bash
-python - <<'PY'
-from pathlib import Path
-
-from reliability_eval.config.resolve import resolve_mvp_config
-from reliability_eval.experiments.run_single import run_single
-from reliability_eval.io.paths import make_run_id
-
-root = Path.cwd()
-config = resolve_mvp_config(
-    root,
-    sample_size=200,
-    template_id="pubmed_t5",
-    execution_profile="local_real",
-)
-config["dataset"]["path_or_hf_id"] = str(root / "data/samples/pubmed_rct_dev200.jsonl")
-config["calibration"] = {"calibration": "none"}
-config["sanity_check_generation"] = True
-
-run_id = run_single(config=config, run_id=make_run_id(prefix="smoke_pubmed_t5_dev200"))
-print(Path(config["artifact_root"]) / run_id)
-PY
+PYTHONPATH=src python -m reliability_eval.cli run \
+  --profile local_real \
+  --dataset pubmed_rct_dev200 \
+  --precision fp16 \
+  --template pubmed_t5 \
+  --calibration none \
+  --sample-size 200
 ```
 
 Save the printed run directory path as `RUN_DIR`.
@@ -85,25 +72,10 @@ Run this immediately after the smoke run:
 
 ```bash
 export RUN_DIR=<printed-run-directory>
-
-python - <<'PY'
-import json
-import os
-from collections import Counter
-from pathlib import Path
-
-run_dir = Path(os.environ["RUN_DIR"])
-rows = [json.loads(line) for line in (run_dir / "predictions.jsonl").open()]
-metrics = json.loads((run_dir / "metrics.json").read_text())
-
-print("n =", len(rows))
-print("gold =", Counter(r["true_label"] for r in rows))
-print("pred =", Counter(r["predicted_label"] for r in rows))
-print("macro_f1 =", metrics.get("macro_f1"))
-print("accuracy =", metrics.get("accuracy"))
-print("ece =", metrics.get("ece"))
-PY
+python scripts/inspect_run.py --run-dir "$RUN_DIR"
 ```
+
+If needed, the equivalent inline Python check remains available in git history.
 
 Pass condition:
 
@@ -112,6 +84,8 @@ Pass condition:
 - Predicted labels use several classes, not only `BACKGROUND`.
 - Uncalibrated `macro_f1` is greater than `0.20`.
 - Calibration is still `none`.
+
+Note: the known-bad n=8 collapse artifact may not be present on fresh clones because run outputs are local and ignored by default. If needed, reproduce collapse diagnostics with `scripts/diagnose_background_collapse.py`.
 
 If this fails because predictions are still collapsed, do not run calibration, INT8, INT4, or full-test evaluation.
 

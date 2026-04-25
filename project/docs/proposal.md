@@ -1,3 +1,5 @@
+> Status note (added 2026-04-24): This document is the original course proposal as submitted. Current operational status is PubMed-first with MedNLI blocked until a lawful configured data path exists in-repo. For live status and operator guidance, use `docs/data_inventory.md` and `docs/cuda_pubmed_handoff.md`.
+
 # CS781 – AI for Health Sciences
 
 ## Course Project Proposal

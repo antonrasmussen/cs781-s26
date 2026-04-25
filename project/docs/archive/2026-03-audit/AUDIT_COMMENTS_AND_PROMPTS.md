@@ -1,3 +1,5 @@
+> Historical snapshot (2026-03-24 audit period). Do not treat this file as current state; use `docs/data_inventory.md` and `docs/cuda_pubmed_handoff.md` as source of truth.
+
 # Audit: Comments, TODOs, and Prompt Templates
 
 ## Inline Comments and TODOs

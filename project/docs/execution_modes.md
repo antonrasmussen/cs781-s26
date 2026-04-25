@@ -2,14 +2,25 @@
 
 The same codebase supports three execution modes. All use the same plain-Python pipeline (`run_single`) and shared artifact contract.
 
+For CUDA PubMed handoff work, use the canonical first-run command in `docs/cuda_pubmed_handoff.md` before running generic sweeps.
+
 ## 1. Local (non-Flyte)
 
 Run experiments directly on your machine. No Flyte, Kubernetes, or remote control plane.
 
 ```bash
-# Single run
+# First CUDA gate (canonical)
+PYTHONPATH=src python -m reliability_eval.cli run \
+  --profile local_real \
+  --dataset pubmed_rct_dev200 \
+  --precision fp16 \
+  --template pubmed_t5 \
+  --calibration none \
+  --sample-size 200
+
+# Other local runs
 python experiments/run_mvp.py --sample-size 8 --template-id pubmed_t1
-python experiments/run_local.py --sweep mvp_pubmed --sample-size 8
+python experiments/run_local.py --sweep mvp_pubmed --sample-size 8 --profile local_real
 
 # Grid sweep
 python experiments/run_grid.py --sweep mvp_pubmed --dry-run   # preview
@@ -58,7 +69,7 @@ python experiments/run_grid.py --sweep mvp_pubmed --profile odu
 PYTHONPATH=src python -m reliability_eval.cli sweep --sweep mvp_pubmed --profile odu
 ```
 
-The `odu` profile (`configs/execution/odu.yaml`) sets `inference_mode: real` and larger batch size. The same `run_single` pipeline executes; only config and environment differ.
+The `odu` profile (`configs/execution/odu.yaml`) sets `inference_mode: real_inference` and larger batch size. The same `run_single` pipeline executes; only config and environment differ.
 
 ### Design principle
 

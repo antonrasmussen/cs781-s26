@@ -11,13 +11,15 @@ Course materials for Spring 2026.
 | `notebooks/` | Jupyter notebooks (e.g., Deep Learning in Genomics primer) |
 | `notes/` | Course notes and discussion write-ups |
 | `papers/` | Research papers (PDFs); see [papers/README.md](papers/README.md) for a list with titles, authors, page counts, years, and one-sentence summaries |
-| `project/` | Course project proposal and build script |
+| `project/` | Active research code and course project materials |
 | `slides/` | Lecture slides |
 
 ## Project
 
-The course project proposal is in `project/project_topics.md`. To regenerate the PDF:
+The course project proposal source is in `project/docs/proposal.md`. For day-to-day experiment work, start with `project/README.md`. For CUDA handoff operations, start with `project/docs/cuda_pubmed_handoff.md`.
+
+To regenerate the proposal PDF:
 
 ```bash
-cd project && python build_pdf.py
+cd project && python docs/scripts/build_pdf.py
 ```

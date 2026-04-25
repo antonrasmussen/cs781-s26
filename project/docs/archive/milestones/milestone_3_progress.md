@@ -1,3 +1,5 @@
+> Status note (added 2026-04-24): This is an archived milestone snapshot. For current operator-facing status and run instructions, use `docs/cuda_pubmed_handoff.md` and `docs/data_inventory.md`.
+
 # CS781 - AI for Health Sciences
 
 ## Course Project Milestone 3: Research Progress Checkpoint
