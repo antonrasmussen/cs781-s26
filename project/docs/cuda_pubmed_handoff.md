@@ -1,0 +1,181 @@
+# CUDA handoff: PubMed first experiment
+
+Use this when moving to a CUDA machine. The goal is to get from the current data inventory to the first serious PubMed experiment without wasting time on already-solved data work.
+
+## Current state
+
+Already ready:
+
+- PubMed 20k RCT HF access is verified: `scripts/verify_hf_access.py`.
+- Full PubMed split provenance is recorded: `data/provenance/pubmed_rct_download.json`.
+- Deterministic balanced test-derived subset exists: `data/samples/pubmed_rct_dev200.jsonl`.
+- Subset provenance exists: `data/samples/pubmed_rct_dev200.provenance.json`.
+- PubMed loader supports HF and local JSONL: `src/reliability_eval/data/pubmed_rct.py`.
+- PubMed prompt templates `pubmed_t1` through `pubmed_t5` exist: `configs/prompts/pubmed_templates.yaml`.
+- BioMistral single-token label-code validation has already passed per `docs/data_inventory.md`.
+- Real inference path exists through `src/reliability_eval/experiments/run_single.py`.
+
+Do not spend CUDA time re-solving data access unless a command actually fails.
+
+## Actual blocker
+
+The current blocker is not data. It is verifying that real FP16 inference with a revised prompt does not collapse to `BACKGROUND`.
+
+Known bad prior run:
+
+- Run artifact: `artifacts/runs/mvp_pubmed_reliabili_20260423T034428_611367Z_603ebe/`
+- Template: `pubmed_t1`
+- Inference mode: `real_inference`
+- Result: every prediction was `A` / `BACKGROUND`
+
+The first gate is therefore a non-collapsed `pubmed_t5` real-inference run on `dev200`.
+
+## CUDA setup
+
+From repo root:
+
+```bash
+cd /path/to/cs781-s26/project
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[gpu,dev]"
+export PYTHONPATH=src
+export RELIABILITY_ARTIFACT_ROOT=artifacts/runs
+```
+
+Expected environment:
+
+- Linux CUDA host.
+- Enough VRAM for BioMistral-7B FP16, preferably at least 16 GB.
+- If using ODU, use the same repo commands; ODU is plain remote compute, not a different pipeline.
+
+## Run first: FP16 real inference on dev200
+
+Use local `dev200` first. It is deterministic, balanced 40 per class, already normalized, and avoids HF/network/sample-order surprises while checking collapse.
+
+```bash
+python - <<'PY'
+from pathlib import Path
+
+from reliability_eval.config.resolve import resolve_mvp_config
+from reliability_eval.experiments.run_single import run_single
+from reliability_eval.io.paths import make_run_id
+
+root = Path.cwd()
+config = resolve_mvp_config(
+    root,
+    sample_size=200,
+    template_id="pubmed_t5",
+    execution_profile="local_real",
+)
+config["dataset"]["path_or_hf_id"] = str(root / "data/samples/pubmed_rct_dev200.jsonl")
+config["calibration"] = {"calibration": "none"}
+config["sanity_check_generation"] = True
+
+run_id = run_single(config=config, run_id=make_run_id(prefix="smoke_pubmed_t5_dev200"))
+print(Path(config["artifact_root"]) / run_id)
+PY
+```
+
+Save the printed run directory path as `RUN_DIR`.
+
+## Inspect the collapse gate
+
+Run this immediately after the smoke run:
+
+```bash
+export RUN_DIR=<printed-run-directory>
+
+python - <<'PY'
+import json
+import os
+from collections import Counter
+from pathlib import Path
+
+run_dir = Path(os.environ["RUN_DIR"])
+rows = [json.loads(line) for line in (run_dir / "predictions.jsonl").open()]
+metrics = json.loads((run_dir / "metrics.json").read_text())
+
+print("n =", len(rows))
+print("gold =", Counter(r["true_label"] for r in rows))
+print("pred =", Counter(r["predicted_label"] for r in rows))
+print("macro_f1 =", metrics.get("macro_f1"))
+print("accuracy =", metrics.get("accuracy"))
+print("ece =", metrics.get("ece"))
+PY
+```
+
+Pass condition:
+
+- `metadata.json` says `inference_mode: real_inference`.
+- `predictions.jsonl` has 200 rows.
+- Predicted labels use several classes, not only `BACKGROUND`.
+- Uncalibrated `macro_f1` is greater than `0.20`.
+- Calibration is still `none`.
+
+If this fails because predictions are still collapsed, do not run calibration, INT8, INT4, or full-test evaluation.
+
+## If pubmed_t5 still collapses
+
+Compare only prompt behavior on the same `dev200` slice:
+
+- `pubmed_t3`
+- `pubmed_t4`
+- `pubmed_t5`
+
+Use the same script above and change only `template_id`.
+
+Purpose: find whether any current prompt avoids collapse. Do not treat small metric differences as experiment results yet.
+
+Relevant files:
+
+- `configs/prompts/pubmed_templates.yaml`
+- `notebooks/02_prompt_template_dev.ipynb`
+- `scripts/diagnose_background_collapse.py`
+
+## After the gate passes
+
+The first serious experiment should be:
+
+- Dataset: PubMed only.
+- Data source: start with `data/samples/pubmed_rct_dev200.jsonl`.
+- Model: `BioMistral/BioMistral-7B`.
+- Precision: FP16.
+- Template: the first non-collapsing template, likely `pubmed_t5`.
+- Calibration: `none`.
+- Sample size: 200.
+
+Only after this run is sane should you scale to HF-hosted PubMed test or full test.
+
+Use HF-hosted PubMed when the pipeline is stable and you want provenance-aligned full split loading from `configs/datasets/pubmed_rct.yaml`. Do not start with full test; it is too expensive if the prompt is still broken.
+
+## Ignore for now
+
+- MedNLI experiments.
+- Temperature scaling.
+- Isotonic calibration.
+- INT8 and INT4 runs.
+- ACE/bootstrap confidence intervals.
+- Full prompt-stability sweeps.
+- Full test split.
+
+MedNLI is blocked until there is a lawful concrete data path. Current repo state:
+
+- `configs/datasets/mednli.yaml` has `path_or_hf_id: null`.
+- `src/reliability_eval/data/mednli.py` raises `NotImplementedError`.
+- `configs/prompts/mednli_templates.yaml` has placeholder template IDs without bodies.
+
+Document MedNLI as blocked; do not pretend access exists.
+
+## Ready for first experiment means
+
+You are ready to begin actual experiments when you have one artifact under `artifacts/runs/` where:
+
+- `metadata.json` records `real_inference`.
+- `resolved_config.yaml` points to PubMed, FP16, calibration none, and the chosen non-collapsing template.
+- `dataset_source` is `data/samples/pubmed_rct_dev200.jsonl` or equivalent local path.
+- `predictions.jsonl` has 200 PubMed rows.
+- Prediction counts are not collapsed to one class.
+- `metrics.json` has uncalibrated `macro_f1 > 0.20`.
+
+Until then, the work is still prompt/inference validation, not experiment execution.
