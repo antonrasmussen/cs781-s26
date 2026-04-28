@@ -135,39 +135,39 @@ def run_single(config: dict, run_id: str | None = None) -> str:
         if start_idx == 0:
             with predictions_path.open("w", encoding="utf-8"):
                 pass
-        for i, ex in enumerate(examples_remaining, start=1):
-            prompt = render(
-                template_id=template_id,
-                task=task,
-                text=ex["text"],
-                label_codes=label_codes,
-                config_dir=config_dir,
-            )
-            result = mock_score_example(
-                prompt=prompt,
-                task=task,
-                example_id=ex["example_id"],
-                true_label=ex["label"],
-            )
-            y_true.append(ex["label"])
-            y_pred.append(result["predicted_label"])
-            confidences.append(float(result["confidence"]))
-            row = {
-                "example_id": ex["example_id"],
-                "text": ex["text"],
-                "true_label": ex["label"],
-                "template_id": template_id,
-                "prompt": prompt,
-                "predicted_label": result["predicted_label"],
-                "predicted_code": result["predicted_code"],
-                "confidence": result["confidence"],
-                "probabilities": result["probabilities"],
-            }
-            predictions.append(row)
-            with predictions_path.open("a", encoding="utf-8") as f:
-                f.write(json.dumps(row) + "\n")
+        with predictions_path.open("a", encoding="utf-8") as pred_file:
+            for i, ex in enumerate(examples_remaining, start=1):
+                prompt = render(
+                    template_id=template_id,
+                    task=task,
+                    text=ex["text"],
+                    label_codes=label_codes,
+                    config_dir=config_dir,
+                )
+                result = mock_score_example(
+                    prompt=prompt,
+                    task=task,
+                    example_id=ex["example_id"],
+                    true_label=ex["label"],
+                )
+                y_true.append(ex["label"])
+                y_pred.append(result["predicted_label"])
+                confidences.append(float(result["confidence"]))
+                row = {
+                    "example_id": ex["example_id"],
+                    "text": ex["text"],
+                    "true_label": ex["label"],
+                    "template_id": template_id,
+                    "prompt": prompt,
+                    "predicted_label": result["predicted_label"],
+                    "predicted_code": result["predicted_code"],
+                    "confidence": result["confidence"],
+                    "probabilities": result["probabilities"],
+                }
+                predictions.append(row)
+                pred_file.write(json.dumps(row) + "\n")
                 if flush_every > 0 and (i % flush_every == 0):
-                    f.flush()
+                    pred_file.flush()
     elif inference_mode == "real_inference":
         model_cfg = config.get("model", {})
         precision_cfg = config.get("precision", {})

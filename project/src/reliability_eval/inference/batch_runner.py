@@ -5,6 +5,7 @@ TODO: Batch inference; deterministic (temperature=0); save predictions.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import warnings
 
@@ -52,42 +53,42 @@ def run_eval(
         with open(path, "w", encoding="utf-8"):
             pass
 
-    for i, ex in enumerate(dataset, start=1):
-        prompt = render(
-            template_id=template_id,
-            task=task,
-            text=ex["text"],
-            label_codes=label_codes,
-            config_dir=config_dir,
-        )
-        result = score_example(
-            model=model,
-            tokenizer=tokenizer,
-            prompt=prompt,
-            code_token_ids=code_token_ids,
-            task=task,
-        )
+    with (open(path, "a", encoding="utf-8") if path else contextlib.nullcontext()) as pred_file:
+        for i, ex in enumerate(dataset, start=1):
+            prompt = render(
+                template_id=template_id,
+                task=task,
+                text=ex["text"],
+                label_codes=label_codes,
+                config_dir=config_dir,
+            )
+            result = score_example(
+                model=model,
+                tokenizer=tokenizer,
+                prompt=prompt,
+                code_token_ids=code_token_ids,
+                task=task,
+            )
 
-        y_true.append(ex["label"])
-        y_pred.append(result["predicted_label"])
-        confidences.append(float(result["confidence"]))
-        row = {
-            "example_id": ex["example_id"],
-            "text": ex["text"],
-            "true_label": ex["label"],
-            "template_id": template_id,
-            "prompt": prompt,
-            "predicted_label": result["predicted_label"],
-            "predicted_code": result["predicted_code"],
-            "confidence": result["confidence"],
-            "probabilities": result["probabilities"],
-        }
-        predictions.append(row)
-        if path:
-            with open(path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(row) + "\n")
+            y_true.append(ex["label"])
+            y_pred.append(result["predicted_label"])
+            confidences.append(float(result["confidence"]))
+            row = {
+                "example_id": ex["example_id"],
+                "text": ex["text"],
+                "true_label": ex["label"],
+                "template_id": template_id,
+                "prompt": prompt,
+                "predicted_label": result["predicted_label"],
+                "predicted_code": result["predicted_code"],
+                "confidence": result["confidence"],
+                "probabilities": result["probabilities"],
+            }
+            predictions.append(row)
+            if pred_file is not None:
+                pred_file.write(json.dumps(row) + "\n")
                 if flush_every > 0 and (i % flush_every == 0):
-                    f.flush()
+                    pred_file.flush()
 
     return {
         "predictions": predictions,
