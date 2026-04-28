@@ -4,7 +4,8 @@ Matrix completeness note: computed from the finalized partial `n=2000` matrix (`
 Missing cells are `int8 / pubmed_t5` and `int4 / pubmed_t2..t5` due to runtime failures.
 
 ## Primary: |Delta_ECE| > |Delta_F1| at INT4 vs FP16
-- point=0.143523, ci=[0.143523, 0.143523]
+- Statistic: `(|Delta_ECE| - |Delta_F1|)` (absolute deltas, per preregistration)
+- point=0.098465, ci=[0.098465, 0.098465]
 - Decision (available evidence): **supported** for the completed comparison (`int4 / pubmed_t1` vs `fp16 / pubmed_t1`) because the CI is positive and excludes 0.
 - Caveat: only one INT4 template completed at `n=2000`; treat this as conditional support under partial matrix completeness.
 

@@ -171,8 +171,8 @@ def _hypothesis_rows(rows: list[dict], artifact_root: Path) -> str:
         int4 = by_key.get(("int4", template))
         if not int4:
             continue
-        d_ece = abs(float(int4["ece"]) - float(fp16["ece"])) / max(float(fp16["ece"]), 1e-12)
-        d_f1 = abs(float(fp16["macro_f1"]) - float(int4["macro_f1"])) / max(float(fp16["macro_f1"]), 1e-12)
+        d_ece = abs(float(int4["ece"]) - float(fp16["ece"]))
+        d_f1 = abs(float(fp16["macro_f1"]) - float(int4["macro_f1"]))
         deltas.append(d_ece - d_f1)
     primary = paired_bootstrap_ci(deltas, n_resamples=1000, seed=42) if deltas else None
 
