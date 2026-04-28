@@ -98,14 +98,11 @@ def fleiss_kappa_bootstrap_ci(
     for _ in range(n_resamples):
         idxs = [rng.randrange(n_subjects) for _ in range(n_subjects)]
         boot = [[row[i] for i in idxs] for row in rows]
-        try:
-            samples.append(fleiss_kappa(boot))
-        except ValueError as e:
-            if "at least two distinct categories" in str(e):
-                # Degenerate resample with one class only; treat as perfect agreement.
-                samples.append(1.0)
-            else:
-                raise
+        if len({label for row in boot for label in row}) < 2:
+            # Degenerate resample with one class only; treat as perfect agreement.
+            samples.append(1.0)
+            continue
+        samples.append(fleiss_kappa(boot))
     samples.sort()
     lo_idx = int(0.025 * (n_resamples - 1))
     hi_idx = int(0.975 * (n_resamples - 1))
