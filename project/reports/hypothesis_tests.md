@@ -1,0 +1,17 @@
+# Hypothesis Tests
+
+Matrix completeness note: computed from the finalized partial `n=2000` matrix (`10/15` cells).
+Missing cells are `int8 / pubmed_t5` and `int4 / pubmed_t2..t5` due to runtime failures.
+
+## Primary: |Delta_ECE| > |Delta_F1| at INT4 vs FP16
+- point=0.143523, ci=[0.143523, 0.143523]
+- Decision (available evidence): **supported** for the completed comparison (`int4 / pubmed_t1` vs `fp16 / pubmed_t1`) because the CI is positive and excludes 0.
+- Caveat: only one INT4 template completed at `n=2000`; treat this as conditional support under partial matrix completeness.
+
+## Secondary: temperature scaling recovery <= 110% FP16 ECE
+- Decision: **not evaluated** on the `n=2000` matrix because post-hoc calibrated counterparts were not generated for the finalized 10-run evidence set.
+
+## Tertiary: Fleiss' kappa degradation and non-recovery
+- fp16: kappa=-0.182616, ci=[-0.186162, -0.178843]
+- int8: kappa=-0.049778, ci=[-0.057222, -0.041049]
+- Decision: **descriptive only**. INT4 lacks template-complete coverage on `n=2000`, so the preregistered INT4-vs-FP16 non-recovery claim cannot be formally tested.

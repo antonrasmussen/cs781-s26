@@ -64,16 +64,23 @@ PYTHONPATH=src python -m reliability_eval.cli run \
   --sample-size 200
 ```
 
-Save the printed run directory path as `RUN_DIR`.
+The CLI prints a `run_id`. Resolve it to a run directory as:
+
+```bash
+export RUN_ID=<printed-run-id>
+export RUN_DIR="${RELIABILITY_ARTIFACT_ROOT:-artifacts/runs}/${RUN_ID}"
+```
 
 ## Inspect the collapse gate
 
 Run this immediately after the smoke run:
 
 ```bash
-export RUN_DIR=<printed-run-directory>
 python scripts/inspect_run.py --run-dir "$RUN_DIR"
 ```
+
+If a long run is interrupted, re-run with the same `run_id`; the pipeline now resumes
+from the existing `predictions.jsonl` prefix when it matches the dataset prefix.
 
 If needed, the equivalent inline Python check remains available in git history.
 

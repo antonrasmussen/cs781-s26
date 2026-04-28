@@ -1,0 +1,12 @@
+| run_id | precision | template_id | n_examples | accuracy | macro_f1 | ece | ace |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| final_pubmed_reliabi_20260427T152058_146948Z_a7088d | fp16 | pubmed_t1 | 2000 | 0.105500 | 0.038173 | 0.686059 | 0.686059 |
+| final_pubmed_reliabi_20260427T163632_548544Z_d14da3 | fp16 | pubmed_t2 | 2000 | 0.133000 | 0.095491 | 0.336023 | 0.336023 |
+| final_pubmed_reliabi_20260427T171304_946963Z_04759a | fp16 | pubmed_t3 | 2000 | 0.105500 | 0.045089 | 0.471274 | 0.471274 |
+| final_pubmed_reliabi_20260427T211454_753565Z_82983f | fp16 | pubmed_t4 | 2000 | 0.105500 | 0.038173 | 0.704047 | 0.704047 |
+| final_pubmed_reliabi_20260427T215337_743931Z_62dc21 | fp16 | pubmed_t5 | 2000 | 0.147000 | 0.059177 | 0.376424 | 0.376424 |
+| final_pubmed_reliabi_20260427T233449_389217Z_d16724 | int4 | pubmed_t1 | 2000 | 0.105500 | 0.038173 | 0.587594 | 0.587594 |
+| final_pubmed_reliabi_20260428T122312_645511Z_4cbeeb | int8 | pubmed_t1 | 2000 | 0.105500 | 0.038173 | 0.675173 | 0.675173 |
+| final_pubmed_reliabi_20260428T142308_358498Z_334b78 | int8 | pubmed_t2 | 2000 | 0.131500 | 0.095326 | 0.355458 | 0.355458 |
+| final_pubmed_reliabi_20260428T155143_845589Z_bde23a | int8 | pubmed_t3 | 2000 | 0.106000 | 0.046146 | 0.460196 | 0.460196 |
+| final_pubmed_reliabi_20260428T173219_254227Z_0dc4ed | int8 | pubmed_t4 | 2000 | 0.105500 | 0.038173 | 0.683902 | 0.683902 |

@@ -5,6 +5,7 @@ TODO: Batch inference; deterministic (temperature=0); save predictions.
 
 from __future__ import annotations
 
+import json
 import warnings
 
 from reliability_eval.inference.score_class_codes import score_example
@@ -22,6 +23,9 @@ def run_eval(
     task: str,
     config_dir: str | None = None,
     run_generation_sanity_check: bool = False,
+    existing_predictions: list[dict] | None = None,
+    predictions_path: str | None = None,
+    flush_every: int = 50,
 ):
     """Run inference over dataset and return rows + metric vectors."""
     label_codes = get_label_codes(task)
@@ -38,12 +42,17 @@ def run_eval(
             config_dir=config_dir,
         )
 
-    predictions = []
-    y_true = []
-    y_pred = []
-    confidences = []
+    predictions = list(existing_predictions or [])
+    y_true = [row["true_label"] for row in predictions]
+    y_pred = [row["predicted_label"] for row in predictions]
+    confidences = [float(row["confidence"]) for row in predictions]
 
-    for ex in dataset:
+    path = predictions_path
+    if path and not existing_predictions:
+        with open(path, "w", encoding="utf-8"):
+            pass
+
+    for i, ex in enumerate(dataset, start=1):
         prompt = render(
             template_id=template_id,
             task=task,
@@ -62,19 +71,23 @@ def run_eval(
         y_true.append(ex["label"])
         y_pred.append(result["predicted_label"])
         confidences.append(float(result["confidence"]))
-        predictions.append(
-            {
-                "example_id": ex["example_id"],
-                "text": ex["text"],
-                "true_label": ex["label"],
-                "template_id": template_id,
-                "prompt": prompt,
-                "predicted_label": result["predicted_label"],
-                "predicted_code": result["predicted_code"],
-                "confidence": result["confidence"],
-                "probabilities": result["probabilities"],
-            }
-        )
+        row = {
+            "example_id": ex["example_id"],
+            "text": ex["text"],
+            "true_label": ex["label"],
+            "template_id": template_id,
+            "prompt": prompt,
+            "predicted_label": result["predicted_label"],
+            "predicted_code": result["predicted_code"],
+            "confidence": result["confidence"],
+            "probabilities": result["probabilities"],
+        }
+        predictions.append(row)
+        if path:
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(row) + "\n")
+                if flush_every > 0 and (i % flush_every == 0):
+                    f.flush()
 
     return {
         "predictions": predictions,

@@ -2,7 +2,7 @@
 
 import pytest
 
-from reliability_eval.metrics.prompt_stability import fleiss_kappa
+from reliability_eval.metrics.prompt_stability import fleiss_kappa, fleiss_kappa_bootstrap_ci
 
 
 def test_fleiss_kappa_perfect_agreement():
@@ -36,3 +36,9 @@ def test_fleiss_kappa_row_length_mismatch():
 def test_fleiss_kappa_empty_templates():
     with pytest.raises(ValueError, match="non-empty"):
         fleiss_kappa([])
+
+
+def test_fleiss_kappa_bootstrap_ci_contains_point():
+    predictions = [["A", "B", "A", "B"], ["A", "B", "A", "B"], ["A", "B", "A", "B"]]
+    out = fleiss_kappa_bootstrap_ci(predictions, n_resamples=200, seed=42)
+    assert out["ci_low"] <= out["point"] <= out["ci_high"]
