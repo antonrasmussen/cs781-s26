@@ -10,7 +10,12 @@ from pathlib import Path
 from typing import List, Optional
 
 
-def aggregate_metrics(artifact_root: str, run_ids: Optional[List[str]] = None) -> dict:
+def aggregate_metrics(
+    artifact_root: str,
+    run_ids: Optional[List[str]] = None,
+    *,
+    expected_count: int | None = None,
+) -> dict:
     """Return combined metrics for real-inference runs under artifact_root."""
     root = Path(artifact_root)
     if not root.exists():
@@ -49,4 +54,9 @@ def aggregate_metrics(artifact_root: str, run_ids: Optional[List[str]] = None) -
             }
         )
 
+    if expected_count is not None and len(rows) != int(expected_count):
+        raise ValueError(
+            f"Expected {expected_count} aggregated runs but found {len(rows)} "
+            f"under {artifact_root}"
+        )
     return {"n_runs": len(rows), "runs": rows}

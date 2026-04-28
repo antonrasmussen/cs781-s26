@@ -1,6 +1,11 @@
 """Fleiss' kappa across templates; per-sample flip rate."""
 
 
+from __future__ import annotations
+
+import random
+
+
 def fleiss_kappa(predictions_per_template: list) -> float:
     """Fleiss' kappa treating each prompt template as a rater.
 
@@ -71,3 +76,37 @@ def fleiss_kappa(predictions_per_template: list) -> float:
         )
 
     return (p_bar - p_e) / denom
+
+
+def fleiss_kappa_bootstrap_ci(
+    predictions_per_template: list,
+    *,
+    n_resamples: int = 1000,
+    seed: int = 42,
+) -> dict[str, float]:
+    """Bootstrap CI for Fleiss' kappa by resampling subject indices."""
+    rows = [list(r) for r in predictions_per_template]
+    if not rows or not rows[0]:
+        raise ValueError("predictions_per_template must be non-empty")
+    n_subjects = len(rows[0])
+    for row in rows:
+        if len(row) != n_subjects:
+            raise ValueError("all template rows must have equal length")
+    point = fleiss_kappa(rows)
+    rng = random.Random(seed)
+    samples = []
+    for _ in range(n_resamples):
+        idxs = [rng.randrange(n_subjects) for _ in range(n_subjects)]
+        boot = [[row[i] for i in idxs] for row in rows]
+        try:
+            samples.append(fleiss_kappa(boot))
+        except ValueError as e:
+            if "at least two distinct categories" in str(e):
+                # Degenerate resample with one class only; treat as perfect agreement.
+                samples.append(1.0)
+            else:
+                raise
+    samples.sort()
+    lo_idx = int(0.025 * (n_resamples - 1))
+    hi_idx = int(0.975 * (n_resamples - 1))
+    return {"point": point, "ci_low": samples[lo_idx], "ci_high": samples[hi_idx]}

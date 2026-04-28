@@ -40,15 +40,16 @@ def _load_dataset_examples(
 ) -> list:
     """Load examples for the configured dataset."""
     dataset_id = dataset_cfg.get("dataset_id", "pubmed_rct")
+    loader_id = "pubmed_rct" if dataset_id == "pubmed_rct_dev200" else dataset_id
     path_or_hf_id = dataset_cfg.get("path_or_hf_id")
     hf_revision = dataset_cfg.get("hf_revision")
 
     try:
-        loader = get_loader(dataset_id)
+        loader = get_loader(loader_id)
     except KeyError as e:
         raise ValueError(f"Unsupported dataset_id: {dataset_id!r}") from e
 
-    if dataset_id == "pubmed_rct":
+    if loader_id == "pubmed_rct":
         return loader(
             path_or_hf_id=path_or_hf_id,
             split=split,
@@ -96,11 +97,30 @@ def run_single(config: dict, run_id: str | None = None) -> str:
     calibration_cfg = config.get("calibration", {})
     calibration_method = str(calibration_cfg.get("calibration", "none")).lower()
     calibration_sample_size = int(config.get("calibration_sample_size", sample_size or 200))
+    flush_every = int(config.get("stream_flush_every", 50))
 
     # Load dataset
     dataset_cfg = config.get("dataset", {})
     path_or_hf_id = dataset_cfg.get("path_or_hf_id")
     examples = _load_dataset_examples(dataset_cfg, sample_size=sample_size, split="test")
+    predictions_path = run_dir / "predictions.jsonl"
+    existing_predictions = _load_existing_predictions(predictions_path)
+    start_idx = _validate_resume_prefix(existing_predictions=existing_predictions, examples=examples)
+    offset = int(config.get("example_offset", 0))
+    if offset < 0:
+        raise ValueError("example_offset must be non-negative")
+    if offset > 0 and not existing_predictions:
+        raise ValueError("example_offset requires existing predictions to resume from")
+    if offset > 0 and offset != len(existing_predictions):
+        raise ValueError(
+            "example_offset must match existing prediction count for safe resume"
+        )
+    start_idx = max(start_idx, offset)
+    if start_idx > len(examples):
+        raise ValueError(
+            f"start index {start_idx} exceeds dataset size {len(examples)}"
+        )
+    examples_remaining = examples[start_idx:]
 
     inference_mode = config.get("inference_mode") or config.get("mode", "mock_inference")
     config_dir = config.get("config_dir")
@@ -108,11 +128,14 @@ def run_single(config: dict, run_id: str | None = None) -> str:
         model = None
         tokenizer = None
         label_codes = get_label_codes(task)
-        predictions = []
-        y_true = []
-        y_pred = []
-        confidences = []
-        for ex in examples:
+        predictions = list(existing_predictions)
+        y_true = [row["true_label"] for row in predictions]
+        y_pred = [row["predicted_label"] for row in predictions]
+        confidences = [float(row["confidence"]) for row in predictions]
+        if start_idx == 0:
+            with predictions_path.open("w", encoding="utf-8"):
+                pass
+        for i, ex in enumerate(examples_remaining, start=1):
             prompt = render(
                 template_id=template_id,
                 task=task,
@@ -129,19 +152,22 @@ def run_single(config: dict, run_id: str | None = None) -> str:
             y_true.append(ex["label"])
             y_pred.append(result["predicted_label"])
             confidences.append(float(result["confidence"]))
-            predictions.append(
-                {
-                    "example_id": ex["example_id"],
-                    "text": ex["text"],
-                    "true_label": ex["label"],
-                    "template_id": template_id,
-                    "prompt": prompt,
-                    "predicted_label": result["predicted_label"],
-                    "predicted_code": result["predicted_code"],
-                    "confidence": result["confidence"],
-                    "probabilities": result["probabilities"],
-                }
-            )
+            row = {
+                "example_id": ex["example_id"],
+                "text": ex["text"],
+                "true_label": ex["label"],
+                "template_id": template_id,
+                "prompt": prompt,
+                "predicted_label": result["predicted_label"],
+                "predicted_code": result["predicted_code"],
+                "confidence": result["confidence"],
+                "probabilities": result["probabilities"],
+            }
+            predictions.append(row)
+            with predictions_path.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(row) + "\n")
+                if flush_every > 0 and (i % flush_every == 0):
+                    f.flush()
     elif inference_mode == "real_inference":
         model_cfg = config.get("model", {})
         precision_cfg = config.get("precision", {})
@@ -154,11 +180,14 @@ def run_single(config: dict, run_id: str | None = None) -> str:
         outputs = run_eval(
             model=model,
             tokenizer=tokenizer,
-            dataset=examples,
+            dataset=examples_remaining,
             template_id=template_id,
             task=task,
             config_dir=config_dir,
             run_generation_sanity_check=bool(config.get("sanity_check_generation", False)),
+            existing_predictions=existing_predictions,
+            predictions_path=str(predictions_path),
+            flush_every=flush_every,
         )
         predictions = outputs["predictions"]
         y_true = outputs["y_true"]
@@ -313,6 +342,38 @@ def _load_calibration_probabilities(
     probs_calib = [dict(row["probabilities"]) for row in outputs_calib["predictions"]]
     labels_calib = [label_to_code[label] for label in outputs_calib["y_true"]]
     return probs_calib, labels_calib
+
+
+def _load_existing_predictions(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    rows: list[dict] = []
+    with path.open("r", encoding="utf-8") as f:
+        for raw in f:
+            raw = raw.strip()
+            if not raw:
+                continue
+            rows.append(json.loads(raw))
+    return rows
+
+
+def _validate_resume_prefix(*, existing_predictions: list[dict], examples: list[dict]) -> int:
+    n_existing = len(existing_predictions)
+    if n_existing == 0:
+        return 0
+    if n_existing > len(examples):
+        raise ValueError(
+            f"Existing predictions ({n_existing}) exceed dataset size ({len(examples)})"
+        )
+    for i in range(n_existing):
+        ex = examples[i]
+        row = existing_predictions[i]
+        if row.get("example_id") != ex.get("example_id"):
+            raise ValueError(
+                "Existing predictions do not match current dataset prefix; "
+                "refusing unsafe resume"
+            )
+    return n_existing
 
 
 def _save_calibration_probs(*, run_dir: Path, probs_calib: list[dict], labels_calib: list[str]) -> None:

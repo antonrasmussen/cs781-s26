@@ -29,6 +29,8 @@ def _cmd_run(args: argparse.Namespace) -> int:
         execution_profile=args.profile,
         sample_size=args.sample_size,
     )
+    if args.example_offset is not None:
+        config["example_offset"] = args.example_offset
     run_id = run_single(config=config)
     print(run_id)
     return 0
@@ -87,6 +89,7 @@ def main() -> int:
         choices=["local", "local_real", "flyte_sandbox", "odu"],
     )
     run_parser.add_argument("--sample-size", type=int, default=None)
+    run_parser.add_argument("--example-offset", type=int, default=None)
     run_parser.set_defaults(func=_cmd_run)
 
     # sweep
