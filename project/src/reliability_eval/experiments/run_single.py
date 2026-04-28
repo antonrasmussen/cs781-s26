@@ -349,11 +349,19 @@ def _load_existing_predictions(path: Path) -> list[dict]:
         return []
     rows: list[dict] = []
     with path.open("r", encoding="utf-8") as f:
-        for raw in f:
+        for line_number, raw in enumerate(f, start=1):
             raw = raw.strip()
             if not raw:
                 continue
-            rows.append(json.loads(raw))
+            try:
+                rows.append(json.loads(raw))
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    f"Corrupted predictions JSONL file at {path} line {line_number}. "
+                    "This can happen if the file was interrupted mid-write during resume. "
+                    "To recover, truncate the malformed last line and retry, or delete "
+                    "the file to restart this run from scratch."
+                ) from exc
     return rows
 
 
