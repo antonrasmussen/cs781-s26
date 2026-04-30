@@ -163,47 +163,106 @@ def _plot_recovery(rows: list[dict], out_path: Path) -> None:
 
 def _hypothesis_rows(rows: list[dict], artifact_root: Path) -> str:
     by_key = {(r["precision"], r["template_id"]): r for r in rows}
-    deltas = []
-    for key, fp16 in by_key.items():
-        prec, template = key
-        if prec != "fp16":
-            continue
+    all_precisions = sorted({r["precision"] for r in rows})
+    all_templates = sorted({r["template_id"] for r in rows})
+    total_cells = len(all_precisions) * len(all_templates)
+    completed_cells = len(rows)
+
+    deltas: list[float] = []
+    compared_pairs: list[str] = []
+    for template in all_templates:
+        fp16 = by_key.get(("fp16", template))
         int4 = by_key.get(("int4", template))
-        if not int4:
+        if fp16 is None or int4 is None:
             continue
-        d_ece = abs(float(int4["ece"]) - float(fp16["ece"])) / max(float(fp16["ece"]), 1e-12)
-        d_f1 = abs(float(fp16["macro_f1"]) - float(int4["macro_f1"])) / max(float(fp16["macro_f1"]), 1e-12)
+        d_ece = abs(float(int4["ece"]) - float(fp16["ece"]))
+        d_f1 = abs(float(fp16["macro_f1"]) - float(int4["macro_f1"]))
         deltas.append(d_ece - d_f1)
+        compared_pairs.append(template)
     primary = paired_bootstrap_ci(deltas, n_resamples=1000, seed=42) if deltas else None
 
+    int4_templates = sorted({r["template_id"] for r in rows if r["precision"] == "int4"})
+    int4_incomplete = len(int4_templates) < len(all_templates)
+
     lines = ["# Hypothesis Tests", ""]
+
+    # Matrix completeness note
+    lines.append(
+        f"Matrix completeness note: computed from the finalized partial `n=2000` matrix "
+        f"(`{completed_cells}/{total_cells}` cells)."
+    )
+    missing_parts: list[str] = []
+    for prec in all_precisions:
+        missing_templates = sorted(t for t in all_templates if (prec, t) not in by_key)
+        if missing_templates:
+            missing_parts.append(f"`{prec} / {', '.join(missing_templates)}`")
+    if missing_parts:
+        lines.append(f"Missing cells are {' and '.join(missing_parts)} due to runtime failures.")
+    lines.append("")
+
     lines.append("## Primary: |Delta_ECE| > |Delta_F1| at INT4 vs FP16")
+    lines.append("- Statistic: `(|Delta_ECE| - |Delta_F1|)` (absolute deltas, per preregistration)")
     if primary is None:
         lines.append("- Insufficient FP16/INT4 template pairs.")
     else:
         lines.append(
             f"- point={primary['point']:.6f}, ci=[{primary['ci_low']:.6f}, {primary['ci_high']:.6f}]"
         )
-        lines.append("- Decision: supported if CI excludes 0 and is positive; otherwise inconclusive.")
+        pair_labels = [f"`int4 / {t}` vs `fp16 / {t}`" for t in compared_pairs]
+        if len(pair_labels) == 1:
+            pairs_str = pair_labels[0]
+        elif len(pair_labels) == 2:
+            pairs_str = f"{pair_labels[0]} and {pair_labels[1]}"
+        else:
+            pairs_str = ", ".join(pair_labels[:-1]) + ", and " + pair_labels[-1]
+        if primary["ci_low"] > 0:
+            outcome = (
+                f"**supported** for the completed comparison ({pairs_str}) "
+                "because the CI is positive and excludes 0."
+            )
+        elif primary["ci_high"] < 0:
+            outcome = (
+                f"**not supported** for the completed comparison ({pairs_str}) "
+                "because the CI is negative."
+            )
+        else:
+            outcome = (
+                f"**inconclusive** for the completed comparison ({pairs_str}) "
+                "because the CI crosses 0."
+            )
+        lines.append(f"- Decision (available evidence): {outcome}")
+        if int4_incomplete:
+            n_int4 = len(int4_templates)
+            lines.append(
+                f"- Caveat: only {n_int4} INT4 template{'s' if n_int4 != 1 else ''} completed "
+                "at `n=2000`; treat this as conditional support under partial matrix completeness."
+            )
 
     lines.append("")
     lines.append("## Secondary: temperature scaling recovery <= 110% FP16 ECE")
-    lines.append("- Reported via recovery ratios where calibrated runs exist.")
-    for row in rows:
-        if row.get("ece_calibrated") is None:
-            continue
-        fp16 = by_key.get(("fp16", row["template_id"]))
-        if not fp16:
-            continue
-        try:
-            ratio = recovery_ratio(
-                ece_uncal=float(row["ece"]),
-                ece_cal=float(row["ece_calibrated"]),
-                ece_fp16=float(fp16["ece"]),
-            )
-            lines.append(f"- {row['run_id']}: recovery_ratio={ratio:.6f}")
-        except Exception:
-            continue
+    has_calibrated = any(r.get("ece_calibrated") is not None for r in rows)
+    if has_calibrated:
+        lines.append("- Reported via recovery ratios where calibrated runs exist.")
+        for row in rows:
+            if row.get("ece_calibrated") is None:
+                continue
+            fp16 = by_key.get(("fp16", row["template_id"]))
+            if not fp16:
+                continue
+            try:
+                ratio = recovery_ratio(
+                    ece_uncal=float(row["ece"]),
+                    ece_cal=float(row["ece_calibrated"]),
+                    ece_fp16=float(fp16["ece"]),
+                )
+                lines.append(f"- {row['run_id']}: recovery_ratio={ratio:.6f}")
+            except Exception:
+                continue
+    else:
+        lines.append(
+            "- Decision: **not evaluated** on the `n=2000` matrix because post-hoc calibrated "
+            "counterparts were not generated for the finalized 10-run evidence set."
+        )
 
     lines.append("")
     lines.append("## Tertiary: Fleiss' kappa degradation and non-recovery")
@@ -221,6 +280,11 @@ def _hypothesis_rows(rows: list[dict], artifact_root: Path) -> str:
         lines.append(
             f"- {precision}: kappa={kappa_ci['point']:.6f}, "
             f"ci=[{kappa_ci['ci_low']:.6f}, {kappa_ci['ci_high']:.6f}]"
+        )
+    if int4_incomplete:
+        lines.append(
+            "- Decision: **descriptive only**. INT4 lacks template-complete coverage on `n=2000`, "
+            "so the preregistered INT4-vs-FP16 non-recovery claim cannot be formally tested."
         )
     return "\n".join(lines) + "\n"
 
