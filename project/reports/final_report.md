@@ -86,7 +86,9 @@ Execution was stopped at `10/15` cells for the `n=2000` matrix due to repeatable
 quantized-runtime failures (`int8 / pubmed_t5` constructor mismatch and `int4` meta-tensor
 loader errors). Completed cells include all FP16 templates, INT8 `t1`-`t4`, and INT4 `t1`.
 This partial matrix is treated as the finalized evidence set for the current submission and
-all claims are limited to those completed runs.
+all claims are limited to those completed runs. A Day-1 forensic pass on the completed cells
+(`reports/diagnostics/forensics_day1.md`) shows strong collapse structure: 5/10 runs are
+single-label (`BACKGROUND`) and the remaining runs are heavily imbalanced toward one label.
 
 From `reports/final_metrics.md`, FP16 rows show accuracy `0.1055`-`0.1470`, macro-F1
 `0.0382`-`0.0955`, and ECE `0.3360`-`0.7040`. INT8 rows (`t1`-`t4`) are similar
@@ -107,7 +109,7 @@ Discussion focuses on three practical questions:
 
 Hypothesis outcomes are interpreted against preregistered rules but constrained by
 matrix incompleteness. The primary statistic is positive on the completed INT4-vs-FP16
-comparison (`point=0.143523`, CI `[0.143523, 0.143523]`), so it is reported as
+comparison (`point=0.098465`, CI `[0.098465, 0.098465]`), so it is reported as
 conditional support only. Secondary recovery is not evaluated on `n=2000` because
 post-hoc calibration runs were not produced for this finalized evidence set. Tertiary
 kappa remains descriptive because INT4 lacks template-complete coverage.
@@ -124,8 +126,13 @@ explained solely by quantization.
 - Isotonic calibration fitting deferred.
 - Quantization results depend on available GPU memory/runtime constraints.
 - Final matrix is incomplete (`10/15`) due to repeatable INT8/INT4 runtime failures.
+- Additional Day-1/Day-2 rerun attempts in this environment could not complete because
+  the available Torch build has no CUDA backend and CPU offloaded runs did not finish in
+  practical wall-clock time for this triage window.
 - Potential pretraining contamination between BioMistral corpora and PubMed content
   cannot be directly audited from released pretraining manifests.
+- Final writeup is maintained in Markdown (`final_report.md`) for this submission cycle;
+  this is a pragmatic deviation from the preregistered LaTeX-first toolchain.
 
 ## Reproducibility
 

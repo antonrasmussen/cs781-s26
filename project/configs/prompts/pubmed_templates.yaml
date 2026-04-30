@@ -37,11 +37,10 @@ templates:
   - id: pubmed_t5
     body: |
       Read the sentence, then choose ONE role code from the list below.
-      List order is intentionally not alphabetical — read all lines before answering.
-      E=CONCLUSIONS
-      D=RESULTS
-      C=METHODS
-      B=OBJECTIVE
       A=BACKGROUND
+      B=OBJECTIVE
+      C=METHODS
+      D=RESULTS
+      E=CONCLUSIONS
       Sentence: {text}
       Answer with a single letter A–E (role code only).
