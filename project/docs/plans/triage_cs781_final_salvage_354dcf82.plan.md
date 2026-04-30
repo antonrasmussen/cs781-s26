@@ -1,6 +1,7 @@
 ---
 name: Triage CS781 Final Salvage
 overview: Plan-only triage. The repo already has 10/15 real n=2000 runs, all collapse-failing. One last targeted debug attempt to break BACKGROUND collapse on dev200; one cheap int4/t2 retry; otherwise finalize a defensible report against the existing evidence.
+status_note: "This triage plan was fully executed 2026-04-29/30. All todos are completed. Final state: 10/15 matrix finalized, report written, repository cleanup done."
 todos:
   - id: day1-env
     content: "Day 1: Stand up GPU env per docs/cuda_pubmed_handoff.md (pip install [gpu,dev], PYTHONPATH=src, RELIABILITY_ARTIFACT_ROOT)."
@@ -37,7 +38,7 @@ todos:
     status: completed
   - id: day4-commit
     content: "Day 4 afternoon: Single clean commit covering reports/ and any new runs under artifacts/runs/."
-    status: in_progress
+    status: completed
 isProject: false
 ---
 

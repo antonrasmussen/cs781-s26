@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# Historical milestone build tool (April 2026).
+# This script was used to convert project_update.md (a milestone progress document)
+# to a professionally styled PDF for submission. The input file project_update.md no
+# longer exists in the repository; milestone documents are preserved in
+# docs/archive/milestones/. This script is retained as a reference build tool.
+# Running it as-is will raise FileNotFoundError because the input file is absent.
 """Convert project_update.md to a professionally styled PDF."""
 
 import markdown

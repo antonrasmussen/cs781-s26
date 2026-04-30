@@ -5,6 +5,10 @@ Date: 2026-04-26
 ## Locked Decisions
 
 - Toolchain: LaTeX-first (`reports/final_report.tex`) with smoke artifact `reports/_toolchain_smoke.pdf`.
+  **Actual outcome:** LaTeX-first toolchain was superseded by Markdown (`reports/final_report.md`)
+  due to time constraints. This follows the preregistered failure-handling clause ("pragmatic
+  deviation" documented in `final_report.md` Limitations). The `.tex` file is a toolchain smoke
+  test stub only, not the final submission document.
 - Task scope: PubMed-only. MedNLI remains blocked and out of scope.
 - Calibration scope: temperature scaling only. Isotonic fitting deferred.
 - Seeds: 42 for sampling, splits, and bootstrap.

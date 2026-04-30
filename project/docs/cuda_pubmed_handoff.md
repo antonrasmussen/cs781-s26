@@ -1,3 +1,10 @@
+> **Historical document (April 2026).** This was the operator runbook for the pre-experiment
+> CUDA phase. The experiments described here have now been completed. The n=2000 PubMed RCT
+> matrix (10/15 cells) is finalized and its results are recorded in `reports/final_metrics.md`
+> and `reports/run_ids_manifest.md`. This document is preserved as historical context for the
+> experimental execution record. For current project status, see `project/README.md` and
+> `reports/final_report.md`.
+
 # CUDA handoff: PubMed first experiment
 
 Use this when moving to a CUDA machine. The goal is to get from the current data inventory to the first serious PubMed experiment without wasting time on already-solved data work.

@@ -76,8 +76,21 @@ Results are generated from:
 
 - `reports/final_metrics.md` (per-run metrics table)
 - `reports/hypothesis_tests.md` (primary/secondary/tertiary outcomes)
-- `reports/figures/reliability_by_precision.png`
-- `reports/figures/recovery_plot.png`
+- `reports/figures/` (cross-run reliability diagrams and recovery plot)
+
+**Generating figures:** Cross-run figures (`reliability_by_precision.png`, `recovery_plot.png`) are
+produced by running:
+
+```bash
+cd project
+python experiments/build_final_report.py \
+  --artifact-root artifacts/runs \
+  --run-id <run_id> [--run-id <run_id> ...]
+```
+
+Full per-run reliability diagrams committed to the repository are available in
+`artifacts/verification_runs/<run_id>/figures/reliability.png` for the five representative runs
+exported at submission time (see `artifacts/verification_runs/manifest.json`).
 
 Each headline claim in this section cites concrete run IDs from
 `reports/run_ids_manifest.md`.
@@ -133,6 +146,12 @@ explained solely by quantization.
   cannot be directly audited from released pretraining manifests.
 - Final writeup is maintained in Markdown (`final_report.md`) for this submission cycle;
   this is a pragmatic deviation from the preregistered LaTeX-first toolchain.
+- ECE and ACE values are identical across all 10 completed runs (e.g., ECE = ACE = 0.686
+  for `fp16/pubmed_t1`). This is consistent with strongly collapsed predictions: when a
+  model assigns near-uniform high confidence to a single class across all examples,
+  equal-width bins (ECE) and equal-mass bins (ACE) are populated by the same
+  distribution of confidence values, producing numerically identical results. This is a
+  diagnostic signal of the collapse problem, not a computation error.
 
 ## Reproducibility
 
