@@ -1,13 +1,13 @@
 # Hypothesis Tests
 
 Matrix completeness note: computed from the finalized partial `n=2000` matrix (`10/15` cells).
-Missing cells are `int8 / pubmed_t5` and `int4 / pubmed_t2..t5` due to runtime failures.
+Missing cells are `int8 / pubmed_t5` and `int4 / pubmed_t2, pubmed_t3, pubmed_t4, pubmed_t5` due to runtime failures.
 
 ## Primary: |Delta_ECE| > |Delta_F1| at INT4 vs FP16
 - Statistic: `(|Delta_ECE| - |Delta_F1|)` (absolute deltas, per preregistration)
 - point=0.098465, ci=[0.098465, 0.098465]
 - Decision (available evidence): **supported** for the completed comparison (`int4 / pubmed_t1` vs `fp16 / pubmed_t1`) because the CI is positive and excludes 0.
-- Caveat: only one INT4 template completed at `n=2000`; treat this as conditional support under partial matrix completeness.
+- Caveat: only 1 INT4 template completed at `n=2000`; treat this as conditional support under partial matrix completeness.
 
 ## Secondary: temperature scaling recovery <= 110% FP16 ECE
 - Decision: **not evaluated** on the `n=2000` matrix because post-hoc calibrated counterparts were not generated for the finalized 10-run evidence set.
