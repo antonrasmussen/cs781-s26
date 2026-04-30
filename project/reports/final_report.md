@@ -146,7 +146,7 @@ explained solely by quantization.
   cannot be directly audited from released pretraining manifests.
 - Final writeup is maintained in Markdown (`final_report.md`) for this submission cycle;
   this is a pragmatic deviation from the preregistered LaTeX-first toolchain.
-- ECE and ACE values are identical across all 10 completed runs (e.g., ECE = ACE = 0.686
+- ECE and ACE values are identical across all 10 completed runs (e.g., ECE = ACE = 0.6861
   for `fp16/pubmed_t1`). This is consistent with strongly collapsed predictions: when a
   model assigns near-uniform high confidence to a single class across all examples,
   equal-width bins (ECE) and equal-mass bins (ACE) are populated by the same

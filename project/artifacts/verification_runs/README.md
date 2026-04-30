@@ -47,4 +47,4 @@ The actual per-run reliability diagrams are committed at
 ## Full artifact bundle
 
 The complete raw run artifacts for all 10 finalized runs are not committed to the repository.
-See `docs/reproducibility_note_template.md` for the full reproducibility policy and archive status.
+See `docs/reproducibility_note.md` for the full reproducibility policy and archive status.

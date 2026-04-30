@@ -125,7 +125,7 @@ python experiments/build_final_report.py \
 ```
 
 Note: cross-precision figures (all 10 runs) require the full artifact bundle; see
-`project/docs/reproducibility_note_template.md`.
+`project/docs/reproducibility_note.md`.
 
 ## Known Limitations
 

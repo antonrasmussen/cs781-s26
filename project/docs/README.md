@@ -10,7 +10,7 @@ For final project status, see `../README.md` (project root) and `../reports/fina
 | [proposal.md](proposal.md) | Full course project proposal (methodology, timeline, references) |
 | [architecture.md](architecture.md) | Module map, data flow, design decisions |
 | [execution_modes.md](execution_modes.md) | Local, Flyte sandbox, ODU compute modes |
-| [reproducibility_note_template.md](reproducibility_note_template.md) | Reproducibility policy: verification runs, artifact coverage, path notes |
+| [reproducibility_note.md](reproducibility_note.md) | Reproducibility policy: verification runs, artifact coverage, path notes |
 | [plans/](plans/) | Triage and execution plans from the final sprint (April 2026) |
 | [archive/2026-03-audit/ISSUES.md](archive/2026-03-audit/ISSUES.md) | Historical audit issue list (archived) |
 | [archive/2026-03-audit/AUDIT_COMMENTS_AND_PROMPTS.md](archive/2026-03-audit/AUDIT_COMMENTS_AND_PROMPTS.md) | Historical TODO/template audit (archived) |
