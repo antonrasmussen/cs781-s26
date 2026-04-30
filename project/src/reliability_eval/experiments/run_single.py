@@ -19,7 +19,6 @@ from reliability_eval.io.artifact_store import (
     ensure_run_dir,
     save_metadata,
     save_metrics,
-    save_predictions,
     save_resolved_config,
 )
 from reliability_eval.io.paths import make_run_id
@@ -252,7 +251,6 @@ def run_single(config: dict, run_id: str | None = None) -> str:
 
     # Write artifacts
     save_resolved_config(run_dir, config)
-    save_predictions(run_dir, predictions)
     save_metrics(run_dir, metrics)
 
     dataset_source = _infer_dataset_source(config, path_or_hf_id)
