@@ -1,0 +1,12 @@
+{
+  "run_id": "final_pubmed_reliabi_20260428T142308_358498Z_334b78",
+  "created_at_utc": "2026-04-28T15:00:15.621422+00:00",
+  "config_hash": "196e623e9aa5",
+  "execution_mode": "local",
+  "compute_env": "local",
+  "code_version": "dc79b41",
+  "dataset_source": "hf://armanc/pubmed-rct20k@main",
+  "inference_mode": "real_inference",
+  "n_examples": 2000,
+  "figure": "C:\\Users\\Strea\\repos\\cs781-s26\\project\\artifacts\\runs\\final_pubmed_reliabi_20260428T142308_358498Z_334b78\\figures\\reliability.png"
+}

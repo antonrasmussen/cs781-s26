@@ -1,0 +1,64 @@
+{
+  "generated_at_utc": "2026-04-30T13:34:13.287649+00:00",
+  "source_root": "artifacts\\runs",
+  "dest_root": "artifacts\\verification_runs",
+  "predictions_limit": 200,
+  "run_count": 5,
+  "runs": [
+    {
+      "run_id": "final_pubmed_reliabi_20260427T152058_146948Z_a7088d",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
+      "run_id": "final_pubmed_reliabi_20260427T163632_548544Z_d14da3",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
+      "run_id": "final_pubmed_reliabi_20260427T215337_743931Z_62dc21",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
+      "run_id": "final_pubmed_reliabi_20260427T233449_389217Z_d16724",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
+      "run_id": "final_pubmed_reliabi_20260428T142308_358498Z_334b78",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    }
+  ]
+}

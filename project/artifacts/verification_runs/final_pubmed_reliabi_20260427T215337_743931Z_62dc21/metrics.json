@@ -1,0 +1,13 @@
+{
+  "accuracy": 0.147,
+  "macro_f1": 0.05917736186134309,
+  "per_class_f1": {
+    "BACKGROUND": 0.03773584905660377,
+    "CONCLUSIONS": 0.2581509602501117,
+    "METHODS": 0.0,
+    "OBJECTIVE": 0.0,
+    "RESULTS": 0.0
+  },
+  "n_examples": 2000,
+  "ece": 0.37642419433593743
+}
