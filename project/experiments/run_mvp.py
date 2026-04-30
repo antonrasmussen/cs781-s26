@@ -40,6 +40,7 @@ def main() -> int:
         default="none",
         choices=["none", "temperature_scaling", "isotonic"],
     )
+    parser.add_argument("--example-offset", type=int, default=0)
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent.parent
@@ -50,6 +51,8 @@ def main() -> int:
         execution_profile=args.profile,
     )
     config["calibration"] = {"calibration": args.calibration}
+    if args.example_offset:
+        config["example_offset"] = args.example_offset
     run_id = make_run_id(prefix="mvp_pubmed")
 
     run_id = run_single(config=config, run_id=run_id)

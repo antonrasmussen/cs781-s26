@@ -12,6 +12,7 @@ env/
 # Artifacts and runs (optional: track small samples)
 artifacts/runs/*
 !artifacts/runs/.gitkeep
+.hf-offload/
 
 # Reports and figures (regenerate from code)
 reports/figures/
