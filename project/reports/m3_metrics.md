@@ -1,5 +1,7 @@
 # Matrix status snapshot (sample_size=2000)
 
+Note: this is a milestone-3 matrix-completeness snapshot and is superseded by `reports/final_metrics.md`.
+
 - Completion: `10/15`
 - Completed:
   - `fp16`: `pubmed_t1`, `pubmed_t2`, `pubmed_t3`, `pubmed_t4`, `pubmed_t5`

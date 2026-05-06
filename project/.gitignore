@@ -14,8 +14,7 @@ artifacts/runs/*
 !artifacts/runs/.gitkeep
 .hf-offload/
 
-# Reports and figures (regenerate from code)
-reports/figures/
+# Reports and tables
 reports/tables/
 !reports/.gitkeep
 

@@ -12,7 +12,7 @@ levels without materially harming accuracy. Execution was finalized under a
 runtime-blocked contingency at `10/15` completed cells on the `n=2000` slice:
 FP16 (`t1`-`t5`), INT8 (`t1`-`t4`), INT4 (`t1`). Across completed runs, macro-F1
 remains low (`0.038`-`0.095`) and ECE remains high (`0.336`-`0.704`) in both FP16
-and quantized settings. Prompt robustness is evaluated with Fleiss' kappa where
+and quantized settings. Across these completed cells the dominant empirical signal is prompt-template-driven label collapse - 5/10 runs predicted a single label and most others were heavily one-label-skewed - rather than a clean quantization effect, so quantization-vs-FP16 differences are interpreted within a collapse-dominated regime. Prompt robustness is evaluated with Fleiss' kappa where
 template coverage permits. Numerical findings and hypothesis outcomes are populated
 from run artifacts listed in
 `reports/run_ids_manifest.md`.
@@ -78,6 +78,7 @@ Results are generated from:
 - `reports/hypothesis_tests.md` (primary/secondary/tertiary outcomes)
 - `reports/figures/reliability_by_precision.png`
 - `reports/figures/recovery_plot.png`
+- `reports/figures/collapse_pattern.png`
 
 Each headline claim in this section cites concrete run IDs from
 `reports/run_ids_manifest.md`.

@@ -118,24 +118,41 @@ def _plot_reliability(rows: list[dict], artifact_root: Path, out_path: Path) -> 
     except ImportError:
         out_path.write_bytes(b"")
         return
-    fig, axes = plt.subplots(1, max(1, len(rows)), figsize=(5 * max(1, len(rows)), 4), squeeze=False)
-    for i, row in enumerate(rows):
+    ordered_rows = sorted(rows, key=lambda r: (str(r["precision"]), str(r["template_id"])))
+    n_cols = 5
+    n_rows = max(1, (len(ordered_rows) + n_cols - 1) // n_cols)
+    fig, axes = plt.subplots(
+        n_rows,
+        n_cols,
+        figsize=(3.2 * n_cols, 3.0 * n_rows),
+        sharex=True,
+        sharey=True,
+        squeeze=False,
+    )
+    flat_axes = [ax for row_axes in axes for ax in row_axes]
+    for i, row in enumerate(ordered_rows):
         pred_rows = _read_predictions(artifact_root / row["run_id"] / "predictions.jsonl")
         conf = [float(r["confidence"]) for r in pred_rows]
         corr = [1 if r["true_label"] == r["predicted_label"] else 0 for r in pred_rows]
         bins = reliability_bins(conf, corr, n_bins=15)
         xs = [0.5 * (b["left"] + b["right"]) for b in bins]
         ys = [b["avg_accuracy"] for b in bins]
-        ax = axes[0, i]
+        ax = flat_axes[i]
         ax.plot([0, 1], [0, 1], linestyle="--", linewidth=1, color="gray")
         ax.plot(xs, ys, marker="o", linewidth=1.5)
-        ax.set_title(f"{row['run_id']}\n{row['precision']}")
+        ax.set_title(
+            f"{row['precision']}/{row['template_id']}\n"
+            f"F1={float(row['macro_f1']):.3f} ECE={float(row['ece']):.3f}",
+            fontsize=9,
+        )
         ax.set_xlim(0, 1)
         ax.set_ylim(0, 1)
         ax.set_xlabel("Confidence")
         ax.set_ylabel("Accuracy")
+    for ax in flat_axes[len(ordered_rows) :]:
+        ax.axis("off")
     plt.tight_layout()
-    plt.savefig(out_path, dpi=120)
+    plt.savefig(out_path, dpi=200)
     plt.close(fig)
 
 
@@ -146,18 +163,108 @@ def _plot_recovery(rows: list[dict], out_path: Path) -> None:
     except ImportError:
         out_path.write_bytes(b"")
         return
-    by_prec: dict[str, list[float]] = {}
+    by_prec: dict[str, dict[str, float]] = {}
     for row in rows:
-        by_prec.setdefault(row["precision"], []).append(float(row["ece"]))
-    names = sorted(by_prec.keys())
-    vals = [sum(v) / len(v) for v in (by_prec[n] for n in names)]
+        by_prec.setdefault(str(row["precision"]), {})[str(row["template_id"])] = float(row["ece"])
+    templates = sorted({str(row["template_id"]) for row in rows})
+    preferred_order = ["fp16", "int8", "int4"]
+    precisions = [p for p in preferred_order if p in by_prec] + sorted(p for p in by_prec if p not in preferred_order)
+    x_positions = list(range(len(templates)))
     fig, ax = plt.subplots(figsize=(6, 4))
-    ax.plot(names, vals, marker="o")
-    ax.set_xlabel("Precision")
+    for precision in precisions:
+        vals = [by_prec[precision].get(t, float("nan")) for t in templates]
+        mean_val = sum(v for v in vals if v == v) / max(1, sum(1 for v in vals if v == v))
+        ax.plot(x_positions, vals, marker="o", linewidth=1.8, label=f"{precision} by template")
+        ax.axhline(mean_val, linestyle="--", linewidth=1.0, alpha=0.7, label=f"{precision} mean={mean_val:.3f}")
+    ax.set_xticks(x_positions)
+    ax.set_xticklabels(templates, rotation=0)
+    ax.set_xlabel("Template")
     ax.set_ylabel("ECE")
-    ax.set_title("ECE trajectory by precision")
+    ax.set_title("ECE by template and precision")
+    ax.legend(loc="upper right", fontsize=8)
     plt.tight_layout()
-    plt.savefig(out_path, dpi=120)
+    plt.savefig(out_path, dpi=200)
+    plt.close(fig)
+
+
+def _plot_collapse_pattern(rows: list[dict], artifact_root: Path, out_path: Path) -> None:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+        import numpy as np  # type: ignore
+    except ImportError:
+        out_path.write_bytes(b"")
+        return
+
+    ordered_rows = sorted(rows, key=lambda r: (str(r["precision"]), str(r["template_id"])))
+    all_labels = sorted(
+        {str(label) for row in ordered_rows for label in dict(row.get("per_class_f1", {})).keys()}
+        | {str(r["predicted_label"]) for row in ordered_rows for r in _read_predictions(artifact_root / row["run_id"] / "predictions.jsonl")}
+    )
+    if not all_labels:
+        out_path.write_bytes(b"")
+        return
+
+    color_map = {
+        "BACKGROUND": "#1f77b4",
+        "CONCLUSIONS": "#ff7f0e",
+        "METHODS": "#2ca02c",
+        "OBJECTIVE": "#d62728",
+        "RESULTS": "#9467bd",
+    }
+    label_colors = [color_map.get(label, "#7f7f7f") for label in all_labels]
+    run_names = [f"{row['precision']}/{row['template_id']}" for row in ordered_rows]
+    y_positions = list(range(len(ordered_rows)))
+
+    hist_matrix: list[list[float]] = []
+    heat_matrix: list[list[float]] = []
+    for label in all_labels:
+        hist_row: list[float] = []
+        heat_row: list[float] = []
+        for row in ordered_rows:
+            pred_rows = _read_predictions(artifact_root / row["run_id"] / "predictions.jsonl")
+            n_total = max(1, len(pred_rows))
+            label_count = sum(1 for entry in pred_rows if str(entry["predicted_label"]) == label)
+            hist_row.append(label_count / n_total)
+            heat_row.append(float(dict(row.get("per_class_f1", {})).get(label, 0.0)))
+        hist_matrix.append(hist_row)
+        heat_matrix.append(heat_row)
+
+    fig, (ax_top, ax_bottom) = plt.subplots(
+        2,
+        1,
+        figsize=(12, 6),
+        gridspec_kw={"height_ratios": [2.5, 1.8]},
+    )
+
+    left = [0.0] * len(ordered_rows)
+    for label, color, proportions in zip(all_labels, label_colors, hist_matrix, strict=True):
+        ax_top.barh(y_positions, proportions, left=left, color=color, edgecolor="white", linewidth=0.2, label=label)
+        left = [l + p for l, p in zip(left, proportions, strict=True)]
+    ax_top.set_xlim(0, 1.0)
+    ax_top.set_yticks(y_positions)
+    ax_top.set_yticklabels(run_names, fontsize=8)
+    ax_top.set_xlabel("Predicted label proportion")
+    ax_top.set_title("Predicted-label distribution by run")
+    ax_top.legend(loc="center left", bbox_to_anchor=(1.01, 0.5), fontsize=8)
+    ax_top.invert_yaxis()
+
+    heat = np.array(heat_matrix, dtype=float)
+    im = ax_bottom.imshow(heat, aspect="auto", cmap="viridis", vmin=0.0, vmax=max(0.3, float(heat.max())))
+    ax_bottom.set_yticks(list(range(len(all_labels))))
+    ax_bottom.set_yticklabels(all_labels, fontsize=8)
+    ax_bottom.set_xticks(list(range(len(run_names))))
+    ax_bottom.set_xticklabels(run_names, rotation=45, ha="right", fontsize=8)
+    ax_bottom.set_title("Per-class F1 by run")
+    for r_idx, _ in enumerate(all_labels):
+        for c_idx, _ in enumerate(run_names):
+            value = heat[r_idx, c_idx]
+            text_color = "white" if value > 0.15 else "black"
+            ax_bottom.text(c_idx, r_idx, f"{value:.2f}", ha="center", va="center", fontsize=7, color=text_color)
+    fig.colorbar(im, ax=ax_bottom, fraction=0.025, pad=0.01, label="Per-class F1")
+
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=200)
     plt.close(fig)
 
 
@@ -303,6 +410,8 @@ def main() -> int:
     parser.add_argument("--hypothesis-out", default="reports/hypothesis_tests.md")
     parser.add_argument("--reliability-fig-out", default="reports/figures/reliability_by_precision.png")
     parser.add_argument("--recovery-fig-out", default="reports/figures/recovery_plot.png")
+    parser.add_argument("--collapse-fig-out", default="reports/figures/collapse_pattern.png")
+    parser.add_argument("--figures-only", action="store_true")
     args = parser.parse_args()
 
     artifact_root = Path(args.artifact_root)
@@ -327,20 +436,24 @@ def main() -> int:
         enriched.append(row)
 
     table_path = Path(args.table_out)
-    table_path.parent.mkdir(parents=True, exist_ok=True)
-    table_path.write_text(_format_table(enriched), encoding="utf-8")
-
     hyp_path = Path(args.hypothesis_out)
-    hyp_path.parent.mkdir(parents=True, exist_ok=True)
-    hyp_path.write_text(_hypothesis_rows(enriched, artifact_root), encoding="utf-8")
+    if not args.figures_only:
+        table_path.parent.mkdir(parents=True, exist_ok=True)
+        table_path.write_text(_format_table(enriched), encoding="utf-8")
+
+        hyp_path.parent.mkdir(parents=True, exist_ok=True)
+        hyp_path.write_text(_hypothesis_rows(enriched, artifact_root), encoding="utf-8")
 
     _plot_reliability(enriched, artifact_root, Path(args.reliability_fig_out))
     _plot_recovery(enriched, Path(args.recovery_fig_out))
+    _plot_collapse_pattern(enriched, artifact_root, Path(args.collapse_fig_out))
 
-    print(f"wrote table: {table_path}")
-    print(f"wrote hypothesis tests: {hyp_path}")
+    if not args.figures_only:
+        print(f"wrote table: {table_path}")
+        print(f"wrote hypothesis tests: {hyp_path}")
     print(f"wrote figure: {args.reliability_fig_out}")
     print(f"wrote figure: {args.recovery_fig_out}")
+    print(f"wrote figure: {args.collapse_fig_out}")
     return 0
 
 
