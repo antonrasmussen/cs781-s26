@@ -31,3 +31,7 @@ This directory contains experiment outputs used by the final report.
 - `reports/run_ids_manifest.md` maps report claims to run IDs.
 - `docs/reproducibility_note_template.md` provides archive/linking language for submissions.
 - `scripts/export_verification_runs.py` exports selected runs into `artifacts/verification_runs/`.
+
+## Known artifact quirks
+
+The `resolved_config.yaml` files in `artifacts/verification_runs/` contain Windows-format absolute paths (e.g., `config_dir: C:\Users\Strea\repos\...`) reflecting the execution host. These paths are metadata only and do not affect reproducibility — the configs directory is `project/configs/` in this repository.

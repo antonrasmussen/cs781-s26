@@ -2,8 +2,8 @@
 
 ## Abstract
 
-We evaluate calibration degradation under quantization for a biomedical decoder model
-(`BioMistral-7B`) on PubMed RCT sentence classification. The analysis distinguishes
+We evaluate calibration[1] degradation under quantization for a biomedical decoder model
+(`BioMistral-7B`[3]) on PubMed RCT[2] sentence classification. The analysis distinguishes
 classification quality (macro F1) from confidence quality (ECE/ACE) and uses a
 single-token class-code scoring protocol to extract a well-defined probability
 distribution from next-token logits. We compare FP16 against quantized conditions
@@ -46,7 +46,7 @@ the restricted class-code set to obtain a proper probability distribution.
 ### Precision Conditions
 
 - FP16 baseline.
-- INT8 quantized (`bitsandbytes`).
+- INT8 quantized (`bitsandbytes`)[4][5].
 - INT4 quantized (`bitsandbytes NF4`) when hardware permits.
 
 ### Calibration Protocol
@@ -70,6 +70,8 @@ not available, kappa is reported on `dev200` as a descriptive lower-power analys
 - Primary hypothesis decision rule: paired-bootstrap CI on `(|Delta_ECE| - |Delta_F1|)` must exclude
   zero and be positive; otherwise the result is reported as inconclusive.
 
+ACE and ECE are numerically identical across all completed runs because extreme label-probability collapse concentrates all predictions in a narrow confidence region, making equal-width and equal-mass binning equivalent in practice.
+
 ## Results
 
 Results are generated from:
@@ -77,7 +79,7 @@ Results are generated from:
 - `reports/final_metrics.md` (per-run metrics table)
 - `reports/hypothesis_tests.md` (primary/secondary/tertiary outcomes)
 - `reports/figures/reliability_by_precision.png`
-- `reports/figures/recovery_plot.png`
+- `reports/figures/recovery_plot.png` (Note: this figure shows uncalibrated ECE across templates and precisions; no temperature-scaled counterparts were produced for the n=2000 evidence set — see Limitations.)
 - `reports/figures/collapse_pattern.png`
 
 Each headline claim in this section cites concrete run IDs from
@@ -110,7 +112,7 @@ Discussion focuses on three practical questions:
 
 Hypothesis outcomes are interpreted against preregistered rules but constrained by
 matrix incompleteness. The primary statistic is positive on the completed INT4-vs-FP16
-comparison (`point=0.098465`, CI `[0.098465, 0.098465]`), so it is reported as
+comparison (`point=0.098465`, CI `[0.098465, 0.098465]` — a point interval because only one INT4/FP16 template pair completed the n=2000 matrix; bootstrapping a single delta yields a degenerate interval, so treat as anecdotal support), so it is reported as
 conditional support only. Secondary recovery is not evaluated on `n=2000` because
 post-hoc calibration runs were not produced for this finalized evidence set. Tertiary
 kappa remains descriptive because INT4 lacks template-complete coverage.
@@ -120,6 +122,10 @@ At this stage, the dominant issue is not model loading or GPU plumbing alone; it
 cells that do run. Across completed `n=2000` runs, macro-F1 remains low and ECE remains high
 for both FP16 and quantized settings, indicating that calibration-quality deficits are not
 explained solely by quantization.
+
+The dominant empirical signal in this study is prompt-template-driven label collapse rather than quantization-induced calibration degradation. Five of ten completed runs predicted a single label (BACKGROUND) for all 2000 examples, and the remaining runs were heavily skewed toward one or two labels. This collapse is present at FP16 precision, which means the reliability problem precedes quantization. From a clinical deployment perspective, this finding is itself significant: even the full-precision BioMistral-7B model exhibits extreme prompt sensitivity on this task, which constitutes a reliability risk independent of any compression-induced degradation.
+
+Temperature scaling was fully implemented and validated on dev200 (see `src/reliability_eval/calibration/`), but could not be applied to the n=2000 evidence set within the available compute window. Whether temperature scaling can recover calibration in a collapse-dominated regime remains an open question for future work.
 
 ## Limitations
 
@@ -138,3 +144,15 @@ explained solely by quantization.
 ## Reproducibility
 
 All run-level claims map to `run_id` entries in `reports/run_ids_manifest.md`.
+
+## References
+
+[1] C. Guo, G. Pleiss, Y. Sun, and K. Weinberger, "On Calibration of Modern Neural Networks," ICML, 2017.
+
+[2] F. Dernoncourt and J. Y. Lee, "PubMed 200k RCT: a Dataset for Sequential Sentence Classification in Medical Abstracts," IJCNLP, 2017.
+
+[3] Y. Labrak, A. Bazoge, E. Morin, P.-A. Gourraud, M. Rouvier, and R. Dufour, "BioMistral: A Collection of Open-Source Pretrained Large Language Models for Medical Domains," arXiv:2402.10373, 2024.
+
+[4] T. Dettmers, A. Pagnoni, A. Holtzman, and L. Zettlemoyer, "QLoRA: Efficient Finetuning of Quantized LLMs," NeurIPS, 2023.
+
+[5] T. Dettmers, M. Lewis, Y. Belkada, and L. Zettlemoyer, "LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale," NeurIPS, 2022.

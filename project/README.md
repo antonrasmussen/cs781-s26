@@ -2,12 +2,15 @@
 
 Calibration and prompt stability under resource constraints for CS781 (Spring 2026).
 
-## Current status (2026-04-24)
+## Final state (2026-04-30)
 
-- Operative scope: **PubMed 20k RCT only**.
-- MedNLI status: **BLOCKED** pending a lawful configured data path.
-- Immediate gate: FP16 real inference on `dev200` with `pubmed_t5` must avoid BACKGROUND collapse.
-- First-pass success criteria: `real_inference`, 200 predictions, non-collapsed class usage, `macro_f1 > 0.20`, calibration `none`.
+- Real-inference experiments completed: **10/15** cells at **n=2000**.
+- Completed: **FP16** (`t1`–`t5`), **INT8** (`t1`–`t4`), **INT4** (`t1` only).
+- Blocked: **INT8/t5** (runtime mismatch), **INT4/t2**–**t5** (loader errors).
+- Final report: [`reports/final_report.md`](reports/final_report.md).
+- Metrics table: [`reports/final_metrics.md`](reports/final_metrics.md).
+- Hypothesis outcomes: [`reports/hypothesis_tests.md`](reports/hypothesis_tests.md).
+- Figures: [`reports/figures/`](reports/figures/).
 
 ## Research goal vs operational scope
 
@@ -54,6 +57,8 @@ For CUDA hosts, install GPU extras:
 pip install -e ".[gpu,dev]"
 ```
 
+Real-inference runs require a CUDA-enabled GPU with at least 16 GB VRAM (BioMistral-7B at FP16). CPU-only inference is not practical at n=2000 scale.
+
 ## Canonical commands
 
 Sanity tests:
@@ -80,23 +85,9 @@ Inspect gate outputs and pass/fail criteria:
 
 ## Implemented vs deferred
 
-Implemented and in active use:
+**Completed:** PubMed loader, `dev200` subset, real inference (FP16/INT8/INT4), single-token class-code scoring, ECE/ACE/macro-F1, reliability diagrams, Fleiss' kappa, temperature scaling (implemented and validated on `dev200`, not applied at n=2000 due to compute constraints), bootstrap CIs.
 
-- PubMed loader (HF and local JSONL), deterministic `dev200`, provenance logging.
-- Real and mock inference paths, single-token class-code scoring, artifact writing.
-- Macro/per-class F1, accuracy, ECE, reliability diagrams, Fleiss' kappa, temperature scaling.
-
-Deferred until after the first CUDA gate passes:
-
-- MedNLI data path and experiments.
-- INT8/INT4 experiment runs for conclusions.
-- ACE/bootstrap confidence intervals, isotonic calibration, full prompt-stability sweeps.
-- CLI `report` implementation and summary-export polish.
-
-## Current phase
-
-Current phase: prompt and inference validation on `dev200` with real FP16 inference.  
-Next phase: scale to broader PubMed evaluation only after the collapse gate passes.
+**Not completed:** MedNLI (data access blocked), INT8/t5 and INT4/t2–t5 (runtime failures), temperature scaling at n=2000 (secondary hypothesis not evaluated), isotonic calibration (deferred).
 
 ## References
 

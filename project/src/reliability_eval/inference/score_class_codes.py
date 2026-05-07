@@ -1,7 +1,4 @@
-"""Scoring for class-code probabilities.
-
-This file contains a temporary mock inference path for MVP.
-"""
+"""Scoring utilities for class-code probabilities: real model inference via restricted softmax, and a deterministic mock path for testing."""
 
 from __future__ import annotations
 

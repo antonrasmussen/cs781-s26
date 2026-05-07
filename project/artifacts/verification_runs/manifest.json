@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-04-30T13:34:13.287649+00:00",
+  "generated_at_utc": "2026-05-07T00:52:26.766733+00:00",
   "source_root": "artifacts\\runs",
   "dest_root": "artifacts\\verification_runs",
   "predictions_limit": 200,
-  "run_count": 5,
+  "run_count": 10,
   "runs": [
     {
       "run_id": "final_pubmed_reliabi_20260427T152058_146948Z_a7088d",
@@ -18,6 +18,28 @@
     },
     {
       "run_id": "final_pubmed_reliabi_20260427T163632_548544Z_d14da3",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
+      "run_id": "final_pubmed_reliabi_20260427T171304_946963Z_04759a",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
+      "run_id": "final_pubmed_reliabi_20260427T211454_753565Z_82983f",
       "copied_files": [
         "metadata.json",
         "metrics.json",
@@ -50,7 +72,40 @@
       "prediction_rows_copied": 200
     },
     {
+      "run_id": "final_pubmed_reliabi_20260428T122312_645511Z_4cbeeb",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
       "run_id": "final_pubmed_reliabi_20260428T142308_358498Z_334b78",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
+      "run_id": "final_pubmed_reliabi_20260428T155143_845589Z_bde23a",
+      "copied_files": [
+        "metadata.json",
+        "metrics.json",
+        "resolved_config.yaml",
+        "predictions_sample.jsonl",
+        "figures/reliability.png"
+      ],
+      "prediction_rows_copied": 200
+    },
+    {
+      "run_id": "final_pubmed_reliabi_20260428T173219_254227Z_0dc4ed",
       "copied_files": [
         "metadata.json",
         "metrics.json",

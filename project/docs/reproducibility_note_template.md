@@ -18,10 +18,10 @@ Use this template in your report appendix, README, or submission note.
 Full raw run artifacts are not tracked in git by default (to keep repo size manageable).  
 Canonical archive location:
 
-- Full artifact bundle (zip/tar): `<ARCHIVE_URL_PLACEHOLDER>`
-- Optional mirrored location: `<MIRROR_URL_PLACEHOLDER>`
-- Archive checksum (SHA256): `<CHECKSUM_PLACEHOLDER>`
-- Archive date/version: `<ARCHIVE_VERSION_PLACEHOLDER>`
+- Full artifact bundle (zip/tar): Not externally archived. Full run artifacts reside on the CUDA host used for execution. Contact the author for access.
+- Optional mirrored location: N/A
+- Archive checksum (SHA256): N/A — archive not available
+- Archive date/version: Final runs completed 2026-04-28; verification subset exported 2026-04-30
 
 ## Verification subset policy
 
@@ -67,10 +67,10 @@ python scripts/export_verification_runs.py \
 
 Choose 2-5 runs that cover your main claims (example set):
 
-- FP16 baseline best template: `<FP16_RUN_ID_PLACEHOLDER>`
-- INT8 comparison template: `<INT8_RUN_ID_PLACEHOLDER>`
-- INT4 available cell (if used): `<INT4_RUN_ID_PLACEHOLDER>`
-- Collapse diagnostic example: `<COLLAPSE_RUN_ID_PLACEHOLDER>`
+- FP16 baseline best template: `final_pubmed_reliabi_20260427T163632_548544Z_d14da3`
+- INT8 comparison template: `final_pubmed_reliabi_20260428T142308_358498Z_334b78`
+- INT4 available cell (if used): `final_pubmed_reliabi_20260427T233449_389217Z_d16724`
+- Collapse diagnostic example: `final_pubmed_reliabi_20260427T152058_146948Z_a7088d`
 
 ## Report linkage checklist
 

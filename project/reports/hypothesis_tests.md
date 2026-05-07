@@ -6,6 +6,7 @@ Missing cells are `int4 / pubmed_t2, pubmed_t3, pubmed_t4, pubmed_t5` and `int8 
 ## Primary: |Delta_ECE| > |Delta_F1| at INT4 vs FP16
 - Statistic: `(|Delta_ECE| - |Delta_F1|)` (absolute deltas, per preregistration)
 - point=0.098465, ci=[0.098465, 0.098465]
+- Note: CI is a point interval (lower == upper) because only one INT4/FP16 template pair completed the n=2000 matrix; bootstrapping a single delta value produces a degenerate interval. Treat as anecdotal support, not a formal hypothesis test.
 - Decision (available evidence): **supported** for the completed comparison (`int4 / pubmed_t1` vs `fp16 / pubmed_t1`) because the CI is positive and excludes 0.
 - Caveat: only 1 INT4 template completed at `n=2000`; treat this as conditional support under partial matrix completeness.
 

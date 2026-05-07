@@ -7,4 +7,4 @@ evaluation:
   reliability_diagram: true
 hardware:
   device_map: "auto"
-  batch_size: 1  # TODO: tune
+  batch_size: 1

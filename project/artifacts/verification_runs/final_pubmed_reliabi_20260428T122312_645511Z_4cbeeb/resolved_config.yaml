@@ -1,0 +1,43 @@
+config_dir: C:\Users\Strea\repos\cs781-s26\project\configs
+experiment_name: final_pubmed_reliability
+seed: 42
+task: pubmed_rct
+dataset:
+  dataset_id: pubmed_rct
+  task: pubmed_rct
+  path_or_hf_id: armanc/pubmed-rct20k
+  hf_revision: main
+  splits:
+    train: train
+    val: validation
+    test: test
+    calibration_fraction: 0.15
+model:
+  model_id: biomistral_7b
+  name_or_path: BioMistral/BioMistral-7B
+  revision: main
+  architecture: mistral
+precision:
+  precision: int8
+  quantization:
+    method: llm_int8
+calibration:
+  calibration: none
+template_id: pubmed_t1
+artifact_root: artifacts/runs
+evaluation:
+  metrics:
+  - macro_f1
+  - per_class_f1
+  - accuracy
+  - ece
+  ece_bins: 15
+  reliability_diagram: true
+hardware:
+  device_map: auto
+  batch_size: 1
+sample_size: 2000
+execution_mode: local
+compute_env: local
+mode: real_inference
+inference_mode: real_inference

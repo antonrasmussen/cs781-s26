@@ -37,7 +37,7 @@ todos:
     status: completed
   - id: day4-commit
     content: "Day 4 afternoon: Single clean commit covering reports/ and any new runs under artifacts/runs/."
-    status: in_progress
+    status: completed
 isProject: false
 ---
 
@@ -235,3 +235,5 @@ All resolved 2026-04-29:
 5. Fix-Found combination: defensible AND least-compute. Pre-fix n=2000 matrix stays as documented bug-trail; one post-fix n=200 dev200 baseline is the upgrade exhibit. No full n=2000 post-fix re-run.
 
 Plan complete. Awaiting your go/no-go on Day 1.
+
+Completed 2026-04-30. All planned runs finalized; final report and metrics committed. Repo is submission-ready.
