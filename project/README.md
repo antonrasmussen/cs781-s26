@@ -7,10 +7,26 @@ Calibration and prompt stability under resource constraints for CS781 (Spring 20
 - Real-inference experiments completed: **10/15** cells at **n=2000**.
 - Completed: **FP16** (`t1`–`t5`), **INT8** (`t1`–`t4`), **INT4** (`t1` only).
 - Blocked: **INT8/t5** (runtime mismatch), **INT4/t2**–**t5** (loader errors).
-- Final report: [`reports/final_report.md`](reports/final_report.md).
+- **Canonical submission**: [`reports/CS781_Final_Report_Anton_Rasmussen.pdf`](reports/CS781_Final_Report_Anton_Rasmussen.pdf) | source: [`reports/final_report.tex`](reports/final_report.tex).
 - Metrics table: [`reports/final_metrics.md`](reports/final_metrics.md).
 - Hypothesis outcomes: [`reports/hypothesis_tests.md`](reports/hypothesis_tests.md).
 - Figures: [`reports/figures/`](reports/figures/).
+
+## Final submission artifacts
+
+Quick navigation for graders:
+
+| Artifact | Path | Purpose |
+|---|---|---|
+| Written report (PDF) | [`reports/CS781_Final_Report_Anton_Rasmussen.pdf`](reports/CS781_Final_Report_Anton_Rasmussen.pdf) | Canonical submission |
+| Report source | [`reports/final_report.tex`](reports/final_report.tex) | IEEEtran LaTeX source |
+| Run ID manifest | [`reports/run_ids_manifest.md`](reports/run_ids_manifest.md) | Claim → run\_id traceability |
+| Metrics table | [`reports/final_metrics.md`](reports/final_metrics.md) | All 10 completed n=2000 runs |
+| Hypothesis tests | [`reports/hypothesis_tests.md`](reports/hypothesis_tests.md) | Primary/secondary/tertiary outcomes |
+| Reproducibility note | [`docs/reproducibility_note.md`](docs/reproducibility_note.md) | Verification policy and export recipe |
+| Verification subset | [`artifacts/verification_runs/`](artifacts/verification_runs/) | Curated run artifacts (metrics, configs, samples) |
+
+Full raw run artifacts are git-ignored (large); see `docs/reproducibility_note.md` for the access policy.
 
 ## Research goal vs operational scope
 

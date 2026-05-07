@@ -1,0 +1,96 @@
+
+kpathsea: Running mktextfm pcrb7t
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Could not map source abbreviation  for pcrb7t.
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Need to update ?
+mktextfm: Running mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrb7t
+This is METAFONT, Version 2.71828182 (TeX Live 2025) (preloaded base=mf)
+
+kpathsea: Running mktexmf pcrb7t
+
+! I can't find file `pcrb7t'.
+<*> ...ljfour; mag:=1; ; nonstopmode; input pcrb7t
+                                                  
+Please type another input file name
+! Emergency stop.
+<*> ...ljfour; mag:=1; ; nonstopmode; input pcrb7t
+                                                  
+Transcript written on mfput.log.
+grep: pcrb7t.log: No such file or directory
+mktextfm: `mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrb7t' failed to make pcrb7t.tfm.
+kpathsea: Appending font creation commands to missfont.log.
+
+kpathsea: Running mktextfm pcrr7t
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Could not map source abbreviation  for pcrr7t.
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Need to update ?
+mktextfm: Running mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrr7t
+This is METAFONT, Version 2.71828182 (TeX Live 2025) (preloaded base=mf)
+
+kpathsea: Running mktexmf pcrr7t
+
+! I can't find file `pcrr7t'.
+<*> ...ljfour; mag:=1; ; nonstopmode; input pcrr7t
+                                                  
+Please type another input file name
+! Emergency stop.
+<*> ...ljfour; mag:=1; ; nonstopmode; input pcrr7t
+                                                  
+Transcript written on mfput.log.
+grep: pcrr7t.log: No such file or directory
+mktextfm: `mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrr7t' failed to make pcrr7t.tfm.
+
+kpathsea: Running mktextfm pcrr7t
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Could not map source abbreviation  for pcrr7t.
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Need to update ?
+mktextfm: Running mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrr7t
+This is METAFONT, Version 2.71828182 (TeX Live 2025) (preloaded base=mf)
+
+kpathsea: Running mktexmf pcrr7t
+
+! I can't find file `pcrr7t'.
+<*> ...ljfour; mag:=1; ; nonstopmode; input pcrr7t
+                                                  
+Please type another input file name
+! Emergency stop.
+<*> ...ljfour; mag:=1; ; nonstopmode; input pcrr7t
+                                                  
+Transcript written on mfput.log.
+grep: pcrr7t.log: No such file or directory
+mktextfm: `mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrr7t' failed to make pcrr7t.tfm.
+
+kpathsea: Running mktextfm pcrr7t
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Could not map source abbreviation  for pcrr7t.
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Need to update ?
+mktextfm: Running mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrr7t
+This is METAFONT, Version 2.71828182 (TeX Live 2025) (preloaded base=mf)
+
+kpathsea: Running mktexmf pcrr7t
+
+! I can't find file `pcrr7t'.
+<*> ...ljfour; mag:=1; ; nonstopmode; input pcrr7t
+                                                  
+Please type another input file name
+! Emergency stop.
+<*> ...ljfour; mag:=1; ; nonstopmode; input pcrr7t
+                                                  
+Transcript written on mfput.log.
+grep: pcrr7t.log: No such file or directory
+mktextfm: `mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrr7t' failed to make pcrr7t.tfm.
+
+kpathsea: Running mktextfm pcrrc7t
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Could not map source abbreviation  for pcrrc7t.
+/usr/local/texlive/2025basic/texmf-dist/web2c/mktexnam: Need to update ?
+mktextfm: Running mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrrc7t
+This is METAFONT, Version 2.71828182 (TeX Live 2025) (preloaded base=mf)
+
+kpathsea: Running mktexmf pcrrc7t
+
+! I can't find file `pcrrc7t'.
+<*> ...jfour; mag:=1; ; nonstopmode; input pcrrc7t
+                                                  
+Please type another input file name
+! Emergency stop.
+<*> ...jfour; mag:=1; ; nonstopmode; input pcrrc7t
+                                                  
+Transcript written on mfput.log.
+grep: pcrrc7t.log: No such file or directory
+mktextfm: `mf-nowin -progname=mf \mode:=ljfour; mag:=1; ; nonstopmode; input pcrrc7t' failed to make pcrrc7t.tfm.

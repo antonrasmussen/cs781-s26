@@ -1,6 +1,6 @@
 # Run ID Manifest
 
-This file maps each numerical claim in `reports/final_report.md` to concrete run artifacts.
+This file maps each numerical claim in `reports/CS781_Final_Report_Anton_Rasmussen.pdf` (source: `reports/final_report.tex`) to concrete run artifacts.
 
 ## Current Matrix Status (sample_size=2000)
 
@@ -20,5 +20,5 @@ This file maps each numerical claim in `reports/final_report.md` to concrete run
 | INT8 smoke viability | `mvp_pubmed_reliabili_20260427T020152_471563Z_3cda43` | Real-inference int8 smoke run completed on CUDA torch build |
 | INT4 smoke viability | `mvp_pubmed_reliabili_20260427T020152_567211Z_7c8719` | Real-inference int4 smoke run completed on CUDA torch build |
 | Primary hypothesis comparison | `reports/hypothesis_tests.md` (dev200 matrix), `final_pubmed_reliabi_20260427T152058_146948Z_a7088d`, `final_pubmed_reliabi_20260427T163632_548544Z_d14da3`, `final_pubmed_reliabi_20260427T171304_946963Z_04759a`, `final_pubmed_reliabi_20260427T211454_753565Z_82983f`, `final_pubmed_reliabi_20260427T215337_743931Z_62dc21`, `final_pubmed_reliabi_20260428T122312_645511Z_4cbeeb`, `final_pubmed_reliabi_20260428T142308_358498Z_334b78`, `final_pubmed_reliabi_20260428T155143_845589Z_bde23a`, `final_pubmed_reliabi_20260428T173219_254227Z_0dc4ed`, `final_pubmed_reliabi_20260427T233449_389217Z_d16724` | 2000-sample matrix stopped at 10/15 due to quantized-runtime failures on remaining cells |
-| Secondary recovery claim | _pending calibration runs_ | `scripts/apply_calibration.py` implemented; calibration pass not started on 2000-sample runs |
+| Secondary recovery claim | _not evaluated on n=2000 evidence set_ | `scripts/apply_calibration.py` implemented and validated on dev200; calibrated n=2000 counterparts not produced within available compute window; secondary hypothesis treated as unevaluated, not rejected |
 | Tertiary kappa observation | `reports/hypothesis_tests.md` | Dev200 kappa for fp16/int8/int4 present; higher-sample confirmation partially complete (10/15) |

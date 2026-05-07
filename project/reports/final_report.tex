@@ -1,32 +1,248 @@
-% ============================================================
-% TOOLCHAIN SMOKE ARTIFACT — NOT THE FINAL SUBMISSION REPORT
-%
-% This file was used to verify the LaTeX build toolchain only.
-% The actual final report is: reports/final_report.md
-% Deviation from the preregistered LaTeX-first plan is
-% documented in reports/final_report.md (Limitations section).
-% ============================================================
+% Final course project report (IEEEtran conference format).
+% Build from this directory:  cd reports && pdflatex final_report.tex && pdflatex final_report.tex
 \documentclass[conference]{IEEEtran}
+\usepackage{url}
+% Switch typewriter to CM Typewriter (always available; single-weight, no missing bold metrics).
+\renewcommand{\ttdefault}{cmtt}
 \usepackage{graphicx}
+\usepackage{amsmath}
 \usepackage{cite}
+\usepackage{amssymb}
+
 \begin{document}
+
 \title{Beyond Accuracy Loss in Quantized Biomedical LLMs}
-\author{\IEEEauthorblockN{Anton Rasmussen}}
+
+\author{\IEEEauthorblockN{Anton Rasmussen}
+\IEEEauthorblockA{\textit{CS781 --- AI for Health Sciences (Spring 2026)}}}
+
 \maketitle
+
 \begin{abstract}
-Placeholder abstract for toolchain smoke testing.
+We evaluate calibration~\cite{guo2017} degradation under quantization for a biomedical decoder model (BioMistral-7B~\cite{labrak2024}) on PubMed RCT sentence classification~\cite{dernoncourt2017}.
+The analysis distinguishes classification quality (macro F1) from confidence quality (ECE/ACE) and uses a single-token class-code scoring protocol to extract a well-defined probability distribution from next-token logits.
+We compare FP16 against quantized conditions and test whether post-hoc temperature scaling recovers calibration to near-FP16 levels without materially harming accuracy.
+Execution was finalized under a runtime-blocked contingency at $10/15$ completed cells on the $n=2000$ slice: FP16 (\texttt{t1}--\texttt{t5}), INT8 (\texttt{t1}--\texttt{t4}), INT4 (\texttt{t1}).
+Across completed runs, macro-F1 remains low ($0.038$--$0.095$) and ECE remains high ($0.336$--$0.704$) in both FP16 and quantized settings.
+Across these completed cells the dominant empirical signal is prompt-template-driven label collapse---$5/10$ runs predicted a single label and most others were heavily one-label-skewed---rather than a clean quantization effect, so quantization-vs-FP16 differences are interpreted within a collapse-dominated regime.
+Prompt robustness is evaluated with Fleiss' $\kappa$~\cite{fleiss1971} where template coverage permits.
+Numerical findings and hypothesis outcomes are populated from run artifacts listed in \path{reports/run_ids_manifest.md}.
 \end{abstract}
+
 \section{Introduction}
-Placeholder text for LaTeX toolchain lock.
+
+Quantized deployment is a practical requirement for many healthcare-adjacent NLP workloads, but calibration failures under compression can introduce safety-relevant risk that is invisible in aggregate accuracy.
+This project evaluates whether quantization harms calibration more than it harms classification utility in a biomedical LLM, and whether post-hoc calibration recovers that loss.
+
+The study is intentionally scoped to PubMed RCT for reproducibility and schedule control.
+MedNLI remains deferred due to unresolved data-access constraints~\cite{romanov2018}.
+This scope decision follows the original proposal fallback path and keeps the final submission focused on one complete, defensible experimental story.
+
+\paragraph{Contributions}
+This submission delivers the following, aligned with the preregistered protocol where compute and runtime constraints allowed:
+\begin{itemize}
+  \item A reproducible evaluation pipeline for prompted BioMistral-7B on PubMed RCT with FP16, INT8 (\texttt{bitsandbytes}~\cite{dettmers2022llmint8}), and INT4 (NF4~\cite{dettmers2023qlora}) inference, single-token class-code probability extraction, and reliability metrics (macro-F1, ECE, ACE, bootstrap CIs).
+  \item A finalized partial evidence matrix at $n=2000$ ($10/15$ cells): all FP16 templates, INT8 \texttt{t1}--\texttt{t4}, INT4 \texttt{t1}, with explicit documentation of blocked cells (INT8 \texttt{t5}, INT4 \texttt{t2}--\texttt{t5}).
+  \item Hypothesis scaffolding (primary paired-bootstrap contrast; secondary temperature scaling; tertiary Fleiss' $\kappa$) with outcomes tied to concrete \texttt{run\_id} artifacts and a verification subset under \path{artifacts/verification_runs/} (see \path{docs/reproducibility_note.md}).
+  \item Forensic analysis showing that label collapse and prompt sensitivity dominate the observed reliability failure modes at full precision as well as under quantization, reframing ``quantization-only'' explanations.
+\end{itemize}
+
 \section{Methods}
-Placeholder methods text.
-\begin{figure}[t]
+
+\subsection{Model and Task}
+We evaluate \texttt{BioMistral/BioMistral-7B} on PubMed RCT sentence classification with five labels: Background, Objective, Methods, Results, Conclusions.
+
+\subsection{Probability Extraction}
+Each class is mapped to a single-token class code (\texttt{A}--\texttt{E}).
+For each example prompt, we score only the logits corresponding to these code tokens at the first generated position and apply softmax over the restricted class-code set to obtain a proper probability distribution.
+
+\subsection{Precision Conditions}
+\begin{itemize}
+  \item FP16 baseline.
+  \item INT8 quantized (\texttt{bitsandbytes})~\cite{dettmers2023qlora,dettmers2022llmint8}.
+  \item INT4 quantized (\texttt{bitsandbytes} NF4) when hardware permits~\cite{dettmers2023qlora}.
+\end{itemize}
+
+\subsection{Calibration Protocol}
+Uncalibrated metrics are computed on test predictions.
+Temperature scaling fits a scalar temperature on a held-out calibration subset from validation data (15\% split, seed 42), then applies the fitted temperature to test-set class-code probabilities~\cite{guo2017,zadrozny2002}.
+Isotonic fitting is deferred and noted as a limitation.
+
+\subsection{Prompt Robustness}
+We evaluate five meaning-preserving prompt templates (\texttt{pubmed\_t1}--\texttt{pubmed\_t5}) and compute Fleiss' $\kappa$ across template predictions on matched examples~\cite{fleiss1971}.
+When template-complete test-slice results are not available, $\kappa$ is reported on \texttt{dev200} as a descriptive lower-power analysis.
+
+\subsection{Metrics and Inference Rules}
+Macro F1, per-class F1, accuracy; ECE (15 equal-width bins), ACE (15 equal-mass bins); bootstrap confidence intervals: 1000 resamples, percentile method, seed 42.
+Primary hypothesis decision rule: paired-bootstrap CI on $(|\Delta\mathrm{ECE}| - |\Delta F_1|)$ must exclude zero and be positive; otherwise the result is reported as inconclusive.
+
+ACE and ECE are numerically identical across all completed runs because extreme label-probability collapse concentrates predictions in a narrow confidence region, making equal-width and equal-mass binning equivalent in practice.
+
+\section{Results}
+
+Results are generated from \path{reports/final_metrics.md}, \path{reports/hypothesis_tests.md}, and the figures referenced below.
+Each headline quantitative claim maps to concrete \texttt{run\_id} entries in \path{reports/run_ids_manifest.md}.
+Table~\ref{tab:matrix} shows the finalized evidence matrix; Table~\ref{tab:metrics} lists per-run metrics for all ten completed runs (suffix column matches the trailing hash segment of each full \texttt{run\_id}).
+ACE equals ECE for every row (see Methods).
+
+Execution was stopped at $10/15$ cells for the $n=2000$ matrix due to repeatable quantized-runtime failures (\texttt{int8/pubmed\_t5} constructor mismatch and \texttt{int4} meta-tensor loader errors).
+Completed cells include all FP16 templates, INT8 \texttt{t1}--\texttt{t4}, and INT4 \texttt{t1}.
+This partial matrix is treated as the finalized evidence set; all claims are limited to those completed runs.
+A forensic pass (\path{reports/diagnostics/forensics_day1.md}) shows strong collapse structure: $5/10$ runs are single-label (\textsc{Background}) and the remaining runs are heavily imbalanced toward one label.
+
+From Table~\ref{tab:metrics}, FP16 rows show accuracy $0.1055$--$0.1470$, macro-F1 $0.0382$--$0.0955$, and ECE $0.3360$--$0.7040$.
+INT8 rows (\texttt{t1}--\texttt{t4}) are similar (accuracy $0.1055$--$0.1315$, macro-F1 $0.0382$--$0.0953$, ECE $0.3555$--$0.6839$).
+The only completed INT4 row (\texttt{t1}) yields accuracy $0.1055$, macro-F1 $0.0382$, ECE $0.5876$.
+This supports a conservative interpretation: reliability deficits are already substantial in FP16 and remain substantial under quantization.
+
+Fig.~\ref{fig:reliability} shows reliability diagnostics by precision and template; each panel is one completed run, and uniformly high ECE ($\geq 0.34$) across all panels confirms that miscalibration is not isolated to any one precision condition.
+Fig.~\ref{fig:recovery} plots uncalibrated ECE across templates and precisions; temperature-scaled counterparts were not produced for the $n=2000$ evidence set (see Limitations and Discussion).
+Fig.~\ref{fig:collapse} visualizes label-collapse patterns; five runs concentrate almost entirely on a single class, consistent with the forensic histograms.
+
+\begin{table}[!t]
+\caption{Finalized $n=2000$ evidence matrix ($10/15$ cells completed).
+$\checkmark$ = completed; $\times$ = blocked by runtime failure.}
+\label{tab:matrix}
 \centering
-\fbox{\rule{0pt}{1.5in}\rule{0.9\linewidth}{0pt}}
-\caption{Placeholder figure for smoke test.}
+{\footnotesize
+\begin{tabular}{@{}l ccccc@{}}
+\hline
+\textbf{Prec.} & \textbf{t1} & \textbf{t2} & \textbf{t3} & \textbf{t4} & \textbf{t5} \\
+\hline
+FP16 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+INT8 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\times$ \\
+INT4 & $\checkmark$ & $\times$     & $\times$     & $\times$     & $\times$ \\
+\hline
+\end{tabular}}
+\end{table}
+
+\begin{table}[!t]
+\caption{Per-run metrics on the finalized stratified $n=2000$ PubMed RCT slice. Suffix is the trailing segment of the canonical \texttt{run\_id} (full IDs in \protect\path{reports/run_ids_manifest.md}).}
+\label{tab:metrics}
+\centering
+{\footnotesize
+\begin{tabular}{@{}l l l r r r r@{}}
+\hline
+\textbf{Sfx} & \textbf{Prec.} & \textbf{Tmpl} & \textbf{$n$} & \textbf{Acc.} & \textbf{F1} & \textbf{ECE} \\
+\hline
+a7088d & fp16 & t1 & 2000 & 0.1055 & 0.0382 & 0.6861 \\
+d14da3 & fp16 & t2 & 2000 & 0.1330 & 0.0955 & 0.3360 \\
+04759a & fp16 & t3 & 2000 & 0.1055 & 0.0451 & 0.4713 \\
+82983f & fp16 & t4 & 2000 & 0.1055 & 0.0382 & 0.7040 \\
+62dc21 & fp16 & t5 & 2000 & 0.1470 & 0.0592 & 0.3764 \\
+d16724 & int4 & t1 & 2000 & 0.1055 & 0.0382 & 0.5876 \\
+4cbeeb & int8 & t1 & 2000 & 0.1055 & 0.0382 & 0.6752 \\
+334b78 & int8 & t2 & 2000 & 0.1315 & 0.0953 & 0.3555 \\
+bde23a & int8 & t3 & 2000 & 0.1060 & 0.0461 & 0.4602 \\
+0dc4ed & int8 & t4 & 2000 & 0.1055 & 0.0382 & 0.6839 \\
+\hline
+\end{tabular}}
+\end{table}
+
+\begin{figure}[!tb]
+\centering
+\includegraphics[width=\linewidth]{figures/reliability_by_precision.png}
+\caption{Reliability diagnostics by precision and template (all runs uncalibrated). All panels show ECE $\geq 0.34$; the miscalibration pattern tracks template rather than precision, consistent with collapse-driven behavior.}
+\label{fig:reliability}
 \end{figure}
+
+\begin{figure}[!tb]
+\centering
+\includegraphics[width=\linewidth]{figures/recovery_plot.png}
+\caption{Uncalibrated ECE across templates and precisions. Calibrated counterparts were not generated for the finalized $n=2000$ matrix.}
+\label{fig:recovery}
+\end{figure}
+
+\begin{figure}[!tb]
+\centering
+\includegraphics[width=\linewidth]{figures/collapse_pattern.png}
+\caption{Label-collapse structure across all completed runs. Five of ten runs predicted a single class (Background) for all 2000 examples; the remaining five show heavy one-label skew. Aligned with forensic histograms in \protect\path{reports/diagnostics/forensics_day1.md}.}
+\label{fig:collapse}
+\end{figure}
+
+\section{Discussion}
+
+Discussion focuses on three practical questions: (1)~whether calibration drift under quantization is materially larger than classification drift; (2)~whether temperature scaling offers reliable recovery without reducing task utility; (3)~whether prompt-level instability is separable from calibration quality.
+
+Hypothesis outcomes are interpreted against preregistered rules but are constrained by matrix incompleteness.
+The primary statistic is positive on the completed INT4-vs-FP16 comparison (point${=}0.098465$, CI $[0.098465, 0.098465]$---a degenerate interval because only one INT4/FP16 template pair completed at $n{=}2000$ and bootstrapping a single delta yields no spread).
+This is treated as anecdotal evidence consistent with the hypothesis direction, not a formal test.
+The secondary recovery hypothesis is \emph{unevaluated}---not supported or rejected---on the finalized $n{=}2000$ evidence set: calibrated counterparts were not produced for these runs (see also Limitations).
+Tertiary Fleiss' $\kappa$ is descriptive only: INT4 lacks template-complete coverage at $n{=}2000$, so the preregistered non-recovery claim cannot be formally tested.
+Observed values are FP16 $\kappa{=}{-0.183}$ (95\% CI $[-0.186,\,-0.179]$) and INT8 $\kappa{=}{-0.050}$ (CI $[-0.057,\,-0.041]$)---both negative, confirming that template predictions agree less than chance and indicating strong prompt sensitivity (full results in \path{reports/hypothesis_tests.md}).
+
+At this stage, the dominant issue is not model loading or GPU plumbing alone; it is a mix of (1)~runtime incompatibilities in some quantized paths and (2)~weak reliability quality in the cells that do run.
+Across completed $n=2000$ runs, macro-F1 remains low and ECE remains high for both FP16 and quantized settings, indicating that calibration-quality deficits are not explained solely by quantization.
+
+The dominant empirical signal is prompt-template-driven label collapse rather than quantization-induced calibration degradation.
+Five of ten completed runs predicted a single label (\textsc{Background}) for all 2000 examples, and the remaining runs were heavily skewed toward one or two labels.
+This collapse is present at FP16 precision, which means the reliability problem precedes quantization.
+From a clinical deployment perspective, even full-precision BioMistral-7B exhibits extreme prompt sensitivity on this task---a reliability risk independent of compression-induced degradation.
+
+Temperature scaling was implemented and validated on \texttt{dev200} (see \path{src/reliability_eval/calibration/}), but could not be applied to the $n=2000$ evidence set within the available compute window; this is why the secondary hypothesis is unevaluated rather than rejected.
+Whether temperature scaling can recover calibration in a collapse-dominated regime is an open empirical question left to future work.
+
+\subsection{Limitations}
+\begin{itemize}
+  \item Single-task scope (PubMed RCT only; MedNLI deferred due to data-access constraints~\cite{romanov2018}).
+  \item Final evidence matrix incomplete ($10/15$ cells): INT8/\texttt{t5} blocked by a constructor mismatch; INT4/\texttt{t2}--\texttt{t5} blocked by meta-tensor loader errors; CPU-only reruns are not practical at $n{=}2000$ scale.
+  \item Secondary hypothesis (temperature-scaling recovery) is \emph{unevaluated} on the finalized evidence set; calibrated $n{=}2000$ counterparts were not produced within the available compute window.
+  \item Isotonic calibration deferred; temperature scaling implemented and validated on \texttt{dev200} only.
+  \item Pretraining contamination between BioMistral corpora and PubMed RCT cannot be directly audited from released manifests.
+\end{itemize}
+
+\section{Reproducibility}
+
+The full project repository is publicly available at
+\url{https://github.com/antonrasmussen/cs781-s26/tree/main/project}.
+All run-level claims map to \texttt{run\_id} entries in \path{reports/run_ids_manifest.md}.
+The canonical submission-facing disclosure, export recipes, and verification-subset policy are in \path{docs/reproducibility_note.md}.
+A curated artifact subset (metrics, configs, prediction samples, per-run reliability figures) is under \path{artifacts/verification_runs/}; full raw runs are git-ignored by default and may require access to the CUDA execution host.
+Graders without GPU access can inspect the curated subset and run \texttt{python -m reliability\_eval.cli -{}-help} to verify the pipeline entrypoint.
+
 \bibliographystyle{IEEEtran}
-\begin{thebibliography}{1}
-\bibitem{guo2017} C.~Guo, G.~Pleiss, Y.~Sun, and K.~Weinberger, ``On Calibration of Modern Neural Networks,'' ICML, 2017.
+\begin{thebibliography}{00}
+
+\bibitem{guo2017}
+C.~Guo, G.~Pleiss, Y.~Sun, and K.~Q.~Weinberger,
+``On calibration of modern neural networks,''
+in \textit{Proc. ICML}, 2017.
+
+\bibitem{dernoncourt2017}
+F.~Dernoncourt and J.~Y.~Lee,
+``PubMed 200k RCT: a dataset for sequential sentence classification in medical abstracts,''
+in \textit{Proc. IJCNLP}, 2017.
+
+\bibitem{labrak2024}
+Y.~Labrak, A.~Bazoge, E.~Morin, P.-A.~Gourraud, M.~Rouvier, and R.~Dufour,
+``BioMistral: a collection of open-source pretrained large language models for medical domains,''
+\textit{arXiv preprint arXiv:2402.10373}, 2024.
+
+\bibitem{dettmers2023qlora}
+T.~Dettmers, A.~Pagnoni, A.~Holtzman, and L.~Zettlemoyer,
+``QLoRA: efficient finetuning of quantized LLMs,''
+in \textit{Proc. NeurIPS}, 2023.
+
+\bibitem{dettmers2022llmint8}
+T.~Dettmers, M.~Lewis, Y.~Belkada, and L.~Zettlemoyer,
+``LLM.int8(): 8-bit matrix multiplication for transformers at scale,''
+in \textit{Proc. NeurIPS}, 2022.
+
+\bibitem{fleiss1971}
+J.~L.~Fleiss,
+``Measuring nominal scale agreement among many raters,''
+\textit{Psychological Bulletin}, vol.~76, no.~5, pp.~378--382, 1971.
+
+\bibitem{zadrozny2002}
+B.~Zadrozny and C.~Elkan,
+``Transforming classifier scores into accurate multiclass probability estimates,''
+in \textit{Proc. KDD}, 2002.
+
+\bibitem{romanov2018}
+A.~Romanov and C.~Shivade,
+``Lessons from natural language inference in the clinical domain,''
+in \textit{Proc. EMNLP}, 2018.
+
 \end{thebibliography}
+
 \end{document}
