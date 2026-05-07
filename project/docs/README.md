@@ -4,6 +4,8 @@ If you are handing off to CUDA, read `cuda_pubmed_handoff.md` first.
 
 | Document | Description |
 |----------|-------------|
+| [reproducibility_note.md](reproducibility_note.md) | Reproducibility and artifact disclosure for submission |
+| [reproducibility_note_template.md](reproducibility_note_template.md) | Template source for the reproducibility note |
 | [cuda_pubmed_handoff.md](cuda_pubmed_handoff.md) | Operator runbook for first real PubMed CUDA experiment |
 | [data_inventory.md](data_inventory.md) | Current data/provenance status and blocker framing |
 | [experiment_protocol.md](experiment_protocol.md) | Active protocol and scope boundaries |

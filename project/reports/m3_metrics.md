@@ -1,5 +1,7 @@
 # Matrix status snapshot (sample_size=2000)
 
+**Superseded — use [`final_metrics.md`](final_metrics.md) for the authoritative per-run metrics table and submission claims.**
+
 Note: this is a milestone-3 matrix-completeness snapshot and is superseded by `reports/final_metrics.md`.
 
 - Completion: `10/15`

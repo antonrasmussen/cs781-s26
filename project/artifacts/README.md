@@ -29,7 +29,8 @@ This directory contains experiment outputs used by the final report.
 ## Related files
 
 - `reports/run_ids_manifest.md` maps report claims to run IDs.
-- `docs/reproducibility_note_template.md` provides archive/linking language for submissions.
+- `docs/reproducibility_note.md` is the canonical reproducibility and artifact disclosure for submission.
+- `docs/reproducibility_note_template.md` provides editable template language (source for the note above).
 - `scripts/export_verification_runs.py` exports selected runs into `artifacts/verification_runs/`.
 
 ## Known artifact quirks

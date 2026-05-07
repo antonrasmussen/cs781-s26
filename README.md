@@ -16,7 +16,9 @@ Course materials for Spring 2026.
 
 ## Project
 
-The course project proposal source is in `project/docs/proposal.md`. For day-to-day experiment work, start with `project/README.md`. For CUDA handoff operations, start with `project/docs/cuda_pubmed_handoff.md`.
+**Final course project (reviewers start here):** [project/reports/final_report.md](project/reports/final_report.md), summarized metrics in [project/reports/final_metrics.md](project/reports/final_metrics.md), and hypothesis outcomes in [project/reports/hypothesis_tests.md](project/reports/hypothesis_tests.md). Reproducibility and artifact disclosure: [project/docs/reproducibility_note.md](project/docs/reproducibility_note.md).
+
+The course project proposal source is in [project/docs/proposal.md](project/docs/proposal.md). For repository layout and commands, see [project/README.md](project/README.md). For historical CUDA handoff operations during development, see [project/docs/cuda_pubmed_handoff.md](project/docs/cuda_pubmed_handoff.md).
 
 To regenerate the proposal PDF:
 

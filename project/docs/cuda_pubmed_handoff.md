@@ -1,5 +1,7 @@
 # CUDA handoff: PubMed first experiment
 
+**Historical context:** This is an operator runbook from **active development** (CUDA handoff and early gates). For the **final submission** narrative, numbers, and hypothesis outcomes, read [`reports/final_report.md`](../reports/final_report.md), [`reports/final_metrics.md`](../reports/final_metrics.md), and [`reports/hypothesis_tests.md`](../reports/hypothesis_tests.md).
+
 Use this when moving to a CUDA machine. The goal is to get from the current data inventory to the first serious PubMed experiment without wasting time on already-solved data work.
 
 ## Current state
