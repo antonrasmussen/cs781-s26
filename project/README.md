@@ -2,6 +2,11 @@
 
 Calibration and prompt stability under resource constraints for CS781 (Spring 2026).
 
+> **Historical course package.** Scientific SoT for the published study is
+> [arXiv:2608.03854](https://arxiv.org/abs/2608.03854) /
+> [fss26_antonLLM](https://github.com/hongqin/fss26_antonLLM). See
+> [`docs/STATUS.md`](docs/STATUS.md). Do not use this tree to reproduce the preprint.
+
 ## Final state (2026-04-30)
 
 - Real-inference experiments completed: **10/15** cells at **n=2000**.

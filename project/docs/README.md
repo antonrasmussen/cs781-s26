@@ -4,6 +4,7 @@ If you are handing off to CUDA, read `cuda_pubmed_handoff.md` first.
 
 | Document | Description |
 |----------|-------------|
+| [STATUS.md](STATUS.md) | Scientific SoT status vs arXiv:2608.03854 / fss26_antonLLM (read first) |
 | [evidence_registry.md](evidence_registry.md) | Frozen inventory of tracked / external / missing evidence |
 | [manuscript_claim_boundaries.md](manuscript_claim_boundaries.md) | Supported vs unevaluated manuscript claims |
 | [reproducibility_note.md](reproducibility_note.md) | Reproducibility and artifact disclosure for submission |
