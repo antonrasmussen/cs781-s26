@@ -1,4 +1,10 @@
-"""Isotonic regression per class (Zadrozny & Elkan). Fitting is still TODO."""
+"""Isotonic regression per class (Zadrozny & Elkan).
+
+Manuscript scope: apply path exists for a supplied ``transform`` callable;
+``fit_isotonic`` is **deferred / not implemented**. Temperature scaling is the
+only fitted calibrator in the current evidence package
+(see ``docs/manuscript_claim_boundaries.md``).
+"""
 
 from __future__ import annotations
 
@@ -40,5 +46,10 @@ def _apply_monotone_then_renorm(probs: list, transform: Callable[[float], float]
 
 
 def fit_isotonic(probs_calib, labels_calib):
-    """Return fitted isotonic mapper(s). TODO: Implement."""
-    raise NotImplementedError("TODO: implement isotonic.fit_isotonic")
+    """Return fitted isotonic mapper(s).
+
+    Not implemented for the current manuscript package (deferred).
+    """
+    raise NotImplementedError(
+        "isotonic.fit_isotonic is deferred; see docs/manuscript_claim_boundaries.md"
+    )

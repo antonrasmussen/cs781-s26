@@ -145,6 +145,8 @@ Temperature scaling was fully implemented and validated on dev200 (see `src/reli
 
 All run-level claims map to `run_id` entries in `reports/run_ids_manifest.md`.
 
+Claim boundaries for conference framing (supported vs unevaluated vs out-of-scope) are frozen in `docs/manuscript_claim_boundaries.md` and `docs/evidence_registry.md`. Do not expand quantitative claims beyond those documents without new artifacts.
+
 ## References
 
 [1] C. Guo, G. Pleiss, Y. Sun, and K. Weinberger, "On Calibration of Modern Neural Networks," ICML, 2017.

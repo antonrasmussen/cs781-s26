@@ -1,4 +1,5 @@
 # MedNLI templates (3 classes: A/B/C)
+# Manuscript scope: placeholders only — no body fields; MedNLI deferred.
 task: mednli
 label_codes:
   entailment: A
@@ -7,4 +8,4 @@ label_codes:
 templates:
   - id: mednli_t1
   - id: mednli_t2
-  # TODO: add 5 templates when MedNLI is active
+  # Add template bodies only after MedNLI data access is confirmed.

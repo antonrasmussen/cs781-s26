@@ -10,8 +10,11 @@ Use this template in your report appendix, README, or submission note.
   - `reports/final_metrics.md`
   - `reports/hypothesis_tests.md`
   - `reports/run_ids_manifest.md`
+  - `reports/verification_run_ids.txt`
 - Small verification subset of run artifacts:
   - `artifacts/verification_runs/`
+- Evidence freeze index:
+  - `docs/evidence_registry.md`
 
 ## What is stored outside the repository
 
@@ -33,11 +36,11 @@ Canonical archive location:
 - `predictions_sample.jsonl` (sampled first N rows)
 - `manifest.json` (export summary)
 
-This subset is intended for quick inspection and claim traceability; full reproduction uses the external archive.
+This subset is intended for quick inspection and claim traceability; full reproduction uses the external archive when available.
 
 ## Command recipe: export selected runs into `artifacts/verification_runs/`
 
-From repo root:
+From `project/`:
 
 ```bash
 python scripts/export_verification_runs.py \
@@ -51,21 +54,13 @@ Optional run-id file mode (one run ID per line, `#` comments allowed):
 ```bash
 python scripts/export_verification_runs.py \
   --run-id-file reports/verification_run_ids.txt \
-  --predictions-limit 200
-```
-
-Optional include reliability figures:
-
-```bash
-python scripts/export_verification_runs.py \
-  --run-id-file reports/verification_run_ids.txt \
   --predictions-limit 200 \
   --include-figure
 ```
 
 ## Suggested run IDs for verification subset
 
-Choose 2-5 runs that cover your main claims (example set):
+Choose 2–5 runs that cover your main claims (example set):
 
 - FP16 baseline best template: `final_pubmed_reliabi_20260427T163632_548544Z_d14da3`
 - INT8 comparison template: `final_pubmed_reliabi_20260428T142308_358498Z_334b78`
@@ -74,7 +69,8 @@ Choose 2-5 runs that cover your main claims (example set):
 
 ## Report linkage checklist
 
-- `reports/run_ids_manifest.md` references each claim -> run_id.
-- This note includes a reachable full archive URL.
+- `reports/run_ids_manifest.md` references each claim → run_id.
+- External archive disclosure is honest (reachable URL or explicit “not published”).
 - Verification subset manifest exists at `artifacts/verification_runs/manifest.json`.
 - Any known missing cells / failed runs are explicitly documented.
+- Stale milestone artifacts are quarantined under `reports/archive/` if present.

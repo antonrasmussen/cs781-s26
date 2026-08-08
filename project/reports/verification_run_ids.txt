@@ -1,0 +1,14 @@
+# Finalized n=2000 verification run IDs
+# Used by: python scripts/export_verification_runs.py --run-id-file reports/verification_run_ids.txt
+# Matrix: 10/15 cells (FP16 t1–t5, INT8 t1–t4, INT4 t1)
+
+final_pubmed_reliabi_20260427T152058_146948Z_a7088d
+final_pubmed_reliabi_20260427T163632_548544Z_d14da3
+final_pubmed_reliabi_20260427T171304_946963Z_04759a
+final_pubmed_reliabi_20260427T211454_753565Z_82983f
+final_pubmed_reliabi_20260427T215337_743931Z_62dc21
+final_pubmed_reliabi_20260427T233449_389217Z_d16724
+final_pubmed_reliabi_20260428T122312_645511Z_4cbeeb
+final_pubmed_reliabi_20260428T142308_358498Z_334b78
+final_pubmed_reliabi_20260428T155143_845589Z_bde23a
+final_pubmed_reliabi_20260428T173219_254227Z_0dc4ed

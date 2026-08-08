@@ -1,4 +1,9 @@
-"""Fleiss' kappa across templates; per-sample flip rate."""
+"""Fleiss' kappa across templates.
+
+Manuscript scope: Fleiss' κ (+ bootstrap CI) is implemented and used in
+``experiments/build_final_report.py``. Per-sample flip rate is **not**
+implemented and must not be claimed (see ``docs/manuscript_claim_boundaries.md``).
+"""
 
 
 from __future__ import annotations

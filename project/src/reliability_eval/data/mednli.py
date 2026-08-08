@@ -18,6 +18,9 @@ def load_mednli(path_or_hf_id: str | None = None, split: str = "test"):
         split: Split name (e.g. ``train``, ``validation``, ``test``).
 
     Raises:
-        NotImplementedError: Always, until loading is implemented.
+        NotImplementedError: Always, until loading is implemented (manuscript:
+        MedNLI remains out of scope; see docs/manuscript_claim_boundaries.md).
     """
-    raise NotImplementedError("TODO: implement mednli.load_mednli")
+    raise NotImplementedError(
+        "mednli.load_mednli is blocked/deferred; see docs/manuscript_claim_boundaries.md"
+    )

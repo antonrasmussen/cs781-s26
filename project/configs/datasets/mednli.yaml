@@ -1,7 +1,8 @@
 # MedNLI (3-class). PhysioNet access; fallback to PubMed-only if needed.
+# Manuscript scope: BLOCKED / not implemented — see docs/manuscript_claim_boundaries.md
 dataset_id: mednli
 task: mednli
-path_or_hf_id: null  # TODO: PhysioNet path or HF id when available
+path_or_hf_id: null  # PhysioNet path or HF id when available (not configured)
 splits:
   train: train
   val: validation

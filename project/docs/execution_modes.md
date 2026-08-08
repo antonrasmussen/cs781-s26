@@ -29,6 +29,12 @@ python experiments/run_grid.py --sweep mvp_pubmed --sample-size 4
 # Via CLI
 PYTHONPATH=src python -m reliability_eval.cli run --sample-size 8
 PYTHONPATH=src python -m reliability_eval.cli sweep --dry-run
+
+# Rebuild final metrics/hypothesis/figures from existing artifacts
+PYTHONPATH=src python -m reliability_eval.cli report \
+  --artifact-root artifacts/runs \
+  --run-id-file reports/verification_run_ids.txt \
+  --expected-count 10
 ```
 
 Set `RELIABILITY_ARTIFACT_ROOT` to override artifact output directory.

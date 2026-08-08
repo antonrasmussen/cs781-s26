@@ -96,7 +96,8 @@ def test_metadata_has_required_provenance_fields(tmp_path):
     assert metadata["dataset_source"] in {
         "pubmed_rct_tiny",
         "hf://armanc/pubmed-rct20k@main",
-    }
+        "hf://armanc/pubmed-rct20k@091aec1e2384a20b2b36eb96177755ca13dd0b42",
+    } or str(metadata["dataset_source"]).startswith("hf://armanc/pubmed-rct20k@")
 
 
 def test_flyte_task_produces_same_artifact_structure_as_run_single(tmp_path):

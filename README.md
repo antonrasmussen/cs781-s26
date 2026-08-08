@@ -30,6 +30,6 @@ Course materials for Spring 2026.
 | Reproducibility note | [project/docs/reproducibility\_note.md](project/docs/reproducibility_note.md) |
 | Verification artifacts | [project/artifacts/verification\_runs/](project/artifacts/verification_runs/) |
 
-### More project detail
+\subsection More project detail
 
-For full repo layout, setup instructions, and CLI commands see [project/README.md](project/README.md). The original proposal is in [project/docs/proposal.md](project/docs/proposal.md).
+For full repo layout, setup instructions, and CLI commands see [project/README.md](project/README.md). The original proposal is in [project/docs/proposal.md](project/docs/proposal.md). Manuscript claim boundaries and the frozen evidence inventory are in [project/docs/manuscript_claim_boundaries.md](project/docs/manuscript_claim_boundaries.md) and [project/docs/evidence_registry.md](project/docs/evidence_registry.md).

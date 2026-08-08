@@ -5,3 +5,7 @@
 #   pip install -e ".[gpu,dev]"
 #
 # Optional: pip install -e ".[flyte]" for Flyte sandbox orchestration
+#
+# Environment pinning / HF revision pins: see docs/environment.md
+# After a working CUDA install, optionally freeze:
+#   pip freeze > requirements-lock.txt

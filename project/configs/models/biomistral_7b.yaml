@@ -1,5 +1,8 @@
 # BioMistral-7B (Labrak et al., 2024)
 model_id: biomistral_7b
 name_or_path: "BioMistral/BioMistral-7B"  # HuggingFace
-revision: "main"
+# Pinned commit for future reproducibility (HF API, 2026-05-07).
+# Historical n=2000 runs used revision: main; model SHA has been stable since 2024-02-21.
+# See docs/environment.md.
+revision: "9a11e1ffa817c211cbb52ee1fb312dc6b61b40a5"
 architecture: mistral

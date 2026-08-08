@@ -2,7 +2,10 @@
 dataset_id: pubmed_rct
 task: pubmed_rct
 path_or_hf_id: "armanc/pubmed-rct20k"
-hf_revision: "main"
+# Pinned commit for future reproducibility (HF API, 2026-05-07).
+# Historical n=2000 runs resolved hf_revision: main at execution time (2026-04-27/28);
+# see docs/environment.md and data/provenance/pubmed_rct_download.json.
+hf_revision: "091aec1e2384a20b2b36eb96177755ca13dd0b42"
 splits:
   train: train
   val: validation

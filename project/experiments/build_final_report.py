@@ -396,6 +396,17 @@ def _hypothesis_rows(rows: list[dict], artifact_root: Path) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _read_run_ids(path: Path) -> list[str]:
+    """Read run IDs from a text file (one per line; ``#`` comments allowed)."""
+    out: list[str] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        out.append(line)
+    return out
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build final report artifacts from runs.")
     parser.add_argument("--artifact-root", default="artifacts/runs")
@@ -404,6 +415,11 @@ def main() -> int:
         action="append",
         default=None,
         help="Optional run id filter (repeat flag for multiple runs)",
+    )
+    parser.add_argument(
+        "--run-id-file",
+        default=None,
+        help="Optional text file with one run ID per line (# comments allowed)",
     )
     parser.add_argument("--expected-count", type=int, default=None)
     parser.add_argument("--table-out", default="reports/final_metrics.md")
@@ -414,10 +430,15 @@ def main() -> int:
     parser.add_argument("--figures-only", action="store_true")
     args = parser.parse_args()
 
+    run_ids: list[str] | None = list(args.run_id) if args.run_id else []
+    if args.run_id_file:
+        run_ids.extend(_read_run_ids(Path(args.run_id_file)))
+    run_ids = sorted(set(run_ids)) if run_ids else None
+
     artifact_root = Path(args.artifact_root)
     payload = aggregate_metrics(
         str(artifact_root),
-        run_ids=args.run_id,
+        run_ids=run_ids,
         expected_count=args.expected_count,
     )
     rows = payload["runs"]

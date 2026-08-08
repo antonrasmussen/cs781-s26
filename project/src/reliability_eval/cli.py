@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import runpy
 import sys
 from pathlib import Path
 
@@ -62,9 +63,52 @@ def _cmd_sweep(args: argparse.Namespace) -> int:
 
 
 def _cmd_report(args: argparse.Namespace) -> int:
-    """Aggregate runs into report. Stub."""
-    print("report: not yet implemented")
-    return 1
+    """Aggregate runs into metrics tables, hypothesis tests, and figures.
+
+    Thin wrapper over ``experiments/build_final_report.py`` so CLI and script
+    paths stay aligned.
+    """
+    project_root = _project_root()
+    script = project_root / "experiments" / "build_final_report.py"
+    if not script.exists():
+        print(f"report: missing builder script at {script}", file=sys.stderr)
+        return 1
+
+    argv = [
+        str(script),
+        "--artifact-root",
+        args.artifact_root,
+        "--table-out",
+        args.table_out,
+        "--hypothesis-out",
+        args.hypothesis_out,
+        "--reliability-fig-out",
+        args.reliability_fig_out,
+        "--recovery-fig-out",
+        args.recovery_fig_out,
+        "--collapse-fig-out",
+        args.collapse_fig_out,
+    ]
+    for run_id in args.run_id or []:
+        argv.extend(["--run-id", run_id])
+    if args.run_id_file:
+        argv.extend(["--run-id-file", args.run_id_file])
+    if args.expected_count is not None:
+        argv.extend(["--expected-count", str(args.expected_count)])
+    if args.figures_only:
+        argv.append("--figures-only")
+
+    # Preserve caller's cwd semantics: prefer project root when invoked as module.
+    old_argv = sys.argv
+    try:
+        sys.argv = argv
+        runpy.run_path(str(script), run_name="__main__")
+    except SystemExit as exc:
+        code = exc.code
+        return int(code) if isinstance(code, int) else (0 if code is None else 1)
+    finally:
+        sys.argv = old_argv
+    return 0
 
 
 def main() -> int:
@@ -105,7 +149,32 @@ def main() -> int:
     sweep_parser.set_defaults(func=_cmd_sweep)
 
     # report
-    report_parser = subparsers.add_parser("report", help="Aggregate runs into report")
+    report_parser = subparsers.add_parser(
+        "report",
+        help="Build final metrics/hypothesis/figures from existing run artifacts",
+    )
+    report_parser.add_argument("--artifact-root", default="artifacts/runs")
+    report_parser.add_argument(
+        "--run-id",
+        action="append",
+        default=[],
+        help="Optional run id filter (repeat flag for multiple runs)",
+    )
+    report_parser.add_argument(
+        "--run-id-file",
+        default=None,
+        help="Optional text file with one run ID per line",
+    )
+    report_parser.add_argument("--expected-count", type=int, default=None)
+    report_parser.add_argument("--table-out", default="reports/final_metrics.md")
+    report_parser.add_argument("--hypothesis-out", default="reports/hypothesis_tests.md")
+    report_parser.add_argument(
+        "--reliability-fig-out",
+        default="reports/figures/reliability_by_precision.png",
+    )
+    report_parser.add_argument("--recovery-fig-out", default="reports/figures/recovery_plot.png")
+    report_parser.add_argument("--collapse-fig-out", default="reports/figures/collapse_pattern.png")
+    report_parser.add_argument("--figures-only", action="store_true")
     report_parser.set_defaults(func=_cmd_report)
 
     args = parser.parse_args()

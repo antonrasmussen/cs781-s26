@@ -21,8 +21,11 @@ Quick navigation for graders:
 | Written report (PDF) | [`reports/CS781_Final_Report_Anton_Rasmussen.pdf`](reports/CS781_Final_Report_Anton_Rasmussen.pdf) | Canonical submission |
 | Report source | [`reports/final_report.tex`](reports/final_report.tex) | IEEEtran LaTeX source |
 | Run ID manifest | [`reports/run_ids_manifest.md`](reports/run_ids_manifest.md) | Claim → run\_id traceability |
+| Verification run IDs | [`reports/verification_run_ids.txt`](reports/verification_run_ids.txt) | Canonical 10-run export list |
 | Metrics table | [`reports/final_metrics.md`](reports/final_metrics.md) | All 10 completed n=2000 runs |
 | Hypothesis tests | [`reports/hypothesis_tests.md`](reports/hypothesis_tests.md) | Primary/secondary/tertiary outcomes |
+| Evidence registry | [`docs/evidence_registry.md`](docs/evidence_registry.md) | Tracked / external / missing evidence |
+| Claim boundaries | [`docs/manuscript_claim_boundaries.md`](docs/manuscript_claim_boundaries.md) | Safe vs unevaluated claims |
 | Reproducibility note | [`docs/reproducibility_note.md`](docs/reproducibility_note.md) | Verification policy and export recipe |
 | Verification subset | [`artifacts/verification_runs/`](artifacts/verification_runs/) | Curated run artifacts (metrics, configs, samples) |
 
@@ -32,10 +35,21 @@ Full raw run artifacts are git-ignored (large); see `docs/reproducibility_note.m
 
 The research goal is to evaluate reliability impacts of quantization on biomedical LLM classification, including calibration and prompt robustness analyses.
 
-Current operational work is intentionally narrower: stabilize a trustworthy PubMed-first real-inference path before spending CUDA time on larger runs, quantized sweeps, or MedNLI.
+**Current evidence package** is intentionally narrower and claim-bounded:
+
+- PubMed-only (MedNLI deferred).
+- Finalized matrix **10/15** at n=2000 (see `docs/evidence_registry.md`).
+- Secondary (temperature recovery) **unevaluated** on n=2000.
+- Safe vs unsafe claim language: `docs/manuscript_claim_boundaries.md`.
+
+Do not expand manuscript claims beyond that document without new artifacts.
 
 ## Quick links
 
+- Evidence registry (frozen): `docs/evidence_registry.md`
+- Claim boundaries: `docs/manuscript_claim_boundaries.md`
+- Reproducibility note: `docs/reproducibility_note.md`
+- Environment / revision pins: `docs/environment.md`
 - CUDA handoff runbook: `docs/cuda_pubmed_handoff.md`
 - Data status and provenance: `docs/data_inventory.md`
 - Active protocol: `docs/experiment_protocol.md`
@@ -83,6 +97,13 @@ Sanity tests:
 pytest tests/ -v
 ```
 
+Claim / artifact integrity (no GPU):
+
+```bash
+python scripts/verify_claim_consistency.py
+python scripts/validate_verification_subset.py
+```
+
 First CUDA gate (PubMed `dev200`, FP16, real inference, no calibration):
 
 ```bash
@@ -93,6 +114,15 @@ python -m reliability_eval.cli run \
   --template pubmed_t5 \
   --calibration none \
   --sample-size 200
+```
+
+Rebuild final tables/figures from full local run artifacts (requires `artifacts/runs/`):
+
+```bash
+python -m reliability_eval.cli report \
+  --artifact-root artifacts/runs \
+  --run-id-file reports/verification_run_ids.txt \
+  --expected-count 10
 ```
 
 Inspect gate outputs and pass/fail criteria:

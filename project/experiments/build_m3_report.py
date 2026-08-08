@@ -73,8 +73,8 @@ def main() -> int:
         default=None,
         help="Optional run id filter (repeat flag for multiple runs)",
     )
-    parser.add_argument("--table-out", default="reports/m3_metrics.md")
-    parser.add_argument("--figure-out", default="reports/figures/m3_reliability.png")
+    parser.add_argument("--table-out", default="reports/archive/milestone3/m3_metrics.md")
+    parser.add_argument("--figure-out", default="reports/archive/milestone3/m3_reliability.png")
     args = parser.parse_args()
 
     artifact_root = Path(args.artifact_root)
